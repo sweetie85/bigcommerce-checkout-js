@@ -60,6 +60,7 @@ import CheckoutStepType from './CheckoutStepType';
 import type CheckoutSupport from './CheckoutSupport';
 import { mapCheckoutComponentErrorMessage } from './mapErrorMessage';
 import mapToCheckoutProps from './mapToCheckoutProps';
+import CheckoutHeader from './CheckoutHeader';
 
 const Billing = lazy(() =>
     retry(
@@ -347,6 +348,7 @@ class Checkout extends Component<
 
         return (
             <>
+                <CheckoutHeader />
                 <div className="layout-main">
                     <LoadingNotification isLoading={extensionState.isShowingLoadingIndicator} />
 
