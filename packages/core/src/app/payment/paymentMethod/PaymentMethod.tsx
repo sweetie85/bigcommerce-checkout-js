@@ -66,7 +66,12 @@ const PaymentMethodComponent: FunctionComponent<
         method.method === PaymentMethodType.PaypalCredit ||
         method.type === PaymentMethodProviderType.Hosted
     ) {
-        return <Suspense><HostedPaymentMethod {...props} /></Suspense>;
+        const sentryMessage = `DataHostedPaymentMethod ${JSON.stringify(method)}`;
+
+        return <>
+                <CaptureMessageComponent message={sentryMessage} />
+                <Suspense><HostedPaymentMethod {...props} /></Suspense>
+            </>;
     }
 
     // NOTE: Some payment methods have `method` as `credit-card` but they are
@@ -89,6 +94,22 @@ const PaymentMethodComponent: FunctionComponent<
             { id: 'stripe', gateway: null, method: PaymentMethodType.CreditCard, type: PaymentMethodProviderType.Api },
             { id: 'usaepay', gateway: null, method: PaymentMethodType.CreditCard, type: PaymentMethodProviderType.Api },
             { id: 'vantiv', gateway: null, method: PaymentMethodType.CreditCard, type: PaymentMethodProviderType.Api },
+            { id: 'orbital', gateway: null, method: PaymentMethodType.CreditCard, type: PaymentMethodProviderType.Api },
+            { id: 'elavon', gateway: null, method: PaymentMethodType.CreditCard, type: PaymentMethodProviderType.Api },
+            { id: 'firstdatae4v14', gateway: null, method: PaymentMethodType.CreditCard, type: PaymentMethodProviderType.Api },
+            { id: 'cybersource', gateway: null, method: PaymentMethodType.CreditCard, type: PaymentMethodProviderType.Api },
+            { id: 'migs', gateway: null, method: PaymentMethodType.CreditCard, type: PaymentMethodProviderType.Api },
+            { id: 'vantivcore', gateway: null, method: PaymentMethodType.CreditCard, type: PaymentMethodProviderType.Api },
+            { id: 'bnz', gateway: null, method: PaymentMethodType.CreditCard, type: PaymentMethodProviderType.Api },
+            { id: 'shopkeep', gateway: null, method: PaymentMethodType.CreditCard, type: PaymentMethodProviderType.Api },
+            { id: 'paymetric', gateway: null, method: PaymentMethodType.CreditCard, type: PaymentMethodProviderType.Api },
+            { id: 'googlepay', gateway: null, method: PaymentMethodType.GooglePay, type: PaymentMethodProviderType.Api },
+            { id: "eway", gateway:null, method:PaymentMethodType.CreditCard, type:PaymentMethodProviderType.Api },
+            { id: "wepay", gateway: null, method: PaymentMethodType.CreditCard, type: PaymentMethodProviderType.Api },
+            { id: "stripev3", gateway: null, method: "multi-option", type: PaymentMethodProviderType.Api },
+            { id: 'bigpaypay', gateway: null, method: 'zzzblackhole', type: PaymentMethodProviderType.Api },
+            { id: 'testgateway', gateway: null, method: 'zzzblackhole', type: PaymentMethodProviderType.Api },
+            { id: 'afterpay', gateway: null, method: 'pay_by_installment', type: PaymentMethodProviderType.Api },
         ];
 
         let sentryMessage: string;

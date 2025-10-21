@@ -9,12 +9,12 @@ import userEvent from '@testing-library/user-event';
 import { noop } from 'lodash';
 import React, { type FunctionComponent } from 'react';
 
+import { ExtensionProvider } from '@bigcommerce/checkout/checkout-extension';
 import {
     type AnalyticsContextProps,
     type AnalyticsEvents,
     AnalyticsProviderMock,
-} from '@bigcommerce/checkout/analytics';
-import { ExtensionProvider } from '@bigcommerce/checkout/checkout-extension';
+ ThemeProvider } from '@bigcommerce/checkout/contexts';
 import { getLanguageService, LocaleProvider } from '@bigcommerce/checkout/locale';
 import {
     CHECKOUT_ROOT_NODE_ID,
@@ -37,7 +37,6 @@ import {
     shippingAddress3,
 } from '@bigcommerce/checkout/test-framework';
 import { act, renderWithoutWrapper as render, screen } from '@bigcommerce/checkout/test-utils';
-import { ThemeProvider } from '@bigcommerce/checkout/ui';
 
 import Checkout from '../checkout/Checkout';
 import { type CheckoutIntermediateProps } from '../checkout/CheckoutIntermediate';

@@ -18,7 +18,7 @@ import React, {
 } from 'react';
 import { type ObjectSchema } from 'yup';
 
-import { type AnalyticsContextProps } from '@bigcommerce/checkout/analytics';
+import { type AnalyticsContextProps } from '@bigcommerce/checkout/contexts';
 import { type ErrorLogger } from '@bigcommerce/checkout/error-handling-utils';
 import { withLanguage, type WithLanguageProps } from '@bigcommerce/checkout/locale';
 import { type CheckoutContextProps, type PaymentFormValues } from '@bigcommerce/checkout/payment-integration-api';
@@ -92,7 +92,10 @@ interface PaymentState {
     shouldDisableSubmit: { [key: string]: boolean };
     shouldHidePaymentSubmitButton: { [key: string]: boolean };
     submitFunctions: { [key: string]: ((values: PaymentFormValues) => void) | null };
-    validationSchemas: { [key: string]: ObjectSchema<Partial<PaymentFormValues>> | null };
+}
+
+interface validationSchemas {
+    [key: string]: ObjectSchema<Partial<PaymentFormValues>> | null;
 }
 
 const Payment= (props: PaymentProps & WithCheckoutPaymentProps & WithLanguageProps & AnalyticsContextProps): ReactElement  => {
@@ -101,12 +104,12 @@ const Payment= (props: PaymentProps & WithCheckoutPaymentProps & WithLanguagePro
         isReady: false,
         shouldDisableSubmit: {},
         shouldHidePaymentSubmitButton: {},
-        validationSchemas: {},
         submitFunctions: {},
     });
 
     const isReadyRef = useRef(state.isReady);
     const grandTotalChangeUnsubscribe = useRef<() => void>();
+    const validationSchemasRef = useRef<validationSchemas>({});
 
     const renderOrderErrorModal = (): ReactNode => {
             const { finalizeOrderError, language, shouldLocaliseErrorMessages, submitOrderError } =
@@ -373,18 +376,12 @@ const Payment= (props: PaymentProps & WithCheckoutPaymentProps & WithLanguagePro
         schema: ObjectSchema<Partial<PaymentFormValues>> | null,
     ): void => {
         const uniqueId = getUniquePaymentMethodId(method.id, method.gateway);
-        const { validationSchemas } = state;
 
-        if (validationSchemas[uniqueId] === schema) {
+        if (validationSchemasRef.current[uniqueId] === schema) {
             return;
         }
 
-        setState(prevState => ({ ...prevState,
-            validationSchemas: {
-                ...validationSchemas,
-                [uniqueId]: schema,
-            },
-        }));
+        validationSchemasRef.current[uniqueId] = schema;
     };
 
     const loadPaymentMethodsOrThrow = async (): Promise<void> => {
@@ -525,7 +522,7 @@ const Payment= (props: PaymentProps & WithCheckoutPaymentProps & WithLanguagePro
                         termsConditionsText={props.termsConditionsText}
                         termsConditionsUrl={props.termsConditionsUrl}
                         usableStoreCredit={props.usableStoreCredit}
-                        validationSchema={(uniqueSelectedMethodId && state.validationSchemas[uniqueSelectedMethodId]) || undefined}
+                        validationSchema={(uniqueSelectedMethodId && validationSchemasRef.current[uniqueSelectedMethodId]) || undefined}
                     />
                 )}
             </ChecklistSkeleton>

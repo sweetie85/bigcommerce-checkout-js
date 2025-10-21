@@ -2,6 +2,82 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.696.0](https://github.com/bigcommerce/checkout-js/compare/v1.695.0...v1.696.0) (2025-10-21)
+
+
+### Features
+
+* **payment:** PAYPAL-2197 add paypal express integration import ([c0cde13](https://github.com/bigcommerce/checkout-js/commit/c0cde13a518dad08e38b8b305757919ab5edd699))
+
+## [1.695.0](https://github.com/bigcommerce/checkout-js/compare/v1.694.3...v1.695.0) (2025-10-21)
+
+
+### Features
+
+* **checkout:** CHECKOUT-9547 Update Data Collection Points III ([#2653](https://github.com/bigcommerce/checkout-js/issues/2653)) ([2136e92](https://github.com/bigcommerce/checkout-js/commit/2136e92191009bccbfbb02a9dd043ff9921608d8))
+
+### [1.694.3](https://github.com/bigcommerce/checkout-js/compare/v1.694.2...v1.694.3) (2025-10-20)
+
+### [1.694.2](https://github.com/bigcommerce/checkout-js/compare/v1.694.1...v1.694.2) (2025-10-20)
+
+### [1.694.1](https://github.com/bigcommerce/checkout-js/compare/v1.694.0...v1.694.1) (2025-10-20)
+
+
+### Code Refactoring
+
+* **checkout:** CHECKOUT-9429 Relocate analytics context ([#2649](https://github.com/bigcommerce/checkout-js/issues/2649)) ([0c11925](https://github.com/bigcommerce/checkout-js/commit/0c119253c967a5fa754e1ce864a434720df946be))
+
+## [1.694.0](https://github.com/bigcommerce/checkout-js/compare/v1.693.2...v1.694.0) (2025-10-17)
+
+
+### Features
+
+* **payment:** PAYPAL-2615 update imports for visa checkout component ([#2640](https://github.com/bigcommerce/checkout-js/issues/2640)) ([89b0729](https://github.com/bigcommerce/checkout-js/commit/89b0729ef0dae23374d71a954079c9a86575988b))
+
+### [1.693.2](https://github.com/bigcommerce/checkout-js/compare/v1.693.1...v1.693.2) (2025-10-17)
+
+
+### Code Refactoring
+
+* **checkout:** CHECKOUT-9429 Move themeContext ([#2648](https://github.com/bigcommerce/checkout-js/issues/2648)) ([923fdf3](https://github.com/bigcommerce/checkout-js/commit/923fdf3b90f81c0dc37ddeecf5a9b436b44bf03f))
+
+### [1.693.1](https://github.com/bigcommerce/checkout-js/compare/v1.693.0...v1.693.1) (2025-10-17)
+
+
+### Code Refactoring
+
+* **checkout:** CHECKOUT-9429 Apply lint autofix ([#2647](https://github.com/bigcommerce/checkout-js/issues/2647)) ([f8c0171](https://github.com/bigcommerce/checkout-js/commit/f8c01710e5fc2172a1352273022ec48848494311))
+
+## [1.693.0](https://github.com/bigcommerce/checkout-js/compare/v1.692.0...v1.693.0) (2025-10-17)
+
+
+### Features
+
+* **checkout:** CHECKOUT-9547 Update Data Collection Points II ([#2642](https://github.com/bigcommerce/checkout-js/issues/2642)) ([7a1e19f](https://github.com/bigcommerce/checkout-js/commit/7a1e19ffd2585f6171d72769d9d14e735b65ef00))
+
+## [1.692.0](https://github.com/bigcommerce/checkout-js/compare/v1.691.3...v1.692.0) (2025-10-16)
+
+
+### Features
+
+* **others:** CHECKOUT-9427 Update styling for checklist item ([#2630](https://github.com/bigcommerce/checkout-js/issues/2630)) ([7736f1d](https://github.com/bigcommerce/checkout-js/commit/7736f1d909cb6a27a2ff16ffc86c5a8a84072ec0))
+
+
+### Code Refactoring
+
+* **checkout:** CHECKOUT-9429 Create Contexts Package ([#2643](https://github.com/bigcommerce/checkout-js/issues/2643)) ([5f6db67](https://github.com/bigcommerce/checkout-js/commit/5f6db675dc308efe305e1ddf125ac7f0ad6090e9))
+
+### [1.691.3](https://github.com/bigcommerce/checkout-js/compare/v1.691.2...v1.691.3) (2025-10-16)
+
+### [1.691.2](https://github.com/bigcommerce/checkout-js/compare/v1.691.1...v1.691.2) (2025-10-16)
+
+### [1.691.1](https://github.com/bigcommerce/checkout-js/compare/v1.691.0...v1.691.1) (2025-10-16)
+
+
+### Code Refactoring
+
+* **checkout:** CHECKOUT-9476 Improve Saving validationSchemas ([#2641](https://github.com/bigcommerce/checkout-js/issues/2641)) ([7216090](https://github.com/bigcommerce/checkout-js/commit/7216090837c8a723f709ef4d225be5eb76f152a7))
+
 ## [1.691.0](https://github.com/bigcommerce/checkout-js/compare/v1.690.0...v1.691.0) (2025-10-15)
 
 

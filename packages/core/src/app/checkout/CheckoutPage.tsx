@@ -18,8 +18,8 @@ import classNames from 'classnames';
 import { find, findIndex } from 'lodash';
 import React, { Component, lazy, type ReactNode } from 'react';
 
-import { type AnalyticsContextProps } from '@bigcommerce/checkout/analytics';
 import { Extension, type ExtensionContextProps, withExtension } from '@bigcommerce/checkout/checkout-extension';
+import { type AnalyticsContextProps } from '@bigcommerce/checkout/contexts';
 import { type ErrorLogger } from '@bigcommerce/checkout/error-handling-utils';
 import { TranslatedString, withLanguage, type WithLanguageProps } from '@bigcommerce/checkout/locale';
 import {
@@ -41,7 +41,6 @@ import { retry } from '../common/utility';
 import {
     CheckoutButtonContainer,
     CheckoutSuggestion,
-    Customer,
     CustomerInfo,
     type CustomerSignOutEvent,
     CustomerViewType,
@@ -108,6 +107,16 @@ const Shipping = lazy(() =>
             import(
                 /* webpackChunkName: "shipping" */
                 '../shipping/Shipping'
+                ),
+    ),
+);
+
+const Customer = lazy(() =>
+    retry(
+        () =>
+            import(
+                /* webpackChunkName: "customer" */
+                '../customer/Customer'
                 ),
     ),
 );
@@ -314,6 +323,7 @@ class Checkout extends Component<
                 );
             } else {
                 const { message, action } = mapCheckoutComponentErrorMessage(error, language.translate.bind(language));
+
                 errorModal = <ErrorModal
                         error={error}
                         message={message}
@@ -321,7 +331,6 @@ class Checkout extends Component<
                     />;
             }
         }
-
 
         return (
             <div className={classNames('remove-checkout-step-numbers', { 'is-embedded': isEmbedded() }, { 'themeV2': themeV2 })} data-test="checkout-page-container" id="checkout-page-container">
@@ -424,24 +433,26 @@ class Checkout extends Component<
                     />
                 }
             >
-                <Customer
-                    checkEmbeddedSupport={this.checkEmbeddedSupport}
-                    isEmbedded={isEmbedded()}
-                    isSubscribed={isSubscribed}
-                    isWalletButtonsOnTop = {isShowingWalletButtonsOnTop }
-                    onAccountCreated={this.navigateToNextIncompleteStep}
-                    onChangeViewType={this.setCustomerViewType}
-                    onContinueAsGuest={this.navigateToNextIncompleteStep}
-                    onContinueAsGuestError={this.handleError}
-                    onReady={this.handleReady}
-                    onSignIn={this.navigateToNextIncompleteStep}
-                    onSignInError={this.handleError}
-                    onSubscribeToNewsletter={this.handleNewsletterSubscription}
-                    onUnhandledError={this.handleUnhandledError}
-                    onWalletButtonClick={this.handleWalletButtonClick}
-                    step={step}
-                    viewType={customerViewType}
-                />
+                <LazyContainer>
+                    <Customer
+                        checkEmbeddedSupport={this.checkEmbeddedSupport}
+                        isEmbedded={isEmbedded()}
+                        isSubscribed={isSubscribed}
+                        isWalletButtonsOnTop = {isShowingWalletButtonsOnTop }
+                        onAccountCreated={this.navigateToNextIncompleteStep}
+                        onChangeViewType={this.setCustomerViewType}
+                        onContinueAsGuest={this.navigateToNextIncompleteStep}
+                        onContinueAsGuestError={this.handleError}
+                        onReady={this.handleReady}
+                        onSignIn={this.navigateToNextIncompleteStep}
+                        onSignInError={this.handleError}
+                        onSubscribeToNewsletter={this.handleNewsletterSubscription}
+                        onUnhandledError={this.handleUnhandledError}
+                        onWalletButtonClick={this.handleWalletButtonClick}
+                        step={step}
+                        viewType={customerViewType}
+                    />
+                </LazyContainer>
             </CheckoutStep>
         );
     }
@@ -702,6 +713,7 @@ class Checkout extends Component<
 
         if (isErrorWithType(error) && error.type === 'empty_cart') {
             this.setState({ error });
+
             return;
         }
 
