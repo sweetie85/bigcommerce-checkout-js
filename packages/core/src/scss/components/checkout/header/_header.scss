@@ -1,0 +1,33 @@
+
+.checkoutHeader.optimizedCheckout-header, 
+.checkoutHeader-heading {
+  display: none;
+}
+
+.checkout-header {
+  background-color: #315B42;
+  display: flex;
+  align-items: center; /* Vertically centers all items */
+  padding: 10px 30px;
+  
+  .back-to-cart {
+    color: #F6A601;
+    margin-right: auto;
+  }
+
+  .center-content {
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 28px;
+    flex-grow: 1;
+  }
+
+  .checkout-header-logo {
+    width: 100px;
+  }
+}
+
+
+
