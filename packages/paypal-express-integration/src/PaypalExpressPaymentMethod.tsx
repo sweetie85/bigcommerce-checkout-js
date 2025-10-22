@@ -1,5 +1,5 @@
 import { type PaymentInitializeOptions } from '@bigcommerce/checkout-sdk';
-import { createPaypalExpressPaymentStrategy } from '@bigcommerce/checkout-sdk/integrations/paypal-express';
+import { createPaypalExpressButtonStrategy } from '@bigcommerce/checkout-sdk/integrations/paypal-express';
 import React, { type FunctionComponent, useCallback } from 'react';
 
 import { HostedPaymentComponent } from '@bigcommerce/checkout/hosted-payment-integration';
@@ -20,7 +20,7 @@ const PaypalExpressPaymentMethod: FunctionComponent<
         (options: PaymentInitializeOptions) =>
             checkoutService.initializePayment({
                 ...options,
-                integrations: [createPaypalExpressPaymentStrategy],
+                integrations: [createPaypalExpressButtonStrategy],
                 paypalexpress: {
                     useRedirectFlow: isEmbedded,
                 },

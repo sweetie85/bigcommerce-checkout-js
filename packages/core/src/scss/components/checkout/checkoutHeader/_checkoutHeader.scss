@@ -33,3 +33,59 @@
     margin-bottom: 0;
     word-wrap: break-word;
 }
+
+.layout {
+    max-width: initial!important;
+    padding: 0!important;
+}
+
+.header-tabs {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 40px 0;
+}
+
+.header-tabs .header-tab {
+    display: flex;
+    gap: 10px;
+    background-color: #315B4226;
+    padding: 10px 50px;
+    align-items: center;
+    font-weight: 500;
+
+    &.active {
+        background-color: #315B42;
+        color: #fff;
+
+        .step-number {
+            background-color: #F6A601;
+            color: #315B42;
+            border-color: #F6A601;
+        }
+    }
+}
+
+.header-tabs .header-tab .step-number {
+    border: 2px solid #315B4287;
+    width: 24px;
+    height: 24px;
+    border-radius: 99px;
+    text-align: center;
+}
+
+.tag-page-content {
+    padding-top: 50px;
+    background-color: #f7f3ee;
+    min-height: 800px;
+}
+
+.shipping-n-delivery {
+    width: 80%;
+    margin: auto;
+}
+
+.shipping-n-delivery .step-title {
+    color: #315B42;
+    font-weight: bold;
+}

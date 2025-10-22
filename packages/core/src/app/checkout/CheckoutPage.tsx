@@ -60,6 +60,7 @@ import type CheckoutSupport from './CheckoutSupport';
 import { mapCheckoutComponentErrorMessage } from './mapErrorMessage';
 import mapToCheckoutProps from './mapToCheckoutProps';
 import CheckoutHeader from './CheckoutHeader';
+import ShippingAndDelivery from './ShippingAndDelivery';
 
 const Billing = lazy(() =>
     retry(
@@ -358,10 +359,12 @@ class Checkout extends Component<
         return (
             <>
                 <CheckoutHeader />
-                <div className="layout-main">
+                <div className='tag-page-content'>
+                    <ShippingAndDelivery data={this.props.data} />
+                </div>
+                {/* <div className="layout-main">
                     <LoadingNotification isLoading={extensionState.isShowingLoadingIndicator} />
 
-                    {/* <Extension region={ExtensionRegion.GlobalWebWorker} /> */}
                     <PromotionBannerList promotions={promotions} />
 
                     {isShowingWalletButtonsOnTop && this.state.buttonConfigs?.length > 0 && (
@@ -387,7 +390,7 @@ class Checkout extends Component<
                             )}
                     </ol>
                 </div>
-                {this.renderCartSummary()}
+                {this.renderCartSummary()} */}
             </>
         );
     }
