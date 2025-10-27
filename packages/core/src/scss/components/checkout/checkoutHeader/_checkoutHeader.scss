@@ -1,6 +1,7 @@
 // =============================================================================
 // CHECKOUT HEADER (Component)
 // =============================================================================
+@import "~react-datepicker/dist/react-datepicker.css";
 
 .checkoutHeader {
     background-color: container("fill", "dark");
@@ -140,4 +141,10 @@
         padding-top: 12px;
         font-size: 16px;
     }
+}
+
+.react-datepicker__input-container input[type="text"] {
+    padding: 5px;
+    border-radius: 4px;
+    outline: none;
 }
