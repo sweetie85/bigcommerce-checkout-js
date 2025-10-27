@@ -61,6 +61,7 @@ import { mapCheckoutComponentErrorMessage } from './mapErrorMessage';
 import mapToCheckoutProps from './mapToCheckoutProps';
 import CheckoutHeader from './CheckoutHeader';
 import ShippingAndDelivery from './shipping-n-delivery/ShippingAndDelivery';
+import CartSummary from './CartSummary';
 
 const Billing = lazy(() =>
     retry(
@@ -72,15 +73,15 @@ const Billing = lazy(() =>
     ),
 );
 
-const CartSummary = lazy(() =>
-    retry(
-        () =>
-            import(
-                /* webpackChunkName: "cart-summary" */
-                '../cart/CartSummary'
-                ),
-    ),
-);
+// const CartSummary = lazy(() =>
+//     retry(
+//         () =>
+//             import(
+//                 /* webpackChunkName: "cart-summary" */
+//                 '../cart/CartSummary'
+//                 ),
+//     ),
+// );
 
 const CartSummaryDrawer = lazy(() =>
     retry(
@@ -359,8 +360,15 @@ class Checkout extends Component<
         return (
             <>
                 <CheckoutHeader />
-                <div className='tag-page-content'>
-                    <ShippingAndDelivery data={this.props.data} checkoutId={this.props.checkoutId} />
+                <div style={{ display: 'flex' }}>
+                    <div style={{ width: '75%' }} className="shipping-n-delivery">
+                        <div className='tag-page-content'>
+                            <ShippingAndDelivery data={this.props.data} checkoutId={this.props.checkoutId} />
+                        </div>
+                    </div>
+                    <div style={{ width: '25%' }} className='cart-summary'>
+                       <CartSummary cart={this.props.cart} /> 
+                    </div>
                 </div>
                 {/* <div className="layout-main">
                     <LoadingNotification isLoading={extensionState.isShowingLoadingIndicator} />
@@ -574,7 +582,7 @@ class Checkout extends Component<
                     return (
                         <LazyContainer loadingSkeleton={<CartSummarySkeleton />}>
                             <aside className="layout-cart">
-                                    <CartSummary isMultiShippingMode={isMultiShippingMode} />
+                                    {/* <CartSummary isMultiShippingMode={isMultiShippingMode} /> */}
                                     <Extension region={ExtensionRegion.SummaryAfter} />
                             </aside>
                         </LazyContainer>
