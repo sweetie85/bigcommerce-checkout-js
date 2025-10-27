@@ -60,7 +60,7 @@ import type CheckoutSupport from './CheckoutSupport';
 import { mapCheckoutComponentErrorMessage } from './mapErrorMessage';
 import mapToCheckoutProps from './mapToCheckoutProps';
 import CheckoutHeader from './CheckoutHeader';
-import ShippingAndDelivery from './ShippingAndDelivery';
+import ShippingAndDelivery from './shipping-n-delivery/ShippingAndDelivery';
 
 const Billing = lazy(() =>
     retry(
@@ -360,7 +360,7 @@ class Checkout extends Component<
             <>
                 <CheckoutHeader />
                 <div className='tag-page-content'>
-                    <ShippingAndDelivery data={this.props.data} />
+                    <ShippingAndDelivery data={this.props.data} checkoutId={this.props.checkoutId} />
                 </div>
                 {/* <div className="layout-main">
                     <LoadingNotification isLoading={extensionState.isShowingLoadingIndicator} />
