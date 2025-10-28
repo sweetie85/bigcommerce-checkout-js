@@ -1,17 +1,26 @@
-import { CustomerAddress } from "@bigcommerce/checkout-sdk";
+import { AddressRequestBody, CustomerAddress } from "@bigcommerce/checkout-sdk";
 import React, { useState } from "react";
 
 interface AddressOptionProps {
   customerAddresses: CustomerAddress[];
+  shippingAddress: AddressRequestBody | null;
+  onInputChange: (updated: any) => void;
 }
 
-const AddressOption = ({ customerAddresses }: AddressOptionProps) => {
+const AddressOption = ({ customerAddresses, shippingAddress, onInputChange }: AddressOptionProps) => {
 
   const [isNewAddress, setIsNewAddress] = useState(false);
 
   const handleChange = (e: any) => {
     console.log('e.target.value: '+e.target.value);
     setIsNewAddress(e.target.value == '1');
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onInputChange({
+      ...shippingAddress,
+      [e.target.name]: e.target.value,
+    });
   };
 
   return <div>
@@ -32,24 +41,24 @@ const AddressOption = ({ customerAddresses }: AddressOptionProps) => {
 
       {isNewAddress && <div>
         <div className="form-field-row">
-          <input className="custom-form-input text" type="text" placeholder="First Name" />
-          <input className="custom-form-input text" type="text" placeholder="Last Name" />
+          <input className="custom-form-input text" type="text" placeholder="First Name" name="firstName" value={shippingAddress?.firstName} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="Last Name" name="lastName" value={shippingAddress?.lastName} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
-          <input className="custom-form-input text" type="text" placeholder="Company Name" />
-          <input className="custom-form-input text" type="text" placeholder="Phone Number" />
+          <input className="custom-form-input text" type="text" placeholder="Company Name" name="company" value={shippingAddress?.company} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="Phone Number" name="phone" value={shippingAddress?.phone} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
-          <input className="custom-form-input text" type="text" placeholder="Address" />
-          <input className="custom-form-input text" type="text" placeholder="Address/Suite/Building" />
+          <input className="custom-form-input text" type="text" placeholder="Address" name="address1" value={shippingAddress?.address1} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="Address/Suite/Building" name="address2" value={shippingAddress?.address2} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
-          <input className="custom-form-input text" type="text" placeholder="City" />
-          <input className="custom-form-input text" type="text" placeholder="Country" />
+          <input className="custom-form-input text" type="text" placeholder="City" name="city" value={shippingAddress?.city} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="Country" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
-          <input className="custom-form-input text" type="text" placeholder="State/Province" />
-          <input className="custom-form-input text" type="text" placeholder="Postal Code" />
+          <input className="custom-form-input text" type="text" placeholder="State/Province" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="Postal Code" name="postalCode" value={shippingAddress?.postalCode} onChange={handleInputChange} />
         </div>
       </div>}
  </div>

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { 
+  AddressRequestBody,
   CheckoutStoreSelector, 
   createCheckoutService, 
   CustomerAddress,
@@ -12,6 +13,7 @@ import AddressOption from "./options/AddressOption";
 import ShippingMethodOption from "./options/ShippingMethodOption";
 import FutureShipDateOption from "./options/FutureShipDateOption";
 import GiftMessageOption from "./options/GiftMessageOption";
+import { CheckoutContext } from "@bigcommerce/checkout/payment-integration-api";
 
 interface ShippingAndDeliveryProps {
   data: CheckoutStoreSelector;
@@ -21,7 +23,14 @@ interface ShippingAndDeliveryProps {
 const ShippingAndDelivery = ({ data, checkoutId }: ShippingAndDeliveryProps) => {
 
   const [customerAddresses, setCustomerAddresses] = useState<CustomerAddress[]>([]);
+
+  // Custom message
   const [giftProducts, setGiftProduct] = useState<{ bigcommerce_product_id: string, frontend_title: string }[]>([]);
+  const [gitProductId, setGiftProductId] = useState<string | null>(null);
+  const [giftMessage, setGiftMessage] = useState<string | null>(null);
+  const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
+
+  const checkoutContext = useContext(CheckoutContext);
 
   // Sample
   const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([{
@@ -50,11 +59,19 @@ const ShippingAndDelivery = ({ data, checkoutId }: ShippingAndDeliveryProps) => 
       setCustomerAddresses(customer.addresses);
     }
     
-    console.log('data.getShippingOptions(): ');
-    console.log(data.getShippingOptions());
-    console.log(data.getPaymentMethods());
+    // console.log('data.getShippingOptions(): ');
+    // console.log(data.getShippingOptions());
+    // console.log(data.getPaymentMethods());
 
-    
+    console.log('data.getShippingAddress: ');
+    console.log(data.getShippingAddress());
+
+    const customerShippingAddress = data.getShippingAddress();
+
+    if (customerShippingAddress) {
+      setShippingAddress(customerShippingAddress);
+    }
+
     const shippingOptions = data.getShippingOptions();
     if (shippingOptions) {
       setShippingOptions(shippingOptions);
@@ -117,12 +134,33 @@ const ShippingAndDelivery = ({ data, checkoutId }: ShippingAndDeliveryProps) => 
     }
   }
 
+  const saveChanges = async () => {
+    console.log('saveChanges: ');
+    await addItemsToCart(gitProductId, giftMessage);
+
+    console.log('Item added');
+
+    if (checkoutContext) {
+      if (shippingAddress) {
+        checkoutContext.checkoutService.updateShippingAddress(shippingAddress);
+        console.log('Updated shipping address...');
+      }
+    }
+  }
+
+  const handleAddressChange = (updatedAddress: AddressRequestBody) => {
+    setShippingAddress(updatedAddress); // ✅ Update single source of truth
+  };
 
   return <div className="shipping-n-delivery">
     <ConsignmentOption />
 
     <div className="" style={{ padding: '40px', backgroundColor: '#fff', marginTop: '40px' }}>
-      <AddressOption customerAddresses={customerAddresses}/>
+      <AddressOption 
+        customerAddresses={customerAddresses} 
+        shippingAddress={shippingAddress} 
+        onInputChange={handleAddressChange} 
+      />
 
       <hr style={{ margin: '30px 0'}} />
 
@@ -133,13 +171,18 @@ const ShippingAndDelivery = ({ data, checkoutId }: ShippingAndDeliveryProps) => 
         <div style={{ width: '40%'}}>
           <FutureShipDateOption />
         </div>
-
       </div>
 
       <hr style={{ margin: '30px 0'}} />      
+      <GiftMessageOption giftProducts={giftProducts} setGiftProductId={setGiftProductId} setGiftMessage={setGiftMessage}  />
 
-      <GiftMessageOption giftProducts={giftProducts} handleAddItemsToCart={addItemsToCart} />
+      <div style={{ textAlign: 'right', marginTop: '20px' }}>
+        <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>SAVE CHANGES</button>
+      </div>
+    </div>
 
+    <div style={{ textAlign: 'right', margin: '20px 0' }}>
+      <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
     </div>
 
   </div>

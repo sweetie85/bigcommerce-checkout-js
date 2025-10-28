@@ -7,14 +7,11 @@ interface GIftProduct {
 
 interface GiftMessageOptionProps {
   giftProducts: GIftProduct[];
-  handleAddItemsToCart: (gitProductId: string | null, giftMessage: string | null) => {}
+  setGiftProductId: (id: string) => void;
+  setGiftMessage: (message: string) => void;
 }
 
-const GiftMessageOption = ({ giftProducts, handleAddItemsToCart }: GiftMessageOptionProps) => {
-  
-  // Custom message
-  const [gitProductId, setGiftProductId] = useState<string | null>(null);
-  const [giftMessage, setGiftMessage] = useState<string | null>(null);
+const GiftMessageOption = ({ giftProducts, setGiftProductId, setGiftMessage }: GiftMessageOptionProps) => {
 
   return <div>
     <div className="step-title">
@@ -33,11 +30,6 @@ const GiftMessageOption = ({ giftProducts, handleAddItemsToCart }: GiftMessageOp
       <textarea onChange={(e) => setGiftMessage(e.target.value)} style={{ marginTop: '10px',  marginLeft: '20px', width: '500px', height: '100px', borderRadius: '6px' }} placeholder="Type your message here"></textarea>
     </div>
     <p style={{ marginLeft: '20px', marginTop: '5px', color: '#ccc'}}>150 characters remaining of 150</p>
-    {/* <button onClick={() => handleAddItemsToCart(gitProductId, giftMessage)}>Add</button> */}
-
-    <div style={{ textAlign: 'right', marginTop: '20px' }}>
-      <button onClick={() => handleAddItemsToCart(gitProductId, giftMessage)} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>SAVE CHANGES</button>
-    </div>
   </div>
 }
 
