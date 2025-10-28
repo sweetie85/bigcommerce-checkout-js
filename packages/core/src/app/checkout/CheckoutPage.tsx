@@ -62,6 +62,7 @@ import mapToCheckoutProps from './mapToCheckoutProps';
 import CheckoutHeader from './CheckoutHeader';
 import ShippingAndDelivery from './shipping-n-delivery/ShippingAndDelivery';
 import CartSummary from './CartSummary';
+import CustomCheckoutPage from './CustomCheckoutPage';
 
 const Billing = lazy(() =>
     retry(
@@ -147,6 +148,7 @@ export interface CheckoutState {
     hasSelectedShippingOptions: boolean;
     isSubscribed: boolean;
     buttonConfigs: PaymentMethod[];
+    activeTabIndex: number;
 }
 
 export interface WithCheckoutProps {
@@ -190,6 +192,7 @@ class Checkout extends Component<
         hasSelectedShippingOptions: false,
         isSubscribed: false,
         buttonConfigs: [],
+        activeTabIndex: 0,
     };
 
     private embeddedMessenger?: EmbeddedCheckoutMessenger;
@@ -344,6 +347,10 @@ class Checkout extends Component<
         );
     }
 
+    private changeTab(index: number) {
+        this.setState({ activeTabIndex: index })
+    }
+
     private renderContent(): ReactNode {
         const { isPending, loginUrl, promotions = [], steps, isShowingWalletButtonsOnTop, extensionState } = this.props;
 
@@ -359,7 +366,8 @@ class Checkout extends Component<
 
         return (
             <>
-                <CheckoutHeader />
+                <CustomCheckoutPage data={this.props.data} checkoutId={this.props.checkoutId} cart={this.props.cart} />
+                {/* <CheckoutHeader activeIndex={this.state.activeTabIndex} onChangeTab={this.changeTab} />
                 <div style={{ display: 'flex' }}>
                     <div style={{ width: '75%' }} className="shipping-n-delivery">
                         <div className='tag-page-content'>
@@ -369,7 +377,7 @@ class Checkout extends Component<
                     <div style={{ width: '25%' }} className='cart-summary'>
                        <CartSummary cart={this.props.cart} /> 
                     </div>
-                </div>
+                </div> */}
                 {/* <div className="layout-main">
                     <LoadingNotification isLoading={extensionState.isShowingLoadingIndicator} />
 

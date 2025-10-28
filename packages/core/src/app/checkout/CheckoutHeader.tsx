@@ -1,7 +1,12 @@
 
 import React from 'react';
 
-const CheckoutHeader = () => {
+interface CheckoutHeaderProps {
+  activeIndex?: number
+  onChangeTab: (index: number) => void;
+}
+
+const CheckoutHeader = ({activeIndex = 0, onChangeTab} : CheckoutHeaderProps) => {
   return <><div className='checkout-header test-lalmani'>
     <div className='back-to-cart'>
       <a href='/cart.php' style={{ color: 'inherit', display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -30,15 +35,15 @@ const CheckoutHeader = () => {
   </div>
   <div>
     <div className='header-tabs'>
-      <div className='header-tab active'>
+      <div onClick={() => onChangeTab(0)} className={`header-tab ${activeIndex == 0 ? 'active' : ''}`}>
         <div className='step-number'>1</div>
         <div className='step-title'>Shipping & Delivery</div>
       </div>
-      <div className='header-tab'>
+      <div onClick={() => onChangeTab(1)} className={`header-tab ${activeIndex == 1 ? 'active' : ''}`}>
         <div className='step-number'>2</div>
         <div className='step-title'>Order Summary</div>
       </div>
-      <div className='header-tab'>
+      <div onClick={() => onChangeTab(2)} className={`header-tab ${activeIndex == 2 ? 'active' : ''}`}>
         <div className='step-number'>3</div>
         <div className='step-title'>Payment</div>
       </div>

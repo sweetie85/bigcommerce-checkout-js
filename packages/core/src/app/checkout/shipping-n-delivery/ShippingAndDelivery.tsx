@@ -35,6 +35,8 @@ const ShippingAndDelivery = ({ data, checkoutId }: ShippingAndDeliveryProps) => 
   const [gitProductId, setGiftProductId] = useState<string | null>(null);
   const [giftMessage, setGiftMessage] = useState<string | null>(null);
 
+  // Next page
+  const [enabledNextStep, setEnabledNextStep] = useState(false);
   const checkoutContext = useContext(CheckoutContext);
 
   useEffect(() => {
@@ -137,6 +139,8 @@ const ShippingAndDelivery = ({ data, checkoutId }: ShippingAndDeliveryProps) => 
         checkoutContext.checkoutService.selectShippingOption(selectedShippingOptionId);
       }
     }
+
+    setEnabledNextStep(true);
   }
 
   const handleAddressChange = (updatedAddress: AddressRequestBody) => {
@@ -177,7 +181,7 @@ const ShippingAndDelivery = ({ data, checkoutId }: ShippingAndDeliveryProps) => 
     </div>
 
     <div style={{ textAlign: 'right', margin: '20px 0' }}>
-      <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
+      <button disabled={!enabledNextStep} style={{ opacity: enabledNextStep ? '1' : '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
     </div>
 
   </div>
