@@ -22,61 +22,48 @@ interface ShippingAndDeliveryProps {
 
 const ShippingAndDelivery = ({ data, checkoutId }: ShippingAndDeliveryProps) => {
 
+  // Address
   const [customerAddresses, setCustomerAddresses] = useState<CustomerAddress[]>([]);
+  const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
+
+  // Shipping options
+  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
+  const [selectedShippingOptionId, setSelectedShippingOptionId] = useState<string | null>(null);
 
   // Custom message
   const [giftProducts, setGiftProduct] = useState<{ bigcommerce_product_id: string, frontend_title: string }[]>([]);
   const [gitProductId, setGiftProductId] = useState<string | null>(null);
   const [giftMessage, setGiftMessage] = useState<string | null>(null);
-  const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
 
   const checkoutContext = useContext(CheckoutContext);
 
-  // Sample
-  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([{
-    id: '100',
-    description: 'Free Shipping',
-    cost: 0,
-    additionalDescription: '',
-    isRecommended: false,
-    imageUrl: '',
-    transitTime: '',
-    type: ""
-  },{
-    id: '101',
-    description: 'Standard',
-    cost: 10.0,
-    additionalDescription: '',
-    isRecommended: false,
-    imageUrl: '',
-    transitTime: '',
-    type: ""
-  }]);
-
   useEffect(() => {
+    // Load Customer address
     const customer = data.getCustomer();
     if (customer) {
       setCustomerAddresses(customer.addresses);
     }
-    
-    // console.log('data.getShippingOptions(): ');
-    // console.log(data.getShippingOptions());
-    // console.log(data.getPaymentMethods());
-
-    console.log('data.getShippingAddress: ');
-    console.log(data.getShippingAddress());
 
     const customerShippingAddress = data.getShippingAddress();
-
     if (customerShippingAddress) {
       setShippingAddress(customerShippingAddress);
     }
 
-    const shippingOptions = data.getShippingOptions();
-    if (shippingOptions) {
-      setShippingOptions(shippingOptions);
+    // Load shipping options
+    if (checkoutContext) {
+      checkoutContext.checkoutService.loadShippingOptions()
+      .then((res) => {
+        const shippingOptions = res.data.getShippingOptions();
+        setShippingOptions(shippingOptions ? shippingOptions : []);
+      });
     }
 
+    const selectedShippingOption = data.getSelectedShippingOption();
+    if (selectedShippingOption) {
+      setSelectedShippingOptionId(selectedShippingOption.id)
+    }
+
+    // Load card products
     fetch('https://phpstack-1452029-5845393.cloudwaysapps.com/bigcommerce-toms/cardproducts/list')
     .then(r => r.json())
     .then(r => {
@@ -145,6 +132,10 @@ const ShippingAndDelivery = ({ data, checkoutId }: ShippingAndDeliveryProps) => 
         checkoutContext.checkoutService.updateShippingAddress(shippingAddress);
         console.log('Updated shipping address...');
       }
+
+      if (selectedShippingOptionId) {
+        checkoutContext.checkoutService.selectShippingOption(selectedShippingOptionId);
+      }
     }
   }
 
@@ -166,7 +157,11 @@ const ShippingAndDelivery = ({ data, checkoutId }: ShippingAndDeliveryProps) => 
 
       <div style={{ display: 'flex', gap: '20px' }}>
         <div style={{ width: '60%'}}>
-          <ShippingMethodOption shippingOptions={shippingOptions}/>
+          <ShippingMethodOption 
+            shippingOptions={shippingOptions} 
+            handleChange={setSelectedShippingOptionId} 
+            selectedShippingOptionId={selectedShippingOptionId}
+          />
         </div>
         <div style={{ width: '40%'}}>
           <FutureShipDateOption />
