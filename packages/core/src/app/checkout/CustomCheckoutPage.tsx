@@ -5,6 +5,7 @@ import CheckoutHeader from "./CheckoutHeader";
 import ShippingAndDelivery from "./shipping-n-delivery/ShippingAndDelivery";
 import { CheckoutStoreSelector, Cart } from "@bigcommerce/checkout-sdk";
 import OrderSummary from "./OrderSummary";
+import CheckoutPayment from "./CheckoutPayment";
 
 interface CustomCheckoutPageProps {
   data: CheckoutStoreSelector;
@@ -26,6 +27,7 @@ const CustomCheckoutPage = ({ data, checkoutId, cart  }: CustomCheckoutPageProps
             <OrderSummary data={data} cart={cart} />
             </div>
           }
+          {activeTabIndex == 2 && <CheckoutPayment data={data} checkoutId={checkoutId}/>}
         </div>
       </div>
       <div style={{ width: '25%' }} className='cart-summary'>
