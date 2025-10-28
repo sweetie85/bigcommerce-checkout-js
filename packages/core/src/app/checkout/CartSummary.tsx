@@ -13,7 +13,7 @@ const CartSummary = ({ cart }: CartSummaryProps) => {
        (cart.lineItems.physicalItems.map(i => <div key={i.id} className="cart-item">
         <div style={{ width: '20%' }}><img src={i.imageUrl} /></div>
         <div style={{ width: '60%' }}>
-          <div className="product-title">{i.name}</div>
+          <div className="product-title">{i.quantity} x {i.name}</div>
           {i.options?.map(o => <div key={o.nameId} className="product-option">{o.name} {o.value}</div>)}
         </div>
         <div style={{ width: '20%' }} className="product-price">${i.salePrice}</div>

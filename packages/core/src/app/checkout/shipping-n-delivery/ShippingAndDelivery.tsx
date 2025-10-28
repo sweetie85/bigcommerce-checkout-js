@@ -112,6 +112,8 @@ const ShippingAndDelivery = ({ data, checkoutId }: ShippingAndDeliveryProps) => 
       console.error('Add item error:', error);
       alert('Error adding add-ons: ' + (error.title || 'Unknown error'));
       return;
+    } else {
+      window.location.reload();
     }
   }
 

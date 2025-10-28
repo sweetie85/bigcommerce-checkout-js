@@ -148,3 +148,19 @@
     border-radius: 4px;
     outline: none;
 }
+
+.form-field-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+
+    .custom-form-input.text {
+        padding: 10px 12px;
+        width: 49%;
+        outline: none;
+        border: 1px solid #315B4287;
+        border-radius: 4px;
+    }
+
+}
+
