@@ -18,9 +18,10 @@ import { CheckoutContext } from "@bigcommerce/checkout/payment-integration-api";
 interface ShippingAndDeliveryProps {
   data: CheckoutStoreSelector;
   checkoutId: string;
+  gotoNextStep: () => void
 }
 
-const ShippingAndDelivery = ({ data, checkoutId }: ShippingAndDeliveryProps) => {
+const ShippingAndDelivery = ({ data, checkoutId, gotoNextStep }: ShippingAndDeliveryProps) => {
 
   // Address
   const [customerAddresses, setCustomerAddresses] = useState<CustomerAddress[]>([]);
@@ -181,7 +182,7 @@ const ShippingAndDelivery = ({ data, checkoutId }: ShippingAndDeliveryProps) => 
     </div>
 
     <div style={{ textAlign: 'right', margin: '20px 0' }}>
-      <button disabled={!enabledNextStep} style={{ opacity: enabledNextStep ? '1' : '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
+      <button onClick={gotoNextStep} disabled={!enabledNextStep} style={{ opacity: enabledNextStep ? '1' : '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
     </div>
 
   </div>

@@ -22,7 +22,7 @@ const CustomCheckoutPage = ({ data, checkoutId, cart  }: CustomCheckoutPageProps
     <div style={{ display: 'flex' }}>
       <div style={{ width: '75%' }} className="shipping-n-delivery">
         <div className='tag-page-content'>
-          { activeTabIndex == 0 && <ShippingAndDelivery data={data} checkoutId={checkoutId} /> }
+          { activeTabIndex == 0 && <ShippingAndDelivery data={data} checkoutId={checkoutId} gotoNextStep={() => setActiveTabIndex(1)} /> }
           { activeTabIndex == 1 && <div className="cart-summary" style={{ background: 'none' }}>
             <OrderSummary data={data} cart={cart} />
             </div>
@@ -31,7 +31,7 @@ const CustomCheckoutPage = ({ data, checkoutId, cart  }: CustomCheckoutPageProps
         </div>
       </div>
       <div style={{ width: '25%' }} className='cart-summary'>
-          <CartSummary cart={cart} /> 
+          <CartSummary data={data} cart={cart} /> 
       </div>
     </div>
   </div>

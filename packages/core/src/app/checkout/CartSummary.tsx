@@ -1,11 +1,30 @@
-import { Cart } from "@bigcommerce/checkout-sdk";
-import React from "react";
+import { Cart, CheckoutStoreSelector, ShippingOption } from "@bigcommerce/checkout-sdk";
+import React, { useEffect, useState } from "react";
 
 interface CartSummaryProps {
+  data: CheckoutStoreSelector;
   cart: Cart | undefined;
 }
 
-const CartSummary = ({ cart }: CartSummaryProps) => {
+const CartSummary = ({ data, cart }: CartSummaryProps) => {
+  const [selectedShippingOption, setSelectedShippingOption] = useState<ShippingOption | null>(null);
+
+  useEffect(() => {
+    const selectedShippingOption = data.getSelectedShippingOption();
+    if (selectedShippingOption) {
+      setSelectedShippingOption(selectedShippingOption)
+    }
+  }, []);
+
+  const cartTotalAmount = () => {
+    let totalAmount = cart ? cart.cartAmount : 0;
+    if (selectedShippingOption) {
+      totalAmount = totalAmount + selectedShippingOption.cost;
+    }
+
+    return totalAmount;
+  }
+
   return <div>
     <p className="title"> Cart Summary ({cart ? cart.lineItems.physicalItems.length : 0} Items)</p>
     <div className="cart-items">
@@ -29,7 +48,7 @@ const CartSummary = ({ cart }: CartSummaryProps) => {
       </div>
       <div className="cart-amount-line">
         <span>Shipping</span>
-        <span>TBD</span>
+        <span>{ selectedShippingOption ? '$'+selectedShippingOption.cost : 'TBD' }</span>
       </div>
       <div className="cart-amount-line">
         <span>Tax</span>
@@ -40,7 +59,7 @@ const CartSummary = ({ cart }: CartSummaryProps) => {
 
       <div className="cart-amount-line">
         <span style={{ fontSize: '18px' }}>Total (USD)</span>
-        <span style={{ fontSize: '20px', fontWeight: 'bold' }}>${cart?.cartAmount}</span>
+        <span style={{ fontSize: '20px', fontWeight: 'bold' }}>${cartTotalAmount()}</span>
       </div>
     </div>
   </div>

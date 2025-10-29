@@ -367,17 +367,6 @@ class Checkout extends Component<
         return (
             <>
                 <CustomCheckoutPage data={this.props.data} checkoutId={this.props.checkoutId} cart={this.props.cart} />
-                {/* <CheckoutHeader activeIndex={this.state.activeTabIndex} onChangeTab={this.changeTab} />
-                <div style={{ display: 'flex' }}>
-                    <div style={{ width: '75%' }} className="shipping-n-delivery">
-                        <div className='tag-page-content'>
-                            <ShippingAndDelivery data={this.props.data} checkoutId={this.props.checkoutId} />
-                        </div>
-                    </div>
-                    <div style={{ width: '25%' }} className='cart-summary'>
-                       <CartSummary cart={this.props.cart} /> 
-                    </div>
-                </div> */}
                 {/* <div className="layout-main">
                     <LoadingNotification isLoading={extensionState.isShowingLoadingIndicator} />
 

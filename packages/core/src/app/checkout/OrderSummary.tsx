@@ -1,4 +1,4 @@
-import { AddressRequestBody, Cart, CheckoutStoreSelector } from "@bigcommerce/checkout-sdk";
+import { AddressRequestBody, Cart, CheckoutStoreSelector, ShippingOption } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
 
 interface CartSummaryProps {
@@ -9,13 +9,28 @@ interface CartSummaryProps {
 const OrderSummary = ({ cart, data }: CartSummaryProps) => {
 
   const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
+  const [selectedShippingOption, setSelectedShippingOption] = useState<ShippingOption | null>(null);
   
   useEffect(() => {
     const customerShippingAddress = data.getShippingAddress();
     if (customerShippingAddress) {
       setShippingAddress(customerShippingAddress);
     }
+
+    const selectedShippingOption = data.getSelectedShippingOption();
+    if (selectedShippingOption) {
+      setSelectedShippingOption(selectedShippingOption)
+    }
   }, []);
+
+  const cartTotalAmount = () => {
+    let totalAmount = cart ? cart.cartAmount : 0;
+    if (selectedShippingOption) {
+      totalAmount = totalAmount + selectedShippingOption.cost;
+    }
+
+    return totalAmount;
+  }
 
   return <div>
     <p className="title" style={{ textAlign: 'center' }}> Order Summary</p>
@@ -24,11 +39,12 @@ const OrderSummary = ({ cart, data }: CartSummaryProps) => {
         <div style={{ width: '100px' }}>Item</div>
         <div style={{ width: '30%' }}></div>
         <div style={{ width: '30%' }}>Delivery Address</div>
-        <div style={{ width: '20%', textAlign: 'right' }}>Price</div>
+        <div style={{ width: '20%' }}>Ship Date</div>
+        <div style={{ width: '10%', textAlign: 'right' }}>Price</div>
       </div>
 
       { cart ?
-       (cart.lineItems.physicalItems.map(i => <>
+       (cart.lineItems.physicalItems.map(i => <div key={i.id}>
         <hr style={{ borderColor: '#315B42'}} />
         <div key={i.id} className="cart-item">
           <div style={{ width: '100px' }}><img src={i.imageUrl} /></div>
@@ -39,9 +55,12 @@ const OrderSummary = ({ cart, data }: CartSummaryProps) => {
           <div style={{ width: '30%' }}>
             {`${shippingAddress?.firstName} ${shippingAddress?.lastName} ${shippingAddress?.address1} ${shippingAddress?.address2} ${shippingAddress?.company} ${shippingAddress?.stateOrProvince} ${shippingAddress?.postalCode}`}
           </div>
-          <div style={{ width: '20%' }} className="product-price">${i.salePrice}</div>
+          <div style={{ width: '20%' }}>
+            {selectedShippingOption ? selectedShippingOption.description : ''}
+          </div>
+          <div style={{ width: '10%' }} className="product-price">${i.salePrice}</div>
         </div>
-      </>))
+      </div>))
       : <></>
       }
     </div>
@@ -55,7 +74,7 @@ const OrderSummary = ({ cart, data }: CartSummaryProps) => {
         </div>
         <div className="cart-amount-line">
           <span>Shipping</span>
-          <span>TBD</span>
+          <span>{ selectedShippingOption ? '$'+selectedShippingOption.cost : 'TBD' }</span>
         </div>
         <div className="cart-amount-line">
           <span>Tax</span>
@@ -66,7 +85,7 @@ const OrderSummary = ({ cart, data }: CartSummaryProps) => {
 
         <div className="cart-amount-line">
           <span style={{ fontSize: '18px' }}>Total (USD)</span>
-          <span style={{ fontSize: '20px', fontWeight: 'bold' }}>${cart?.cartAmount}</span>
+          <span style={{ fontSize: '20px', fontWeight: 'bold' }}>${cartTotalAmount()}</span>
         </div>
       </div>
     </div>
