@@ -58,7 +58,7 @@ const CheckoutPayment = ({ data, checkoutId, paymentForm } :CheckoutPaymentProps
         </div>
       </div>
 
-      <p style={{fontSize: '16px', fontWeight: 'bold'}}>Payment: </p>
+      <p style={{fontSize: '16px', fontWeight: 'bold', marginTop: '20px'}}>Payment: </p>
       { paymentForm }
 
 
