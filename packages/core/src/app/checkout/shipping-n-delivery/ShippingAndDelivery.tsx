@@ -18,21 +18,21 @@ import { CheckoutContext } from "@bigcommerce/checkout/payment-integration-api";
 interface ShippingAndDeliveryProps {
   data: CheckoutStoreSelector;
   checkoutId: string;
+  shippingOptions: ShippingOption[],
+  giftProducts: { bigcommerce_product_id: string, frontend_title: string }[];
   gotoNextStep: () => void
 }
 
-const ShippingAndDelivery = ({ data, checkoutId, gotoNextStep }: ShippingAndDeliveryProps) => {
+const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, gotoNextStep }: ShippingAndDeliveryProps) => {
 
   // Address
   const [customerAddresses, setCustomerAddresses] = useState<CustomerAddress[]>([]);
   const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
 
   // Shipping options
-  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
   const [selectedShippingOptionId, setSelectedShippingOptionId] = useState<string | null>(null);
 
   // Custom message
-  const [giftProducts, setGiftProduct] = useState<{ bigcommerce_product_id: string, frontend_title: string }[]>([]);
   const [gitProductId, setGiftProductId] = useState<string | null>(null);
   const [giftMessage, setGiftMessage] = useState<string | null>(null);
 
@@ -52,27 +52,10 @@ const ShippingAndDelivery = ({ data, checkoutId, gotoNextStep }: ShippingAndDeli
       setShippingAddress(customerShippingAddress);
     }
 
-    // Load shipping options
-    if (checkoutContext) {
-      checkoutContext.checkoutService.loadShippingOptions()
-      .then((res) => {
-        const shippingOptions = res.data.getShippingOptions();
-        setShippingOptions(shippingOptions ? shippingOptions : []);
-      });
-    }
-
     const selectedShippingOption = data.getSelectedShippingOption();
     if (selectedShippingOption) {
       setSelectedShippingOptionId(selectedShippingOption.id)
     }
-
-    // Load card products
-    fetch('https://phpstack-1452029-5845393.cloudwaysapps.com/bigcommerce-toms/cardproducts/list')
-    .then(r => r.json())
-    .then(r => {
-      setGiftProduct(r.data);
-    });
-
   }, [])
 
   const addItemsToCart = async (gitProductId: string | null, giftMessage: string | null) => {

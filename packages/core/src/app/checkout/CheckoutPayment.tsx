@@ -1,12 +1,13 @@
 import { AddressRequestBody, CheckoutStoreSelector } from "@bigcommerce/checkout-sdk";
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 
 interface CheckoutPaymentProps {
   data: CheckoutStoreSelector;
   checkoutId: string;
+  paymentForm: ReactNode;
 }
 
-const CheckoutPayment = ({ data, checkoutId } :CheckoutPaymentProps) => {
+const CheckoutPayment = ({ data, checkoutId, paymentForm } :CheckoutPaymentProps) => {
 
   const [billingAddress, setBillingAddress] = useState<AddressRequestBody | null>(null);
   
@@ -58,6 +59,8 @@ const CheckoutPayment = ({ data, checkoutId } :CheckoutPaymentProps) => {
       </div>
 
       <p style={{fontSize: '16px', fontWeight: 'bold'}}>Payment: </p>
+      { paymentForm }
+
 
       <div style={{ margin: '0 30px' }}>
         <button disabled={!enabledNextStep} style={{ opacity: enabledNextStep ? '1' : '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>PLACE YOUR ORDER</button>

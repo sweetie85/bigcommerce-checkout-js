@@ -59,9 +59,6 @@ import CheckoutStepType from './CheckoutStepType';
 import type CheckoutSupport from './CheckoutSupport';
 import { mapCheckoutComponentErrorMessage } from './mapErrorMessage';
 import mapToCheckoutProps from './mapToCheckoutProps';
-import CheckoutHeader from './CheckoutHeader';
-import ShippingAndDelivery from './shipping-n-delivery/ShippingAndDelivery';
-import CartSummary from './CartSummary';
 import CustomCheckoutPage from './CustomCheckoutPage';
 
 const Billing = lazy(() =>
@@ -74,15 +71,15 @@ const Billing = lazy(() =>
     ),
 );
 
-// const CartSummary = lazy(() =>
-//     retry(
-//         () =>
-//             import(
-//                 /* webpackChunkName: "cart-summary" */
-//                 '../cart/CartSummary'
-//                 ),
-//     ),
-// );
+const CartSummary = lazy(() =>
+    retry(
+        () =>
+            import(
+                /* webpackChunkName: "cart-summary" */
+                '../cart/CartSummary'
+                ),
+    ),
+);
 
 const CartSummaryDrawer = lazy(() =>
     retry(
@@ -366,7 +363,32 @@ class Checkout extends Component<
 
         return (
             <>
-                <CustomCheckoutPage data={this.props.data} checkoutId={this.props.checkoutId} cart={this.props.cart} />
+                <CustomCheckoutPage 
+                    data={this.props.data} 
+                    checkoutId={this.props.checkoutId} 
+                    cart={this.props.cart} 
+                    paymentForm={ <LazyContainer loadingSkeleton={<ChecklistSkeleton />}>
+                        <Payment
+                            checkEmbeddedSupport={this.checkEmbeddedSupport}
+                            errorLogger={this.props.errorLogger}
+                            isEmbedded={isEmbedded()}
+                            isUsingMultiShipping={
+                                this.props.cart && this.props.consignments
+                                    ? isUsingMultiShipping(this.props.consignments, this.props.cart.lineItems)
+                                    : false
+                            }
+                            onCartChangedError={this.handleCartChangedError}
+                            onFinalize={this.navigateToOrderConfirmation}
+                            onReady={this.handleReady}
+                            onSubmit={this.navigateToOrderConfirmation}
+                            onSubmitError={this.handleError}
+                            onUnhandledError={this.handleUnhandledError}
+                        />
+                    </LazyContainer>
+                    }
+                    />
+                
+
                 {/* <div className="layout-main">
                     <LoadingNotification isLoading={extensionState.isShowingLoadingIndicator} />
 
@@ -394,8 +416,8 @@ class Checkout extends Component<
                                 }),
                             )}
                     </ol>
-                </div>
-                {this.renderCartSummary()} */}
+                </div> */}
+                {/* {this.renderCartSummary()} */}
             </>
         );
     }
@@ -579,7 +601,7 @@ class Checkout extends Component<
                     return (
                         <LazyContainer loadingSkeleton={<CartSummarySkeleton />}>
                             <aside className="layout-cart">
-                                    {/* <CartSummary isMultiShippingMode={isMultiShippingMode} /> */}
+                                    <CartSummary isMultiShippingMode={isMultiShippingMode} />
                                     <Extension region={ExtensionRegion.SummaryAfter} />
                             </aside>
                         </LazyContainer>
