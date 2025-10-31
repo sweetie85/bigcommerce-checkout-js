@@ -14,6 +14,7 @@ import ShippingMethodOption from "./options/ShippingMethodOption";
 import FutureShipDateOption from "./options/FutureShipDateOption";
 import GiftMessageOption from "./options/GiftMessageOption";
 import { CheckoutContext } from "@bigcommerce/checkout/payment-integration-api";
+import SelectItems from "./options/SelectItems";
 
 interface ShippingAndDeliveryProps {
   data: CheckoutStoreSelector;
@@ -24,6 +25,10 @@ interface ShippingAndDeliveryProps {
 }
 
 const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, gotoNextStep }: ShippingAndDeliveryProps) => {
+
+  // consignment address 
+  const [isSingleAddress, setIsSingleAddress] = useState(true);
+  const [shouldShowNewAddress, setShouldShowNewAddress] = useState(false);
 
   // Address
   const [customerAddresses, setCustomerAddresses] = useState<CustomerAddress[]>([]);
@@ -132,9 +137,18 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
   };
 
   return <div className="shipping-n-delivery">
-    <ConsignmentOption />
+    <ConsignmentOption isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
 
-    <div className="" style={{ padding: '40px', backgroundColor: '#fff', marginTop: '40px' }}>
+    {!isSingleAddress && <div>
+      <SelectItems cart={data.getCart()} />
+
+      <div style={{ marginTop: '20px'}}>
+        <a onClick={() => setShouldShowNewAddress(true)} style={{ borderBottom: '1px solid #315B42', color: '#315B42', padding: '5px', fontWeight: 'bold' }}>Add delivery address &gt;</a>
+      </div>
+    </div>
+    }
+
+    <div className="" style={{ padding: '40px', backgroundColor: '#fff', marginTop: '40px', display: isSingleAddress ? 'block' : (shouldShowNewAddress ? 'block' : 'none') }}>
       <AddressOption 
         customerAddresses={customerAddresses} 
         shippingAddress={shippingAddress} 
