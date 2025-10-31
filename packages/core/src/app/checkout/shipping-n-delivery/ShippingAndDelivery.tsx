@@ -3,6 +3,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { 
   AddressRequestBody,
   CheckoutStoreSelector, 
+  ConsignmentCreateRequestBody, 
+  ConsignmentLineItem, 
   createCheckoutService, 
   CustomerAddress,
   ShippingOption
@@ -15,6 +17,7 @@ import FutureShipDateOption from "./options/FutureShipDateOption";
 import GiftMessageOption from "./options/GiftMessageOption";
 import { CheckoutContext } from "@bigcommerce/checkout/payment-integration-api";
 import SelectItems from "./options/SelectItems";
+import { useShipping } from "../../shipping/hooks/useShipping";
 
 interface ShippingAndDeliveryProps {
   data: CheckoutStoreSelector;
@@ -45,6 +48,11 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
   const [enabledNextStep, setEnabledNextStep] = useState(false);
   const checkoutContext = useContext(CheckoutContext);
 
+  const { 
+    cart,
+    consignments
+  } = useShipping();
+
   useEffect(() => {
     // Load Customer address
     const customer = data.getCustomer();
@@ -61,6 +69,18 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
     if (selectedShippingOption) {
       setSelectedShippingOptionId(selectedShippingOption.id)
     }
+
+    console.log('consignments: ');
+    console.log(consignments);
+
+    if (checkoutContext) {
+      checkoutContext.checkoutService.deleteConsignment(consignments[0].id).then((res) => {
+        console.log('Delete consignments res:');
+        console.log(res);
+      })
+    }
+
+
   }, [])
 
   const addItemsToCart = async (gitProductId: string | null, giftMessage: string | null) => {
@@ -112,6 +132,31 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
     }
   }
 
+  const createConsignments = async () => {
+    
+    if (!checkoutContext) {
+      return;
+    }
+
+    // const lineItems = cart.lineItems.physicalItems.map(i => {
+    //   return { itemId: i.id, quantity: i.quantity };
+    // }) as ConsignmentLineItem[];
+
+    // Test first item
+    const firstItem = cart.lineItems.physicalItems[0];
+    const lineItems = [{ itemId: firstItem.id, quantity: firstItem.quantity }];
+
+    const requestBody = [{
+        address: shippingAddress,
+        shippingAddress: shippingAddress,
+        lineItems: lineItems
+      }] as ConsignmentCreateRequestBody[];
+
+    const res = await checkoutContext.checkoutService.createConsignments(requestBody);
+    console.log('createConsignments res: ');
+    console.log(res);
+  }
+
   const saveChanges = async () => {
     console.log('saveChanges: ');
     await addItemsToCart(gitProductId, giftMessage);
@@ -127,6 +172,8 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
       if (selectedShippingOptionId) {
         checkoutContext.checkoutService.selectShippingOption(selectedShippingOptionId);
       }
+
+      await createConsignments();
     }
 
     setEnabledNextStep(true);
@@ -140,7 +187,7 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
     <ConsignmentOption isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
 
     {!isSingleAddress && <div>
-      <SelectItems cart={data.getCart()} />
+      <SelectItems cart={cart} />
 
       <div style={{ marginTop: '20px'}}>
         <a onClick={() => setShouldShowNewAddress(true)} style={{ borderBottom: '1px solid #315B42', color: '#315B42', padding: '5px', fontWeight: 'bold' }}>Add delivery address &gt;</a>
