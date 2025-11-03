@@ -1,5 +1,6 @@
 import { AddressRequestBody, Cart, CheckoutStoreSelector, ShippingOption } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
+import { formatAddress } from "./custom-utility";
 
 interface CartSummaryProps {
   data: CheckoutStoreSelector;
@@ -53,7 +54,7 @@ const OrderSummary = ({ cart, data }: CartSummaryProps) => {
             {i.options?.map(o => <div key={o.nameId} className="product-option">{o.name} {o.value}</div>)}
           </div>
           <div style={{ width: '30%' }}>
-            {`${shippingAddress?.firstName} ${shippingAddress?.lastName} ${shippingAddress?.address1} ${shippingAddress?.address2} ${shippingAddress?.company} ${shippingAddress?.stateOrProvince} ${shippingAddress?.postalCode}`}
+            {shippingAddress ? formatAddress(shippingAddress) : ''}
           </div>
           <div style={{ width: '20%' }}>
             {selectedShippingOption ? selectedShippingOption.description : ''}

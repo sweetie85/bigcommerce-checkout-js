@@ -139,13 +139,15 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
       return;
     }
 
-    // const lineItems = cart.lineItems.physicalItems.map(i => {
-    //   return { itemId: i.id, quantity: i.quantity };
-    // }) as ConsignmentLineItem[];
+    const lineItems = cart.lineItems.physicalItems
+      .filter(i => selectedItems.includes(i.id as string))
+      .map(i => {
+        return { itemId: i.id, quantity: i.quantity };
+      }) as ConsignmentLineItem[];
 
     // Test first item
-    const firstItem = cart.lineItems.physicalItems[0];
-    const lineItems = [{ itemId: firstItem.id, quantity: firstItem.quantity }];
+    // const firstItem = cart.lineItems.physicalItems[0];
+    // const lineItems = [{ itemId: firstItem.id, quantity: firstItem.quantity }];
 
     const requestBody = [{
         address: shippingAddress,
@@ -188,7 +190,7 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
     <ConsignmentOption isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
 
     {!isSingleAddress && <div>
-      <SelectItems cart={cart} selecedItemIds={selectedItems} onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)} />
+      <SelectItems cart={cart} consignments={consignments} selecedItemIds={selectedItems} onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)} />
 
       <div style={{ marginTop: '20px'}}>
         <a onClick={() => setShouldShowNewAddress(true)} style={{ borderBottom: '1px solid #315B42', color: '#315B42', padding: '5px', fontWeight: 'bold' }}>Add delivery address &gt;</a>
