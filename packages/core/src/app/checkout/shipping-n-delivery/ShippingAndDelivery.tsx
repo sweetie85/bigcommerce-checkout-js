@@ -32,6 +32,7 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
   // consignment address 
   const [isSingleAddress, setIsSingleAddress] = useState(true);
   const [shouldShowNewAddress, setShouldShowNewAddress] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   // Address
   const [customerAddresses, setCustomerAddresses] = useState<CustomerAddress[]>([]);
@@ -74,10 +75,10 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
     console.log(consignments);
 
     if (checkoutContext) {
-      checkoutContext.checkoutService.deleteConsignment(consignments[0].id).then((res) => {
-        console.log('Delete consignments res:');
-        console.log(res);
-      })
+      // checkoutContext.checkoutService.deleteConsignment(consignments[0].id).then((res) => {
+      //   console.log('Delete consignments res:');
+      //   console.log(res);
+      // })
     }
 
 
@@ -187,7 +188,7 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
     <ConsignmentOption isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
 
     {!isSingleAddress && <div>
-      <SelectItems cart={cart} />
+      <SelectItems cart={cart} selecedItemIds={selectedItems} onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)} />
 
       <div style={{ marginTop: '20px'}}>
         <a onClick={() => setShouldShowNewAddress(true)} style={{ borderBottom: '1px solid #315B42', color: '#315B42', padding: '5px', fontWeight: 'bold' }}>Add delivery address &gt;</a>
