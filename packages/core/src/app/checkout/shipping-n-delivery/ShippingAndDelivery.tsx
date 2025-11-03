@@ -169,6 +169,8 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
     if (checkoutContext) {
       if (shippingAddress) {
         checkoutContext.checkoutService.updateShippingAddress(shippingAddress);
+        // checkoutContext.checkoutService.ass
+        // checkoutContext.checkoutService.assignItemsToAddress(consignments[0]);
         console.log('Updated shipping address...');
       }
 
