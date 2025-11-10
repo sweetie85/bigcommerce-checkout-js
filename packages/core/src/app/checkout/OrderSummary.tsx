@@ -9,21 +9,16 @@ interface CartSummaryProps {
 }
 
 const OrderSummary = ({ cart, consignments, data }: CartSummaryProps) => {
-
-  const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
-  const [selectedShippingOption, setSelectedShippingOption] = useState<ShippingOption | null>(null);
   const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
-  
+  const [shippingTotal, setShippingTotal] = useState<number>(0);
+
   useEffect(() => {
-    const customerShippingAddress = data.getShippingAddress();
-    if (customerShippingAddress) {
-      setShippingAddress(customerShippingAddress);
+    let shippingTotal = 0;
+    for(let i = 0; i < consignments.length; i++) {
+      shippingTotal += consignments[i].shippingCost;
     }
 
-    const selectedShippingOption = data.getSelectedShippingOption();
-    if (selectedShippingOption) {
-      setSelectedShippingOption(selectedShippingOption)
-    }
+    setShippingTotal(shippingTotal);
 
     if (cart) {
       const mainItems = cart.lineItems.physicalItems.filter(c => !c.parentId);
@@ -33,8 +28,8 @@ const OrderSummary = ({ cart, consignments, data }: CartSummaryProps) => {
 
   const cartTotalAmount = () => {
     let totalAmount = cart ? cart.cartAmount : 0;
-    if (selectedShippingOption) {
-      totalAmount = totalAmount + selectedShippingOption.cost;
+    if (shippingTotal) {
+      totalAmount = totalAmount + shippingTotal;
     }
 
     return totalAmount;
@@ -43,31 +38,30 @@ const OrderSummary = ({ cart, consignments, data }: CartSummaryProps) => {
   return <div>
     <p className="title" style={{ textAlign: 'center' }}> Order Summary</p>
     <div className="cart-items">
-      <div className="cart-item" style={{ fontWeight: 'bold' }}>
-        <div style={{ width: '100px' }}>Item</div>
-        <div style={{ width: '30%' }}></div>
-        <div style={{ width: '30%' }}>Delivery Address</div>
-        <div style={{ width: '20%' }}>Ship Date</div>
-        <div style={{ width: '10%', textAlign: 'right' }}>Price</div>
-      </div>
 
-      { consignments.map(c =>
-        (mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
-        .map(i => <div key={i.id}>
-        <hr style={{ borderColor: '#315B42'}} />
-        <div key={i.id} className="cart-item">
-          <div style={{ width: '100px' }}><img src={i.imageUrl} /></div>
-          <div style={{ width: '30%' }}>
-            <div className="product-title">{i.quantity} x {i.name}</div>
-            {i.options?.map(o => <div key={o.nameId} className="product-option">{o.name} {o.value}</div>)}
-          </div>
-          <div style={{ width: '30%' }}>{formatAddress(c.address)}</div>
-          <div style={{ width: '20%' }}>
-            {selectedShippingOption ? selectedShippingOption.description : ''}
-          </div>
-          <div style={{ width: '10%' }} className="product-price">${i.salePrice}</div>
+      { consignments.map(c => <div style={{ border: '2px solid #315B42', borderRadius: '10px', margin: '10px', padding: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div className="cart-item" style={{ fontWeight: 'bold' }}>
+          <div style={{ width: '100px' }}>Item</div>
+          <div style={{ width: '30%' }}></div>
+          <div style={{ width: '30%' }}>Delivery Address</div>
+          <div style={{ width: '20%' }}>Ship Date</div>
+          <div style={{ width: '10%', textAlign: 'right' }}>Price</div>
         </div>
-      </div>))
+        {mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
+        .map(i => <div key={i.id}>
+          <hr style={{ borderColor: '#315B42'}} />
+          <div key={i.id} className="cart-item">
+            <div style={{ width: '100px' }}><img src={i.imageUrl} /></div>
+            <div style={{ width: '30%' }}>
+              <div className="product-title">{i.quantity} x {i.name}</div>
+              {i.options?.map(o => <div key={o.nameId} className="product-option">{o.name} {o.value}</div>)}
+            </div>
+            <div style={{ width: '30%' }}>{formatAddress(c.address)}</div>
+            <div style={{ width: '20%' }}>{c.selectedShippingOption?.description}</div>
+            <div style={{ width: '10%' }} className="product-price">${i.salePrice}</div>
+          </div>
+        </div>)}
+      </div>
       )}
     </div>
 
@@ -80,7 +74,7 @@ const OrderSummary = ({ cart, consignments, data }: CartSummaryProps) => {
         </div>
         <div className="cart-amount-line">
           <span>Shipping</span>
-          <span>{ selectedShippingOption ? '$'+selectedShippingOption.cost : 'TBD' }</span>
+          <span>{ shippingTotal ? '$'+shippingTotal.toFixed(2) : 'TBD' }</span>
         </div>
         <div className="cart-amount-line">
           <span>Tax</span>

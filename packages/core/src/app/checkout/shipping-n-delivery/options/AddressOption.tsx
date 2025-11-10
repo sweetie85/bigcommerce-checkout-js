@@ -1,13 +1,14 @@
-import { AddressRequestBody, CustomerAddress } from "@bigcommerce/checkout-sdk";
+import { AddressRequestBody, Customer, CustomerAddress } from "@bigcommerce/checkout-sdk";
 import React, { useState } from "react";
 
 interface AddressOptionProps {
+  customer: Customer,
   customerAddresses: CustomerAddress[];
   shippingAddress: AddressRequestBody | null;
   onInputChange: (updated: AddressRequestBody ) => void;
 }
 
-const AddressOption = ({ customerAddresses, shippingAddress, onInputChange }: AddressOptionProps) => {
+const AddressOption = ({ customer, customerAddresses, shippingAddress, onInputChange }: AddressOptionProps) => {
 
   const [isNewAddress, setIsNewAddress] = useState(false);
 
@@ -28,8 +29,9 @@ const AddressOption = ({ customerAddresses, shippingAddress, onInputChange }: Ad
   }
 
   return <div>
-    <div className="step-title">
-        <input onChange={handleChange} value={0} name="address_option_saved" id="choose_saved_address" type="radio" ></input>
+    {!!customer.id ? <>
+      <div className="step-title">
+        <input onChange={handleChange} value={0} name="address_option_saved" id="choose_saved_address" type="radio" ></input>        
         <label style={{ marginLeft: '10px' }} htmlFor="choose_saved_address">2. Choose a saved address:</label>
       </div>
       <div>
@@ -42,8 +44,14 @@ const AddressOption = ({ customerAddresses, shippingAddress, onInputChange }: Ad
         <input onChange={handleChange} value={1} name="address_option_saved" id="choose_new_address" type="radio" ></input>
         <label style={{ marginLeft: '10px', color: '#315B42' }} htmlFor="choose_new_address">Enter a new adddress:</label>
       </div>
+      </>
+      :
+      <div className="step-title">
+        <label>2. Shipping Address</label>
+      </div>
+    }
 
-      {isNewAddress && <div>
+      {(!customer.id || isNewAddress) && <div>
         <div className="form-field-row">
           <input className="custom-form-input text" type="text" placeholder="First Name" name="firstName" value={shippingAddress?.firstName} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="Last Name" name="lastName" value={shippingAddress?.lastName} onChange={handleInputChange} />

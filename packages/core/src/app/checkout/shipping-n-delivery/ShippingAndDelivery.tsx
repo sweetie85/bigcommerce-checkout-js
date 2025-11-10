@@ -54,7 +54,8 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
 
   const { 
     cart,
-    consignments
+    consignments,
+    customer,
   } = useShipping();
 
   useEffect(() => {
@@ -146,7 +147,7 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
     }
 
     const lineItems = cart.lineItems.physicalItems
-      .filter(i => selectedItems.includes(i.id as string))
+      .filter(i => !customer.id || selectedItems.includes(i.id as string))
       .map(i => {
         return { itemId: i.id, quantity: i.quantity };
       }) as ConsignmentLineItem[];
@@ -213,7 +214,7 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
   };
 
   return <div className="shipping-n-delivery">
-    <ConsignmentOption isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
+    <ConsignmentOption customer={customer} isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
 
     {!isSingleAddress && <div>
       <SelectItems 
@@ -224,41 +225,52 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
         onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)} 
       />
 
-      <div style={{ marginTop: '20px'}}>
-        <a onClick={() => setShouldShowNewAddress(true)} style={{ borderBottom: '1px solid #315B42', color: '#315B42', padding: '5px', fontWeight: 'bold' }}>Add delivery address &gt;</a>
-      </div>
+      {selectedItems.length > 0 &&
+        <div style={{ marginTop: '20px'}}>
+          <a onClick={() => setShouldShowNewAddress(true)} style={{ borderBottom: '1px solid #315B42', color: '#315B42', padding: '5px', fontWeight: 'bold' }}>Add delivery address &gt;</a>
+        </div>
+      }
     </div>
     }
 
-    <div className="" style={{ padding: '40px', backgroundColor: '#fff', marginTop: '40px', display: isSingleAddress ? 'block' : (shouldShowNewAddress ? 'block' : 'none') }}>
-      <AddressOption 
-        customerAddresses={customerAddresses} 
-        shippingAddress={shippingAddress} 
-        onInputChange={handleAddressChange} 
-      />
+    {(isSingleAddress || selectedItems.length > 0) &&
+      <div className="" style={{ padding: '40px', backgroundColor: '#fff', marginTop: '40px'}}>
+        <AddressOption 
+          customer={customer}
+          customerAddresses={customerAddresses} 
+          shippingAddress={shippingAddress} 
+          onInputChange={handleAddressChange} 
+        />
 
-      <hr style={{ margin: '30px 0'}} />
+        {!customer.id &&
+          <div style={{ marginTop: '30px' }}>
+            <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>SAVE CHANGES</button>
+          </div>
+        }
 
-      <div style={{ display: 'flex', gap: '20px' }}>
-        <div style={{ width: '60%'}}>
-          <ShippingMethodOption 
-            shippingOptions={shippingOptions} 
-            handleChange={setSelectedShippingOptionId} 
-            selectedShippingOptionId={selectedShippingOptionId}
-          />
+        <hr style={{ margin: '30px 0'}} />
+
+        <div style={{ display: 'flex', gap: '20px' }}>
+          <div style={{ width: '60%'}}>
+            <ShippingMethodOption 
+              shippingOptions={shippingOptions} 
+              handleChange={setSelectedShippingOptionId} 
+              selectedShippingOptionId={selectedShippingOptionId}
+            />
+          </div>
+          <div style={{ width: '40%'}}>
+            <FutureShipDateOption />
+          </div>
         </div>
-        <div style={{ width: '40%'}}>
-          <FutureShipDateOption />
+
+        <hr style={{ margin: '30px 0'}} />      
+        <GiftMessageOption giftProducts={giftProducts} setGiftProductId={setGiftProductId} setGiftMessage={setGiftMessage}  />
+
+        <div style={{ textAlign: 'right', marginTop: '20px' }}>
+          <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>SAVE CHANGES</button>
         </div>
       </div>
-
-      <hr style={{ margin: '30px 0'}} />      
-      <GiftMessageOption giftProducts={giftProducts} setGiftProductId={setGiftProductId} setGiftMessage={setGiftMessage}  />
-
-      <div style={{ textAlign: 'right', marginTop: '20px' }}>
-        <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>SAVE CHANGES</button>
-      </div>
-    </div>
+    }
 
     <div style={{ textAlign: 'right', margin: '20px 0' }}>
       <button onClick={gotoNextStep} disabled={!enabledNextStep} style={{ opacity: enabledNextStep ? '1' : '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
