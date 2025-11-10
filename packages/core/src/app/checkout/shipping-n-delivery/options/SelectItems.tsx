@@ -1,5 +1,5 @@
-import { Cart, Consignment } from "@bigcommerce/checkout-sdk";
-import React from "react";
+import { Cart, Consignment, PhysicalItem } from "@bigcommerce/checkout-sdk";
+import React, { useEffect, useState } from "react";
 import { formatAddress } from "../../custom-utility";
 
 interface SelectItemsProps {
@@ -10,6 +10,14 @@ interface SelectItemsProps {
 }
 
 const SelectItems = ({ cart, consignments, selecedItemIds, onChangeSelectedItems }: SelectItemsProps) => {
+  const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
+
+  useEffect(() => {
+    if (cart) {
+      const mainItems = cart.lineItems.physicalItems.filter(c => !c.parentId);
+      setMainCartItems(mainItems);
+    }
+  }, []);
 
   const handleChange = (e: any) => {
 
@@ -38,9 +46,8 @@ const SelectItems = ({ cart, consignments, selecedItemIds, onChangeSelectedItems
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '10px' }}>
 
       {/* Iterate through every consignmets and filter items */}
-      { consignments.map(c => 
-        (cart.lineItems.physicalItems
-          .filter(i => c.lineItemIds.includes(i.id as string))
+      { consignments.map(c => <div style={{ border: '2px solid #008000', borderRadius: '10px', margin: '0 10px', padding: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
           .map(i => <div key={i.id} style={{ display: 'flex', alignItems: 'center', gap: '20px'}}>
             <input type="checkbox" value={i.id} checked={selecedItemIds.includes(i.id as string)} onChange={handleChange} />
             <div style={{ display: 'flex', backgroundColor: '#fff', padding: '10px', borderRadius: '20px', width: "100%" }}>
@@ -57,7 +64,8 @@ const SelectItems = ({ cart, consignments, selecedItemIds, onChangeSelectedItems
               </div>
             </div>
           </div>
-        ))
+        )}
+        </div>
       )}
     </div>
   </div>

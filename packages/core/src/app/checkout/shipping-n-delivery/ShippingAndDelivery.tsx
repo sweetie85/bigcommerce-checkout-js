@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { 
   AddressRequestBody,
   CheckoutStoreSelector, 
+  ConsignmentAssignmentRequestBody, 
   ConsignmentCreateRequestBody, 
   ConsignmentLineItem, 
   createCheckoutService, 
@@ -18,6 +19,7 @@ import GiftMessageOption from "./options/GiftMessageOption";
 import { CheckoutContext } from "@bigcommerce/checkout/payment-integration-api";
 import SelectItems from "./options/SelectItems";
 import { useShipping } from "../../shipping/hooks/useShipping";
+import { forEach } from "lodash";
 
 interface ShippingAndDeliveryProps {
   data: CheckoutStoreSelector;
@@ -60,6 +62,9 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
     if (customer) {
       setCustomerAddresses(customer.addresses);
     }
+
+    console.log('getBillingAddress():' );
+    console.log(data.getBillingAddress());
 
     const customerShippingAddress = data.getShippingAddress();
     if (customerShippingAddress) {
@@ -149,13 +154,23 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
     // const firstItem = cart.lineItems.physicalItems[0];
     // const lineItems = [{ itemId: firstItem.id, quantity: firstItem.quantity }];
 
-    const requestBody = [{
+    // const requestBody = [{
+    //     address: shippingAddress,
+    //     shippingAddress: shippingAddress,
+    //     lineItems: lineItems
+    //   }] as ConsignmentCreateRequestBody[];
+
+    // const res = await checkoutContext.checkoutService.createConsignments(requestBody);
+
+
+    const requestBody = {
         address: shippingAddress,
         shippingAddress: shippingAddress,
         lineItems: lineItems
-      }] as ConsignmentCreateRequestBody[];
+      } as ConsignmentAssignmentRequestBody;
 
-    const res = await checkoutContext.checkoutService.createConsignments(requestBody);
+    const res = await checkoutContext.checkoutService.assignItemsToAddress(requestBody);
+    // const res = await checkoutContext.checkoutService.createConsignments(requestBody);
     console.log('createConsignments res: ');
     console.log(res);
   }
@@ -168,14 +183,21 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
 
     if (checkoutContext) {
       if (shippingAddress) {
-        checkoutContext.checkoutService.updateShippingAddress(shippingAddress);
+        // checkoutContext.checkoutService.updateShippingAddress(shippingAddress);
         // checkoutContext.checkoutService.ass
         // checkoutContext.checkoutService.assignItemsToAddress(consignments[0]);
-        console.log('Updated shipping address...');
+        // console.log('Updated shipping address...');
+
+        checkoutContext.checkoutService.updateBillingAddress(shippingAddress);
       }
 
       if (selectedShippingOptionId) {
         checkoutContext.checkoutService.selectShippingOption(selectedShippingOptionId);
+
+        // Save consignment shipping option
+        consignments.forEach((c) => {
+          checkoutContext.checkoutService.selectConsignmentShippingOption(c.id, selectedShippingOptionId);
+        });
       }
 
       await createConsignments();

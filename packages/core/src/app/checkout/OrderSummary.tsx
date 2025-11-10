@@ -1,16 +1,18 @@
-import { AddressRequestBody, Cart, CheckoutStoreSelector, ShippingOption } from "@bigcommerce/checkout-sdk";
+import { AddressRequestBody, Cart, CheckoutStoreSelector, Consignment, PhysicalItem, ShippingOption } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
 import { formatAddress } from "./custom-utility";
 
 interface CartSummaryProps {
   data: CheckoutStoreSelector;
   cart: Cart | undefined;
+  consignments: Consignment[];
 }
 
-const OrderSummary = ({ cart, data }: CartSummaryProps) => {
+const OrderSummary = ({ cart, consignments, data }: CartSummaryProps) => {
 
   const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
   const [selectedShippingOption, setSelectedShippingOption] = useState<ShippingOption | null>(null);
+  const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
   
   useEffect(() => {
     const customerShippingAddress = data.getShippingAddress();
@@ -21,6 +23,11 @@ const OrderSummary = ({ cart, data }: CartSummaryProps) => {
     const selectedShippingOption = data.getSelectedShippingOption();
     if (selectedShippingOption) {
       setSelectedShippingOption(selectedShippingOption)
+    }
+
+    if (cart) {
+      const mainItems = cart.lineItems.physicalItems.filter(c => !c.parentId);
+      setMainCartItems(mainItems);
     }
   }, []);
 
@@ -44,8 +51,9 @@ const OrderSummary = ({ cart, data }: CartSummaryProps) => {
         <div style={{ width: '10%', textAlign: 'right' }}>Price</div>
       </div>
 
-      { cart ?
-       (cart.lineItems.physicalItems.map(i => <div key={i.id}>
+      { consignments.map(c =>
+        (mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
+        .map(i => <div key={i.id}>
         <hr style={{ borderColor: '#315B42'}} />
         <div key={i.id} className="cart-item">
           <div style={{ width: '100px' }}><img src={i.imageUrl} /></div>
@@ -53,17 +61,14 @@ const OrderSummary = ({ cart, data }: CartSummaryProps) => {
             <div className="product-title">{i.quantity} x {i.name}</div>
             {i.options?.map(o => <div key={o.nameId} className="product-option">{o.name} {o.value}</div>)}
           </div>
-          <div style={{ width: '30%' }}>
-            {shippingAddress ? formatAddress(shippingAddress) : ''}
-          </div>
+          <div style={{ width: '30%' }}>{formatAddress(c.address)}</div>
           <div style={{ width: '20%' }}>
             {selectedShippingOption ? selectedShippingOption.description : ''}
           </div>
           <div style={{ width: '10%' }} className="product-price">${i.salePrice}</div>
         </div>
       </div>))
-      : <></>
-      }
+      )}
     </div>
 
     <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'space-between' }}>

@@ -7,6 +7,7 @@ import { CheckoutStoreSelector, Cart, ShippingOption } from "@bigcommerce/checko
 import OrderSummary from "./OrderSummary";
 import CheckoutPayment from "./CheckoutPayment";
 import { CheckoutContext } from "@bigcommerce/checkout/payment-integration-api";
+import { useShipping } from "../shipping/hooks/useShipping";
 
 interface CustomCheckoutPageProps {
   data: CheckoutStoreSelector;
@@ -22,6 +23,8 @@ const CustomCheckoutPage = ({ data, checkoutId, cart, paymentForm  }: CustomChec
   const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
   
   const checkoutContext = useContext(CheckoutContext); 
+  
+  const { consignments } = useShipping();
 
   // Initialize data to avoid re-fetch on every component load
   useEffect(() => {
@@ -58,7 +61,7 @@ const CustomCheckoutPage = ({ data, checkoutId, cart, paymentForm  }: CustomChec
             /> 
           }
           { activeTabIndex == 1 && <div className="cart-summary" style={{ background: 'none' }}>
-            <OrderSummary data={data} cart={cart} />
+            <OrderSummary data={data} cart={cart} consignments={consignments} />
             </div>
           }
           {activeTabIndex == 2 && <CheckoutPayment data={data} checkoutId={checkoutId} paymentForm={paymentForm}/>}

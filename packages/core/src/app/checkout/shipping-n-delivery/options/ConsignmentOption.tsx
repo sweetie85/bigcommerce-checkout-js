@@ -12,7 +12,7 @@ const ConsignmentOption = ({ isSingleAddress, setIsSingleAddress }: ConsignmentO
   }
 
   return <div>
-    <p className="step-title">1. Choose delivery and gift message options:</p>
+    <p className="step-title">1. Choose delivery and gift message options 1239945:</p>
     <div>
       <input onChange={handleChange} checked={isSingleAddress} value={'SINGLE'} name="address_option" id="ship_to_single" type="radio" ></input>
       <label style={{ marginLeft: '10px' }} htmlFor="ship_to_single">Ship to a single address</label>

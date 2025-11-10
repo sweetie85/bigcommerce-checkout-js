@@ -22,10 +22,10 @@ const CheckoutPayment = ({ data, checkoutId, paymentForm } :CheckoutPaymentProps
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      // setBillingAddress({
-      //   ...billingAddress,
-      //   [e.target.name]: e.target.value,
-      // });
+      setBillingAddress({
+        ...billingAddress,
+        [e.target.name]: e.target.value,
+      } as AddressRequestBody);
     };
 
   return <div style={{ margin: '0 30px' }}>
