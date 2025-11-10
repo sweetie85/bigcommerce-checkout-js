@@ -1,20 +1,20 @@
 import { Cart, CheckoutStoreSelector, PhysicalItem, ShippingOption } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
+import { useShipping } from "../shipping/hooks/useShipping";
 
-interface CartSummaryProps {
-  data: CheckoutStoreSelector;
-  cart: Cart | undefined;
-}
-
-const CartSummary = ({ data, cart }: CartSummaryProps) => {
-  const [selectedShippingOption, setSelectedShippingOption] = useState<ShippingOption | null>(null);
+const CartSummary = () => {
+  const [shippingTotal, setShippingTotal] = useState<number>(0);
   const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
 
+  const { cart, consignments } = useShipping();
+
   useEffect(() => {
-    const selectedShippingOption = data.getSelectedShippingOption();
-    if (selectedShippingOption) {
-      setSelectedShippingOption(selectedShippingOption)
+    let shippingTotal = 0;
+    for(let i = 0; i < consignments.length; i++) {
+      shippingTotal += consignments[i].shippingCost;
     }
+
+    setShippingTotal(shippingTotal);
 
     if (cart) {
       const mainItems = cart.lineItems.physicalItems.filter(c => !c.parentId);
@@ -24,8 +24,8 @@ const CartSummary = ({ data, cart }: CartSummaryProps) => {
 
   const cartTotalAmount = () => {
     let totalAmount = cart ? cart.cartAmount : 0;
-    if (selectedShippingOption) {
-      totalAmount = totalAmount + selectedShippingOption.cost;
+    if (shippingTotal) {
+      totalAmount = totalAmount + shippingTotal;
     }
 
     return totalAmount;
@@ -54,7 +54,7 @@ const CartSummary = ({ data, cart }: CartSummaryProps) => {
       </div>
       <div className="cart-amount-line">
         <span>Shipping</span>
-        <span>{ selectedShippingOption ? '$'+selectedShippingOption.cost : 'TBD' }</span>
+        <span>{ shippingTotal ? '$'+shippingTotal.toFixed(2) : 'TBD' }</span>
       </div>
       <div className="cart-amount-line">
         <span>Tax</span>

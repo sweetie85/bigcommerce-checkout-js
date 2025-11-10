@@ -35,6 +35,7 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
   const [isSingleAddress, setIsSingleAddress] = useState(true);
   const [shouldShowNewAddress, setShouldShowNewAddress] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [selectedConsignmentId, setSelectedConsignmentId] = useState<string | null>(null);
 
   // Address
   const [customerAddresses, setCustomerAddresses] = useState<CustomerAddress[]>([]);
@@ -177,6 +178,8 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
 
   const saveChanges = async () => {
     console.log('saveChanges: ');
+    console.log('selectedConsignmentId: '+selectedConsignmentId);
+
     await addItemsToCart(gitProductId, giftMessage);
 
     console.log('Item added');
@@ -192,12 +195,11 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
       }
 
       if (selectedShippingOptionId) {
-        checkoutContext.checkoutService.selectShippingOption(selectedShippingOptionId);
-
-        // Save consignment shipping option
-        consignments.forEach((c) => {
-          checkoutContext.checkoutService.selectConsignmentShippingOption(c.id, selectedShippingOptionId);
-        });
+        if (isSingleAddress) {
+          checkoutContext.checkoutService.selectShippingOption(selectedShippingOptionId);
+        } else if (selectedConsignmentId) {
+          checkoutContext.checkoutService.selectConsignmentShippingOption(selectedConsignmentId, selectedShippingOptionId);
+        }
       }
 
       await createConsignments();
@@ -214,7 +216,13 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
     <ConsignmentOption isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
 
     {!isSingleAddress && <div>
-      <SelectItems cart={cart} consignments={consignments} selecedItemIds={selectedItems} onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)} />
+      <SelectItems 
+        cart={cart} 
+        consignments={consignments} 
+        selecedItemIds={selectedItems} 
+        onSelectConsignment={setSelectedConsignmentId}
+        onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)} 
+      />
 
       <div style={{ marginTop: '20px'}}>
         <a onClick={() => setShouldShowNewAddress(true)} style={{ borderBottom: '1px solid #315B42', color: '#315B42', padding: '5px', fontWeight: 'bold' }}>Add delivery address &gt;</a>

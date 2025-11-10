@@ -68,7 +68,7 @@ const CustomCheckoutPage = ({ data, checkoutId, cart, paymentForm  }: CustomChec
         </div>
       </div>
       <div style={{ width: '25%' }} className='cart-summary'>
-          <CartSummary data={data} cart={cart} /> 
+          <CartSummary /> 
       </div>
     </div>
   </div>
