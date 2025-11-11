@@ -104,6 +104,10 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
       // })
     // }
 
+    const consignments = checkoutState.data.getConsignments();
+    if (consignments && consignments.length > 1) {
+      setIsSingleAddress(false);
+    }
 
   }, [])
 
@@ -152,7 +156,8 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
       alert('Error adding add-ons: ' + (error.title || 'Unknown error'));
       return;
     } else {
-      window.location.reload();
+      console.log('Item added successfully.');
+      // window.location.reload();
     }
   }
 
