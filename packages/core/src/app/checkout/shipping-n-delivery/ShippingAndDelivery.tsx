@@ -19,7 +19,7 @@ import GiftMessageOption from "./options/GiftMessageOption";
 import { CheckoutContext } from "@bigcommerce/checkout/payment-integration-api";
 import SelectItems from "./options/SelectItems";
 import { useShipping } from "../../shipping/hooks/useShipping";
-import { forEach } from "lodash";
+import { useCustomer } from "../../customer/useCustomer";
 
 interface ShippingAndDeliveryProps {
   data: CheckoutStoreSelector;
@@ -57,6 +57,8 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
     consignments,
     customer,
   } = useShipping();
+
+  const { actions: customerActions } = useCustomer();
 
   useEffect(() => {
     // Load Customer address
@@ -202,11 +204,21 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
           checkoutContext.checkoutService.selectConsignmentShippingOption(selectedConsignmentId, selectedShippingOptionId);
         }
       }
+      if (!customer.id) {
+        console.log('customerActions.continueAsGuest: ');
+        customerActions.continueAsGuest({
+          email: 'lalmani@inctechservices.com',
+        });
+      }
 
       await createConsignments();
     }
 
     setEnabledNextStep(true);
+  }
+
+  const handleGuestEmailChange = (e: any) => {
+    console.log(e.target.value);
   }
 
   const handleAddressChange = (updatedAddress: AddressRequestBody) => {
@@ -233,7 +245,17 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
     </div>
     }
 
+    {!customer.id && <>
+      <div className="step-title">
+        <label style={{ marginLeft: '10px' }}>2. Customer:</label>
+        <div className="form-field-row">
+          <input className="custom-form-input text" type="text" placeholder="Email Id" onChange={handleGuestEmailChange} />
+        </div>
+      </div>
+    </>}
+
     {(isSingleAddress || selectedItems.length > 0) &&
+
       <div className="" style={{ padding: '40px', backgroundColor: '#fff', marginTop: '40px'}}>
         <AddressOption 
           customer={customer}
