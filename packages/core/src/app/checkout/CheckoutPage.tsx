@@ -60,6 +60,7 @@ import type CheckoutSupport from './CheckoutSupport';
 import { mapCheckoutComponentErrorMessage } from './mapErrorMessage';
 import mapToCheckoutProps from './mapToCheckoutProps';
 import CustomCheckoutPage from './CustomCheckoutPage';
+import { CheckoutProvider } from './shipping-n-delivery/CheckoutContext';
 
 const Billing = lazy(() =>
     retry(
@@ -363,30 +364,32 @@ class Checkout extends Component<
 
         return (
             <>
-                <CustomCheckoutPage 
-                    data={this.props.data} 
-                    checkoutId={this.props.checkoutId} 
-                    cart={this.props.cart} 
-                    paymentForm={ <LazyContainer loadingSkeleton={<ChecklistSkeleton />}>
-                        <Payment
-                            checkEmbeddedSupport={this.checkEmbeddedSupport}
-                            errorLogger={this.props.errorLogger}
-                            isEmbedded={isEmbedded()}
-                            isUsingMultiShipping={
-                                this.props.cart && this.props.consignments
-                                    ? isUsingMultiShipping(this.props.consignments, this.props.cart.lineItems)
-                                    : false
-                            }
-                            onCartChangedError={this.handleCartChangedError}
-                            onFinalize={this.navigateToOrderConfirmation}
-                            onReady={this.handleReady}
-                            onSubmit={this.navigateToOrderConfirmation}
-                            onSubmitError={this.handleError}
-                            onUnhandledError={this.handleUnhandledError}
-                        />
-                    </LazyContainer>
-                    }
+                <CheckoutProvider>
+                    <CustomCheckoutPage 
+                        data={this.props.data} 
+                        checkoutId={this.props.checkoutId} 
+                        cart={this.props.cart} 
+                        paymentForm={ <LazyContainer loadingSkeleton={<ChecklistSkeleton />}>
+                            <Payment
+                                checkEmbeddedSupport={this.checkEmbeddedSupport}
+                                errorLogger={this.props.errorLogger}
+                                isEmbedded={isEmbedded()}
+                                isUsingMultiShipping={
+                                    this.props.cart && this.props.consignments
+                                        ? isUsingMultiShipping(this.props.consignments, this.props.cart.lineItems)
+                                        : false
+                                }
+                                onCartChangedError={this.handleCartChangedError}
+                                onFinalize={this.navigateToOrderConfirmation}
+                                onReady={this.handleReady}
+                                onSubmit={this.navigateToOrderConfirmation}
+                                onSubmitError={this.handleError}
+                                onUnhandledError={this.handleUnhandledError}
+                            />
+                        </LazyContainer>
+                        }
                     />
+                </CheckoutProvider>
                 
 
                 {/* <div className="layout-main">

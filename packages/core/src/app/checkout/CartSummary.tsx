@@ -1,12 +1,18 @@
-import { Cart, CheckoutStoreSelector, PhysicalItem, ShippingOption } from "@bigcommerce/checkout-sdk";
+import { Cart, CheckoutStoreSelector, Consignment, PhysicalItem, ShippingOption } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
-import { useShipping } from "../shipping/hooks/useShipping";
+import { useCheckout } from "./shipping-n-delivery/CheckoutContext";
+// import { useShipping } from "../shipping/hooks/useShipping";
 
 const CartSummary = () => {
   const [shippingTotal, setShippingTotal] = useState<number>(0);
   const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
 
-  const { cart, consignments } = useShipping();
+  // const { cart, consignments } = useShipping();
+
+  const { state: checkoutState } = useCheckout();
+
+  const cart: Cart | undefined = checkoutState.data.getCart();
+  const consignments: Consignment[] | undefined = checkoutState.data.getConsignments() ?? [];
 
   useEffect(() => {
     let shippingTotal = 0;
@@ -20,7 +26,7 @@ const CartSummary = () => {
       const mainItems = cart.lineItems.physicalItems.filter(c => !c.parentId);
       setMainCartItems(mainItems);
     }
-  }, []);
+  }, [consignments, cart]);
 
   const cartTotalAmount = () => {
     let totalAmount = cart ? cart.cartAmount : 0;
@@ -28,7 +34,7 @@ const CartSummary = () => {
       totalAmount = totalAmount + shippingTotal;
     }
 
-    return totalAmount;
+    return totalAmount.toFixed();
   }
 
   return <div>

@@ -1,18 +1,24 @@
 import { Cart, Consignment, PhysicalItem } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
 import { formatAddress } from "../../custom-utility";
+import { useCheckout } from "../CheckoutContext";
 
 interface SelectItemsProps {
-  cart: Cart;
-  consignments: Consignment[];
+  // cart: Cart;
+  // consignments: Consignment[];
   selecedItemIds: string[];
   onChangeSelectedItems: (ids: string[]) => void;
   onSelectConsignment: (id: string) => void;
 }
 
-const SelectItems = ({ cart, consignments, selecedItemIds, onChangeSelectedItems, onSelectConsignment }: SelectItemsProps) => {
+const SelectItems = ({ selecedItemIds, onChangeSelectedItems, onSelectConsignment }: SelectItemsProps) => {
   const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
   const [showDetailsItemIds, setShowDetailsItemIds] = useState<number[]>([]);
+  
+  const { state: checkoutState } = useCheckout();
+
+  const cart: Cart | undefined = checkoutState.data.getCart();
+  const consignments: Consignment[] | undefined = checkoutState.data.getConsignments() ?? [];
 
   useEffect(() => {
     if (cart) {

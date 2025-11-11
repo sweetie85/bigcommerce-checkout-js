@@ -1,16 +1,22 @@
 import { AddressRequestBody, Cart, CheckoutStoreSelector, Consignment, PhysicalItem, ShippingOption } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
 import { formatAddress } from "./custom-utility";
+import { useCheckout } from "./shipping-n-delivery/CheckoutContext";
 
 interface CartSummaryProps {
-  data: CheckoutStoreSelector;
-  cart: Cart | undefined;
-  consignments: Consignment[];
+  // data: CheckoutStoreSelector;
+  // cart: Cart | undefined;
+  // consignments: Consignment[];
 }
 
-const OrderSummary = ({ cart, consignments, data }: CartSummaryProps) => {
+const OrderSummary = ({ }: CartSummaryProps) => {
   const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
   const [shippingTotal, setShippingTotal] = useState<number>(0);
+
+  const { state: checkoutState } = useCheckout();
+  
+  const cart: Cart | undefined = checkoutState.data.getCart();
+  const consignments: Consignment[] | undefined = checkoutState.data.getConsignments() ?? [];
 
   useEffect(() => {
     let shippingTotal = 0;

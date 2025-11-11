@@ -17,21 +17,21 @@ import AddressOption from "./options/AddressOption";
 import ShippingMethodOption from "./options/ShippingMethodOption";
 import FutureShipDateOption from "./options/FutureShipDateOption";
 import GiftMessageOption from "./options/GiftMessageOption";
-import { CheckoutContext } from "@bigcommerce/checkout/payment-integration-api";
+// import { CheckoutContext } from "@bigcommerce/checkout/payment-integration-api";
+import { useCheckout } from './CheckoutContext';
 import SelectItems from "./options/SelectItems";
 import { useShipping } from "../../shipping/hooks/useShipping";
 import { useCustomer } from "../../customer/useCustomer";
 import { trim } from "lodash";
 
 interface ShippingAndDeliveryProps {
-  data: CheckoutStoreSelector;
   checkoutId: string;
-  shippingOptions: ShippingOption[],
+  // shippingOptions: ShippingOption[],
   giftProducts: { bigcommerce_product_id: string, frontend_title: string }[];
   gotoNextStep: () => void
 }
 
-const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, gotoNextStep }: ShippingAndDeliveryProps) => {
+const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: ShippingAndDeliveryProps) => {
 
   // consignment address 
   const [isSingleAddress, setIsSingleAddress] = useState(true);
@@ -57,49 +57,52 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
 
   // Next page
   const [enabledNextStep, setEnabledNextStep] = useState(false);
-  const checkoutContext = useContext(CheckoutContext);
+  // const checkoutContext = useContext(CheckoutContext);
+  const { state: checkoutState, checkoutService } = useCheckout();
 
   const { 
     cart,
     consignments,
     customer,
-    countries,
+    // countries,
   } = useShipping();
 
-  const { actions: customerActions } = useCustomer();
+  // const { actions: customerActions } = useCustomer();
 
   useEffect(() => {
     // Load Customer address
-    const customer = data.getCustomer();
+    const customer = checkoutState.data.getCustomer();
     if (customer) {
       setCustomerAddresses(customer.addresses);
     }
 
-    const billingAddress = data.getBillingAddress();
+    const billingAddress = checkoutState.data.getBillingAddress();
+    console.log('billingAddress: ');
+    console.log(billingAddress);
     setBillingAddress(billingAddress);
 
     // Guest email id is saving as billing address email id so use billing email as guest email
     setGuestEmailId(billingAddress && billingAddress.email ? billingAddress.email : '');
 
-    const customerShippingAddress = data.getShippingAddress();
+    const customerShippingAddress = checkoutState.data.getShippingAddress();
     if (customerShippingAddress) {
       setShippingAddress(customerShippingAddress);
     }
 
-    const selectedShippingOption = data.getSelectedShippingOption();
+    const selectedShippingOption = checkoutState.data.getSelectedShippingOption();
     if (selectedShippingOption) {
       setSelectedShippingOptionId(selectedShippingOption.id)
     }
 
-    console.log('consignments: ');
-    console.log(consignments);
+    // console.log('consignments: ');
+    // console.log(consignments);
 
-    if (checkoutContext) {
+    // if (checkoutContext) {
       // checkoutContext.checkoutService.deleteConsignment(consignments[0].id).then((res) => {
       //   console.log('Delete consignments res:');
       //   console.log(res);
       // })
-    }
+    // }
 
 
   }, [])
@@ -166,7 +169,8 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
     }
 
     console.log('continueAsGuest: ');
-    const res = await customerActions.continueAsGuest({
+    // checkoutService.continueAsGuest()
+    const res = await checkoutService.continueAsGuest({
       email: guestEmalId,
     });
     
@@ -174,10 +178,6 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
   }
 
   const createConsignments = async () => {
-    
-    if (!checkoutContext) {
-      return;
-    }
 
     const lineItems = cart.lineItems.physicalItems
       .filter(i => customer.isGuest || selectedItems.includes(i.id as string))
@@ -204,7 +204,7 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
         lineItems: lineItems
       } as ConsignmentAssignmentRequestBody;
 
-    const res = await checkoutContext.checkoutService.assignItemsToAddress(requestBody);
+    const res = await checkoutService.assignItemsToAddress(requestBody);
     // const res = await checkoutContext.checkoutService.createConsignments(requestBody);
     console.log('createConsignments res: ');
     console.log(res);
@@ -218,26 +218,25 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
 
     console.log('Item added');
 
-    if (checkoutContext) {
-      if (shippingAddress) {
-        // checkoutContext.checkoutService.updateShippingAddress(shippingAddress);
-        // checkoutContext.checkoutService.ass
-        // checkoutContext.checkoutService.assignItemsToAddress(consignments[0]);
-        // console.log('Updated shipping address...');
+    if (shippingAddress) {
+      // checkoutContext.checkoutService.updateShippingAddress(shippingAddress);
+      // checkoutContext.checkoutService.ass
+      // checkoutContext.checkoutService.assignItemsToAddress(consignments[0]);
+      // console.log('Updated shipping address...');
 
-        checkoutContext.checkoutService.updateBillingAddress(shippingAddress);
-      }
-
-      if (selectedShippingOptionId) {
-        if (isSingleAddress) {
-          checkoutContext.checkoutService.selectShippingOption(selectedShippingOptionId);
-        } else if (selectedConsignmentId) {
-          checkoutContext.checkoutService.selectConsignmentShippingOption(selectedConsignmentId, selectedShippingOptionId);
-        }
-      }
-
-      await createConsignments();
+      checkoutService.updateBillingAddress(shippingAddress);
     }
+
+    if (selectedShippingOptionId) {
+      if (isSingleAddress) {
+        checkoutService.selectShippingOption(selectedShippingOptionId);
+      } else if (selectedConsignmentId) {
+        checkoutService.selectConsignmentShippingOption(selectedConsignmentId, selectedShippingOptionId);
+      }
+    }
+
+    await createConsignments();
+    
 
     setEnabledNextStep(true);
   }
@@ -263,8 +262,6 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
       <ConsignmentOption isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
       {!isSingleAddress && <div>
         <SelectItems 
-          cart={cart} 
-          consignments={consignments} 
           selecedItemIds={selectedItems} 
           onSelectConsignment={setSelectedConsignmentId}
           onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)} 
@@ -313,7 +310,7 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
           customerAddresses={customerAddresses} 
           shippingAddress={shippingAddress} 
           onInputChange={handleAddressChange} 
-          countries={countries}
+          countries={checkoutState.data.getShippingCountries() ?? []}
         />
 
         {customer.isGuest &&
@@ -327,7 +324,7 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
         <div style={{ display: 'flex', gap: '20px' }}>
           <div style={{ width: '60%'}}>
             <ShippingMethodOption 
-              shippingOptions={shippingOptions} 
+              shippingOptions={checkoutState.data.getShippingOptions() ?? []} 
               handleChange={setSelectedShippingOptionId} 
               selectedShippingOptionId={selectedShippingOptionId}
             />
