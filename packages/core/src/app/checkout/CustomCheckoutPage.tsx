@@ -36,6 +36,8 @@ const CustomCheckoutPage = ({ data, checkoutId, cart, paymentForm  }: CustomChec
         const shippingOptions = res.data.getShippingOptions();
         setShippingOptions(shippingOptions ? shippingOptions : []);
       });
+
+      checkoutContext.checkoutService.loadShippingCountries()
     }
 
     fetch('https://phpstack-1452029-5845393.cloudwaysapps.com/bigcommerce-toms/cardproducts/list')

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 
 import { 
   AddressRequestBody,
+  BillingAddress,
   CheckoutStoreSelector, 
   ConsignmentAssignmentRequestBody, 
   ConsignmentCreateRequestBody, 
@@ -20,6 +21,7 @@ import { CheckoutContext } from "@bigcommerce/checkout/payment-integration-api";
 import SelectItems from "./options/SelectItems";
 import { useShipping } from "../../shipping/hooks/useShipping";
 import { useCustomer } from "../../customer/useCustomer";
+import { trim } from "lodash";
 
 interface ShippingAndDeliveryProps {
   data: CheckoutStoreSelector;
@@ -36,6 +38,11 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
   const [shouldShowNewAddress, setShouldShowNewAddress] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [selectedConsignmentId, setSelectedConsignmentId] = useState<string | null>(null);
+
+  const [isSignInActice, setIsSigninActive] = useState<boolean>(false);
+  const [guestEmalId, setGuestEmailId] = useState('');
+  const [guestEmalError, setGuestEmalError] = useState<string | null>(null);
+  const [billingAddress, setBillingAddress] = useState<BillingAddress | undefined>(undefined);
 
   // Address
   const [customerAddresses, setCustomerAddresses] = useState<CustomerAddress[]>([]);
@@ -56,6 +63,7 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
     cart,
     consignments,
     customer,
+    countries,
   } = useShipping();
 
   const { actions: customerActions } = useCustomer();
@@ -67,8 +75,11 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
       setCustomerAddresses(customer.addresses);
     }
 
-    console.log('getBillingAddress():' );
-    console.log(data.getBillingAddress());
+    const billingAddress = data.getBillingAddress();
+    setBillingAddress(billingAddress);
+
+    // Guest email id is saving as billing address email id so use billing email as guest email
+    setGuestEmailId(billingAddress && billingAddress.email ? billingAddress.email : '');
 
     const customerShippingAddress = data.getShippingAddress();
     if (customerShippingAddress) {
@@ -142,6 +153,26 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
     }
   }
 
+  const saveGuestEmail = async () => {
+
+    const emailRegex = /^([a-zA-Z0-9_.\-])+@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+
+    if (trim(guestEmalId).length == 0) {
+      setGuestEmalError('Email address is required'); 
+    } else if (!emailRegex.test(guestEmalId)) {
+      setGuestEmalError('Email address is invalid'); 
+    } else {
+      setGuestEmalError(null);
+    }
+
+    console.log('continueAsGuest: ');
+    const res = await customerActions.continueAsGuest({
+      email: guestEmalId,
+    });
+    
+    console.log(res);
+  }
+
   const createConsignments = async () => {
     
     if (!checkoutContext) {
@@ -149,7 +180,7 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
     }
 
     const lineItems = cart.lineItems.physicalItems
-      .filter(i => !customer.id || selectedItems.includes(i.id as string))
+      .filter(i => customer.isGuest || selectedItems.includes(i.id as string))
       .map(i => {
         return { itemId: i.id, quantity: i.quantity };
       }) as ConsignmentLineItem[];
@@ -204,12 +235,6 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
           checkoutContext.checkoutService.selectConsignmentShippingOption(selectedConsignmentId, selectedShippingOptionId);
         }
       }
-      if (!customer.id) {
-        console.log('customerActions.continueAsGuest: ');
-        customerActions.continueAsGuest({
-          email: 'lalmani@inctechservices.com',
-        });
-      }
 
       await createConsignments();
     }
@@ -218,7 +243,15 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
   }
 
   const handleGuestEmailChange = (e: any) => {
-    console.log(e.target.value);
+    setGuestEmailId(e.target.value);
+
+    const emailRegex = /^([a-zA-Z0-9_.\-])+@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+
+     if (trim(e.target.value).length == 0) {
+      setGuestEmalError('Email address is required');
+    } else {
+      setGuestEmalError(null);
+    }
   }
 
   const handleAddressChange = (updatedAddress: AddressRequestBody) => {
@@ -226,33 +259,51 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
   };
 
   return <div className="shipping-n-delivery">
-    <ConsignmentOption customer={customer} isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
+    {customer.id ? <>
+      <ConsignmentOption isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
+      {!isSingleAddress && <div>
+        <SelectItems 
+          cart={cart} 
+          consignments={consignments} 
+          selecedItemIds={selectedItems} 
+          onSelectConsignment={setSelectedConsignmentId}
+          onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)} 
+        />
 
-    {!isSingleAddress && <div>
-      <SelectItems 
-        cart={cart} 
-        consignments={consignments} 
-        selecedItemIds={selectedItems} 
-        onSelectConsignment={setSelectedConsignmentId}
-        onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)} 
-      />
-
-      {selectedItems.length > 0 &&
-        <div style={{ marginTop: '20px'}}>
-          <a onClick={() => setShouldShowNewAddress(true)} style={{ borderBottom: '1px solid #315B42', color: '#315B42', padding: '5px', fontWeight: 'bold' }}>Add delivery address &gt;</a>
-        </div>
-      }
-    </div>
-    }
-
-    {!customer.id && <>
-      <div className="step-title">
-        <label style={{ marginLeft: '10px' }}>2. Customer:</label>
-        <div className="form-field-row">
-          <input className="custom-form-input text" type="text" placeholder="Email Id" onChange={handleGuestEmailChange} />
-        </div>
+        {selectedItems.length > 0 &&
+          <div style={{ marginTop: '20px'}}>
+            <a onClick={() => setShouldShowNewAddress(true)} style={{ borderBottom: '1px solid #315B42', color: '#315B42', padding: '5px', fontWeight: 'bold' }}>Add delivery address &gt;</a>
+          </div>
+        }
       </div>
-    </>}
+      }
+    </> 
+    :
+      <div className="step-title">
+        <label style={{}}>1. Enter the email address:</label>
+        <div className="form-field-row" style={{ justifyContent: 'left', gap: '20px' }}>
+          <input className="custom-form-input text" type="text" placeholder="Email Id" onChange={handleGuestEmailChange} value={guestEmalId} />
+          <button onClick={saveGuestEmail} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '5px', padding: '10px'}}>Continue</button>
+        </div>
+        
+        { guestEmalError && <div><span style={{ fontWeight: 'normal', color: '#d14343'}}>{guestEmalError}</span></div>}
+        
+        {isSignInActice ? <>
+          <div className="form-field-row">
+            <input className="custom-form-input text" type="password" placeholder="Password" onChange={handleGuestEmailChange} />
+          </div>
+          <div style={{ marginTop: '30px' }}>
+            <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '5px', padding: '10px'}}>Sign In</button>
+            <button onClick={() => setIsSigninActive(false)} style={{ color: '#315B42', marginLeft: '10px', width: '200px', textAlign: 'center', backgroundColor: '#fff', border: '1px solid #cccccc', borderRadius: '5px', padding: '10px'}}>Cancel</button>
+          </div>
+          </>
+        : 
+          <div style={{ marginTop: '20px' }}>
+            Already have an account? <a onClick={() => window.location.href = "/login.php"} style={{ cursor: 'pointer', textDecoration: 'underline' }}>Sign in now</a>
+          </div>
+        }
+      </div>
+    }
 
     {(isSingleAddress || selectedItems.length > 0) &&
 
@@ -262,11 +313,12 @@ const ShippingAndDelivery = ({ data, checkoutId, shippingOptions, giftProducts, 
           customerAddresses={customerAddresses} 
           shippingAddress={shippingAddress} 
           onInputChange={handleAddressChange} 
+          countries={countries}
         />
 
-        {!customer.id &&
+        {customer.isGuest &&
           <div style={{ marginTop: '30px' }}>
-            <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>SAVE CHANGES</button>
+            <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>CONTINUE</button>
           </div>
         }
 

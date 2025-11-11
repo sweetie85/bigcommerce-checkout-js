@@ -1,27 +1,50 @@
-import { AddressRequestBody, Customer, CustomerAddress } from "@bigcommerce/checkout-sdk";
-import React, { useState } from "react";
+import { AddressRequestBody, Country, Customer, CustomerAddress, Region } from "@bigcommerce/checkout-sdk";
+import React, { useEffect, useState } from "react";
 
 interface AddressOptionProps {
+  countries: Country[],
   customer: Customer,
   customerAddresses: CustomerAddress[];
   shippingAddress: AddressRequestBody | null;
   onInputChange: (updated: AddressRequestBody ) => void;
 }
 
-const AddressOption = ({ customer, customerAddresses, shippingAddress, onInputChange }: AddressOptionProps) => {
+const AddressOption = ({ countries, customer, customerAddresses, shippingAddress, onInputChange }: AddressOptionProps) => {
 
   const [isNewAddress, setIsNewAddress] = useState(false);
+  const [provinces, setProvinces] = useState<Region[]>([]);
+
+  useEffect(() => {
+    console.log('shippingAddress: ');
+    console.log(shippingAddress);
+
+    console.log(shippingAddress?.countryCode);
+
+    if (shippingAddress?.countryCode) {
+      const selectedCountry = countries.find(c => c.code == shippingAddress.countryCode);
+      if (selectedCountry?.subdivisions) {
+        setProvinces(selectedCountry.subdivisions);
+      }
+    }
+  }, []);
 
   const handleChange = (e: any) => {
     console.log('e.target.value: '+e.target.value);
     setIsNewAddress(e.target.value == '1');
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
     onInputChange({
       ...shippingAddress,
       [e.target.name]: e.target.value,
     } as AddressRequestBody );
+
+    if (e.target.name == 'countryCode') {
+      const selectedCountry = countries.find(c => c.code == e.target.value);
+      if (selectedCountry?.subdivisions) {
+        setProvinces(selectedCountry.subdivisions);
+      }
+    }
   };
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -66,10 +89,21 @@ const AddressOption = ({ customer, customerAddresses, shippingAddress, onInputCh
         </div>
         <div className="form-field-row">
           <input className="custom-form-input text" type="text" placeholder="City" name="city" value={shippingAddress?.city} onChange={handleInputChange} />
-          <input className="custom-form-input text" type="text" placeholder="Country" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange} />
+          {/* <input className="custom-form-input text" type="text" placeholder="Country" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange} /> */}
+          <select className="custom-form-input select" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange}>
+            <option value="">-- Select a Country --</option>
+            {countries.map(c => <option value={c.code}>{c.name}</option>)}
+          </select>
         </div>
         <div className="form-field-row">
-          <input className="custom-form-input text" type="text" placeholder="State/Province" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange} />
+          {provinces.length == 0 ?
+            <input className="custom-form-input text" type="text" placeholder="State/Province" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange} />
+          : 
+            <select className="custom-form-input select" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange}>
+              <option value="">-- Select a State --</option>
+              {provinces.map(c => <option value={c.code}>{c.name}</option>)}
+            </select>
+          }
           <input className="custom-form-input text" type="text" placeholder="Postal Code" name="postalCode" value={shippingAddress?.postalCode} onChange={handleInputChange} />
         </div>
       </div>}
