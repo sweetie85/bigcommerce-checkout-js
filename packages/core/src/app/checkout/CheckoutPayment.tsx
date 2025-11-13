@@ -1,5 +1,6 @@
 import { AddressRequestBody, CheckoutStoreSelector } from "@bigcommerce/checkout-sdk";
 import React, { ReactNode, useEffect, useState } from "react";
+import { useCheckout } from "./shipping-n-delivery/CheckoutContext";
 
 interface CheckoutPaymentProps {
   data: CheckoutStoreSelector;
@@ -11,6 +12,8 @@ const CheckoutPayment = ({ data, checkoutId, paymentForm } :CheckoutPaymentProps
 
   const [billingAddress, setBillingAddress] = useState<AddressRequestBody | null>(null);
   
+  const { checkoutService } = useCheckout();
+
   // Next page
   const [enabledNextStep, setEnabledNextStep] = useState(true);
 
@@ -27,6 +30,13 @@ const CheckoutPayment = ({ data, checkoutId, paymentForm } :CheckoutPaymentProps
         [e.target.name]: e.target.value,
       } as AddressRequestBody);
     };
+
+  const updateBillingAddress = () => {
+    if (billingAddress) {
+      checkoutService.updateBillingAddress(billingAddress);
+      console.log('Billing address updated.');
+    }
+  }
 
   return <div style={{ margin: '0 30px' }}>
     <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>Billing & Payment Information</p>
@@ -58,9 +68,10 @@ const CheckoutPayment = ({ data, checkoutId, paymentForm } :CheckoutPaymentProps
         </div>
       </div>
 
+      <button onClick={updateBillingAddress} style={{ marginTop: '24px', width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '5px', padding: '10px'}}>Continue</button>
+
       <p style={{fontSize: '16px', fontWeight: 'bold', marginTop: '20px'}}>Payment: </p>
       { paymentForm }
-
 
       <div style={{ margin: '0 30px' }}>
         <button disabled={!enabledNextStep} style={{ opacity: enabledNextStep ? '1' : '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>PLACE YOUR ORDER</button>

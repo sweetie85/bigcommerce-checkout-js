@@ -17,7 +17,7 @@ const GiftMessageOption = ({ giftProducts, setGiftProductId, setGiftMessage }: G
 
   return <div>
     <div className="step-title">
-      <input onChange={(e) => setIsEnabled(e.target.value == "1")} name="address_option_saved" id="choose_gift_item" type="radio" value={1} ></input>
+      <input onChange={(e) => setIsEnabled(!isEnabled)} name="address_option_saved" id="choose_gift_item" type="radio" value={1} ></input>
       <label htmlFor="choose_gift_item" style={{ marginLeft: '10px' }}>5. Add gift message::</label>
     </div>
 

@@ -100,6 +100,8 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     // }
 
     const consignments = checkoutState.data.getConsignments();
+    console.log('consignments: ');
+    console.log(consignments);
     if (consignments && consignments.length > 1) {
       setIsSingleAddress(false);
     }
@@ -180,7 +182,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
   const createConsignments = async () => {
 
     const lineItems = cart.lineItems.physicalItems
-      .filter(i => !customer || customer.isGuest || selectedItems.includes(i.id as string))
+      .filter(i => selectedItems.length == 0 || selectedItems.includes(i.id as string))
       .map(i => {
         return { itemId: i.id, quantity: i.quantity };
       }) as ConsignmentLineItem[];
@@ -223,15 +225,13 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
       // checkoutContext.checkoutService.ass
       // checkoutContext.checkoutService.assignItemsToAddress(consignments[0]);
       // console.log('Updated shipping address...');
-
-      checkoutService.updateBillingAddress(shippingAddress);
     }
 
     if (selectedShippingOptionId) {
-      if (isSingleAddress) {
-        checkoutService.selectShippingOption(selectedShippingOptionId);
-      } else if (selectedConsignmentId) {
+      if (selectedConsignmentId) {
         checkoutService.selectConsignmentShippingOption(selectedConsignmentId, selectedShippingOptionId);
+      } else if (isSingleAddress) {
+        checkoutService.selectShippingOption(selectedShippingOptionId);
       }
     }
 
@@ -258,24 +258,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
   };
 
   return <div className="shipping-n-delivery">
-    {(customer && customer.id) ? <>
-      <ConsignmentOption isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
-      {!isSingleAddress && <div>
-        <SelectItems 
-          selecedItemIds={selectedItems} 
-          onSelectConsignment={setSelectedConsignmentId}
-          onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)} 
-        />
-
-        {selectedItems.length > 0 &&
-          <div style={{ marginTop: '20px'}}>
-            <a onClick={() => setShouldShowNewAddress(true)} style={{ borderBottom: '1px solid #315B42', color: '#315B42', padding: '5px', fontWeight: 'bold' }}>Add delivery address &gt;</a>
-          </div>
-        }
-      </div>
-      }
-    </> 
-    :
+    {(!customer || customer.isGuest) &&
       <div className="step-title">
         <label style={{}}>1. Enter the email address:</label>
         <div className="form-field-row" style={{ justifyContent: 'left', gap: '20px' }}>
@@ -295,12 +278,30 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
           </div>
           </>
         : 
-          <div style={{ marginTop: '20px' }}>
+          <div style={{ marginTop: '20px', marginBottom: '20px' }}>
             Already have an account? <a onClick={() => window.location.href = "/login.php"} style={{ cursor: 'pointer', textDecoration: 'underline' }}>Sign in now</a>
           </div>
         }
       </div>
     }
+
+    <>
+      <ConsignmentOption isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
+      {!isSingleAddress && <div>
+        <SelectItems 
+          selecedItemIds={selectedItems} 
+          onSelectConsignment={setSelectedConsignmentId}
+          onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)} 
+        />
+
+        {selectedItems.length > 0 &&
+          <div style={{ marginTop: '20px'}}>
+            <a onClick={() => setShouldShowNewAddress(true)} style={{ borderBottom: '1px solid #315B42', color: '#315B42', padding: '5px', fontWeight: 'bold' }}>Add delivery address &gt;</a>
+          </div>
+        }
+      </div>
+      }
+    </> 
 
     {(isSingleAddress || selectedItems.length > 0) &&
 
