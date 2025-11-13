@@ -1,14 +1,18 @@
 import React from "react";
 
 import { ShippingOption } from '@bigcommerce/checkout-sdk';
+import { useCheckout } from "../CheckoutContext";
 
 interface ShippingMethodOptionProps {
-  shippingOptions: ShippingOption[];
   selectedShippingOptionId: string | null;
   handleChange: (id: string) => void
 }
 
-const ShippingMethodOption = ({ shippingOptions, selectedShippingOptionId, handleChange }: ShippingMethodOptionProps) => {
+const ShippingMethodOption = ({ selectedShippingOptionId, handleChange }: ShippingMethodOptionProps) => {
+
+  const { state: checkoutState } = useCheckout();
+  const shippingOptions = checkoutState.data.getShippingOptions() ?? [];
+
   return <div style={{ display: 'flex', gap: '20px' }}>
     <div style={{ width: '60%'}}>
       <div className="step-title">

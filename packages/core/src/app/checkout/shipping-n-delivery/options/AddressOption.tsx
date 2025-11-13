@@ -1,18 +1,22 @@
 import { AddressRequestBody, Country, Customer, CustomerAddress, Region } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
+import { useCheckout } from "../CheckoutContext";
 
 interface AddressOptionProps {
-  countries: Country[],
-  customer: Customer,
-  customerAddresses: CustomerAddress[];
   shippingAddress: AddressRequestBody | null;
   onInputChange: (updated: AddressRequestBody ) => void;
+  selectedConsignmentId: string | null;
 }
 
-const AddressOption = ({ countries, customer, customerAddresses, shippingAddress, onInputChange }: AddressOptionProps) => {
+const AddressOption = ({ selectedConsignmentId, shippingAddress, onInputChange }: AddressOptionProps) => {
 
   const [isNewAddress, setIsNewAddress] = useState(false);
   const [provinces, setProvinces] = useState<Region[]>([]);
+
+  const { state: checkoutState } = useCheckout();
+  const customer = checkoutState.data.getCustomer();
+  const countries = checkoutState.data.getShippingCountries() ?? [];
+  const customerAddresses = customer?.addresses ?? [];
 
   useEffect(() => {
     console.log('shippingAddress: ');
@@ -25,6 +29,13 @@ const AddressOption = ({ countries, customer, customerAddresses, shippingAddress
       if (selectedCountry?.subdivisions) {
         setProvinces(selectedCountry.subdivisions);
       }
+    }
+
+    const consignments = checkoutState.data.getConsignments();
+    const seletedConsigmnet = consignments?.find(c => c.id == selectedConsignmentId);
+
+    if (seletedConsigmnet) {
+      
     }
   }, []);
 
@@ -47,19 +58,34 @@ const AddressOption = ({ countries, customer, customerAddresses, shippingAddress
     }
   };
 
+  function isSameAddress(a: AddressRequestBody, b: AddressRequestBody): boolean {
+    debugger;
+    if (!a || !b) return false;
+
+    const normalize = (val?: string) => (val || '').trim().toLowerCase();
+
+    return (
+      normalize(a.address1) === normalize(b.address1) &&
+      normalize(a.city) === normalize(b.city) &&
+      normalize(a.postalCode) === normalize(b.postalCode) &&
+      normalize(a.countryCode) === normalize(b.countryCode) &&
+      normalize(a.stateOrProvinceCode) === normalize(b.stateOrProvinceCode)
+    );
+  }
+
   const handleAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onInputChange(customerAddresses.find(a => a.id == (e.target.value as unknown as number)) as AddressRequestBody);
   }
 
   return <div>
-    {!!customer.id ? <>
+    {(customer && customer.id) ? <>
       <div className="step-title">
         <input onChange={handleChange} value={0} name="address_option_saved" id="choose_saved_address" type="radio" ></input>        
         <label style={{ marginLeft: '10px' }} htmlFor="choose_saved_address">2. Choose a saved address:</label>
       </div>
       <div>
         <select onChange={handleAddressChange} style={{ borderRadius: '6px', marginTop: '10px', padding: '10px', width: '500px' }}>
-          {customerAddresses.map((a) => <option value={a.id} key={a.id}>{a.address1 + ' '+a.city}</option>)}
+          {customerAddresses.map((a) => <option selected={!!shippingAddress && isSameAddress(shippingAddress, a)} value={a.id} key={a.id}>{a.address1 + ' ' + a.company + ' '+a.city}</option>)}
         </select>
       </div>
 
@@ -74,7 +100,7 @@ const AddressOption = ({ countries, customer, customerAddresses, shippingAddress
       </div>
     }
 
-      {(!customer.id || isNewAddress) && <div>
+      {(!customer || customer.isGuest || isNewAddress) && <div>
         <div className="form-field-row">
           <input className="custom-form-input text" type="text" placeholder="First Name" name="firstName" value={shippingAddress?.firstName} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="Last Name" name="lastName" value={shippingAddress?.lastName} onChange={handleInputChange} />

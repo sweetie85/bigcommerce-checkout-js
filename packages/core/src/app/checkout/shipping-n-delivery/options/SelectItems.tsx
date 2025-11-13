@@ -4,8 +4,6 @@ import { formatAddress } from "../../custom-utility";
 import { useCheckout } from "../CheckoutContext";
 
 interface SelectItemsProps {
-  // cart: Cart;
-  // consignments: Consignment[];
   selecedItemIds: string[];
   onChangeSelectedItems: (ids: string[]) => void;
   onSelectConsignment: (id: string) => void;

@@ -59,19 +59,14 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
   const [enabledNextStep, setEnabledNextStep] = useState(false);
   // const checkoutContext = useContext(CheckoutContext);
   const { state: checkoutState, checkoutService } = useCheckout();
+  const customer = checkoutState.data.getCustomer();
 
   const { 
     cart,
-    consignments,
-    customer,
-    // countries,
   } = useShipping();
-
-  // const { actions: customerActions } = useCustomer();
 
   useEffect(() => {
     // Load Customer address
-    const customer = checkoutState.data.getCustomer();
     if (customer) {
       setCustomerAddresses(customer.addresses);
     }
@@ -185,7 +180,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
   const createConsignments = async () => {
 
     const lineItems = cart.lineItems.physicalItems
-      .filter(i => customer.isGuest || selectedItems.includes(i.id as string))
+      .filter(i => !customer || customer.isGuest || selectedItems.includes(i.id as string))
       .map(i => {
         return { itemId: i.id, quantity: i.quantity };
       }) as ConsignmentLineItem[];
@@ -263,7 +258,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
   };
 
   return <div className="shipping-n-delivery">
-    {customer.id ? <>
+    {(customer && customer.id) ? <>
       <ConsignmentOption isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
       {!isSingleAddress && <div>
         <SelectItems 
@@ -311,14 +306,12 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
 
       <div className="" style={{ padding: '40px', backgroundColor: '#fff', marginTop: '40px'}}>
         <AddressOption 
-          customer={customer}
-          customerAddresses={customerAddresses} 
           shippingAddress={shippingAddress} 
           onInputChange={handleAddressChange} 
-          countries={checkoutState.data.getShippingCountries() ?? []}
+          selectedConsignmentId={selectedConsignmentId}
         />
 
-        {customer.isGuest &&
+        {(!customer || customer.isGuest) &&
           <div style={{ marginTop: '30px' }}>
             <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>CONTINUE</button>
           </div>
@@ -328,11 +321,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
 
         <div style={{ display: 'flex', gap: '20px' }}>
           <div style={{ width: '60%'}}>
-            <ShippingMethodOption 
-              shippingOptions={checkoutState.data.getShippingOptions() ?? []} 
-              handleChange={setSelectedShippingOptionId} 
-              selectedShippingOptionId={selectedShippingOptionId}
-            />
+            <ShippingMethodOption handleChange={setSelectedShippingOptionId} selectedShippingOptionId={selectedShippingOptionId} />
           </div>
           <div style={{ width: '40%'}}>
             <FutureShipDateOption />
