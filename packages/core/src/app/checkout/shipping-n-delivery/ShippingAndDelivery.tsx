@@ -4,6 +4,7 @@ import {
   AddressRequestBody,
   BillingAddress,
   CheckoutStoreSelector, 
+  Consignment, 
   ConsignmentAssignmentRequestBody, 
   ConsignmentCreateRequestBody, 
   ConsignmentLineItem, 
@@ -179,26 +180,13 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     console.log(res);
   }
 
-  const createConsignments = async () => {
+  const updateConsignments = async () : Promise<Consignment | null> => {
 
     const lineItems = cart.lineItems.physicalItems
       .filter(i => selectedItems.length == 0 || selectedItems.includes(i.id as string))
       .map(i => {
         return { itemId: i.id, quantity: i.quantity };
       }) as ConsignmentLineItem[];
-
-    // Test first item
-    // const firstItem = cart.lineItems.physicalItems[0];
-    // const lineItems = [{ itemId: firstItem.id, quantity: firstItem.quantity }];
-
-    // const requestBody = [{
-    //     address: shippingAddress,
-    //     shippingAddress: shippingAddress,
-    //     lineItems: lineItems
-    //   }] as ConsignmentCreateRequestBody[];
-
-    // const res = await checkoutContext.checkoutService.createConsignments(requestBody);
-
 
     const requestBody = {
         address: shippingAddress,
@@ -207,36 +195,35 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
       } as ConsignmentAssignmentRequestBody;
 
     const res = await checkoutService.assignItemsToAddress(requestBody);
-    // const res = await checkoutContext.checkoutService.createConsignments(requestBody);
-    console.log('createConsignments res: ');
-    console.log(res);
+    const updatedConsignments = res.data.getConsignments();
+
+    if (updatedConsignments) {
+      const selectedConsignment = updatedConsignments.find(c =>
+        c.lineItemIds.some(id => selectedItems.includes(id))
+      );
+
+      return selectedConsignment ?? null;
+    }
+
+    return null;
   }
 
   const saveChanges = async () => {
     console.log('saveChanges: ');
-    console.log('selectedConsignmentId: '+selectedConsignmentId);
+    console.log('selectedItems: ');
+    console.log(selectedItems);
 
     await addItemsToCart(gitProductId, giftMessage);
 
-    console.log('Item added');
-
-    if (shippingAddress) {
-      // checkoutContext.checkoutService.updateShippingAddress(shippingAddress);
-      // checkoutContext.checkoutService.ass
-      // checkoutContext.checkoutService.assignItemsToAddress(consignments[0]);
-      // console.log('Updated shipping address...');
-    }
+    const selectedConsignment = await updateConsignments();
 
     if (selectedShippingOptionId) {
-      if (selectedConsignmentId) {
-        checkoutService.selectConsignmentShippingOption(selectedConsignmentId, selectedShippingOptionId);
+      if (selectedConsignment) {
+        checkoutService.selectConsignmentShippingOption(selectedConsignment.id, selectedShippingOptionId);
       } else if (isSingleAddress) {
         checkoutService.selectShippingOption(selectedShippingOptionId);
       }
     }
-
-    await createConsignments();
-    
 
     setEnabledNextStep(true);
   }
