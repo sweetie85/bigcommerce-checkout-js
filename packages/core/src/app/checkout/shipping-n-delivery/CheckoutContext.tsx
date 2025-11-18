@@ -10,6 +10,7 @@ import {
   CheckoutService,
   CheckoutSelectors,
   createCheckoutService,
+  CheckoutIncludes,
 } from '@bigcommerce/checkout-sdk';
 
 // 👇 Define context shape
@@ -46,12 +47,21 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
     async function initCheckout() {
       try {
-        // 1️⃣ Load main checkout
-        const checkoutState = await checkoutService.loadCheckout();
 
-        // 2️⃣ Load shipping countries (important!)
-        await checkoutService.loadShippingCountries();
-        await checkoutService.loadShippingOptions();
+        // 1️⃣ Load main checkout
+        const [checkoutState, countries] = await Promise.all([
+          await checkoutService.loadCheckout(undefined, {
+            params: {
+              include: [
+                'consignments.availableShippingOptions'
+              ] as any, // FIXME: Currently the enum is not exported so it can't be used here.
+            },
+          }),
+
+          // 2️⃣ Load shipping countries (important!)
+          await checkoutService.loadShippingCountries()
+        ]);
+        // await checkoutService.loadShippingOptions();
 
         if (mounted) {
           setState(checkoutState);

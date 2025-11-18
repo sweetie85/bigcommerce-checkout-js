@@ -9,6 +9,7 @@ import CheckoutPayment from "./CheckoutPayment";
 // import { CheckoutContext, CheckoutProvider } from "@bigcommerce/checkout/payment-integration-api";
 import { CheckoutProvider, useCheckout } from "./shipping-n-delivery/CheckoutContext";
 import { useShipping } from "../shipping/hooks/useShipping";
+import { CheckoutPageSkeleton } from "@bigcommerce/checkout/ui";
 
 interface CustomCheckoutPageProps {
   data: CheckoutStoreSelector;
@@ -53,7 +54,7 @@ const CustomCheckoutPage = ({ data, checkoutId, cart, paymentForm  }: CustomChec
   }, [ready]);
 
    if (!ready || !state) {
-    return <div>Loading checkout...</div>;
+    return <CheckoutPageSkeleton />;
   }
 
   return <div>
