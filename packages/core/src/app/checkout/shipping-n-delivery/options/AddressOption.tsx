@@ -1,15 +1,14 @@
-import { AddressRequestBody, Country, Customer, CustomerAddress, Region } from "@bigcommerce/checkout-sdk";
+import { AddressRequestBody, Consignment, Country, Customer, CustomerAddress, Region } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
 import { useCheckout } from "../CheckoutContext";
 
 interface AddressOptionProps {
   updatedShippingAddress: AddressRequestBody | null;
   onInputChange: (updated: AddressRequestBody ) => void;
-  // selectedConsignmentId: string | null;
-  selecedItemIds: string[];
+  selectedConsignment: Consignment | null;
 }
 
-const AddressOption = ({ selecedItemIds, updatedShippingAddress, onInputChange }: AddressOptionProps) => {
+const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignment }: AddressOptionProps) => {
 
   const [isNewAddress, setIsNewAddress] = useState(false);
   const [provinces, setProvinces] = useState<Region[]>([]);
@@ -21,23 +20,13 @@ const AddressOption = ({ selecedItemIds, updatedShippingAddress, onInputChange }
   const customerAddresses = customer?.addresses ?? [];
 
   useEffect(() => {
-    const consignments = checkoutState.data.getConsignments();
-    // const seletedConsigmnet = consignments?.find(c => c.id == selectedConsignmentId);
-
-    const selectedConsignment = consignments?.find(c =>
-      c.lineItemIds.some(id => selecedItemIds.includes(id))
-    );
-
-    console.log('selectedConsignment shipping address: ');
-    console.log(selectedConsignment?.shippingAddress);
-
     if (selectedConsignment) {
-      setShippingAddress({ ...selectedConsignment.shippingAddress });
+      setShippingAddress(selectedConsignment.address);
     }
-  }, [selecedItemIds]);
+  }, [selectedConsignment])
 
   useEffect(() => {
-    console.log('shippingAddress: ');
+    console.log('AddressOption shippingAddress: ');
     console.log(shippingAddress);
 
     console.log(shippingAddress?.countryCode);

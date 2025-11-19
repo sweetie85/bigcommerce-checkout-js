@@ -1,17 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-import { ShippingOption } from '@bigcommerce/checkout-sdk';
+import { Consignment, ShippingOption } from '@bigcommerce/checkout-sdk';
 import { useCheckout } from "../CheckoutContext";
 
 interface ShippingMethodOptionProps {
-  selectedShippingOptionId: string | null;
-  handleChange: (id: string) => void
+  updatedShippingOptionId: string | null;
+  handleChange: (id: string) => void,
+  selectedConsignment: Consignment | null;
 }
 
-const ShippingMethodOption = ({ selectedShippingOptionId, handleChange }: ShippingMethodOptionProps) => {
+const ShippingMethodOption = ({ updatedShippingOptionId, handleChange, selectedConsignment }: ShippingMethodOptionProps) => {
 
+  const [selectedShippingOptionId, setSelectedShippingOptionId] = useState(updatedShippingOptionId);
   const { state: checkoutState } = useCheckout();
   const shippingOptions = checkoutState.data.getShippingOptions() ?? [];
+
+
+  useEffect(() => {
+    if (selectedConsignment && selectedConsignment.selectedShippingOption) {
+      setSelectedShippingOptionId(selectedConsignment.selectedShippingOption.id)
+    }
+  }, [selectedConsignment]);
 
   return <div style={{ display: 'flex', gap: '20px' }}>
     <div style={{ width: '60%'}}>

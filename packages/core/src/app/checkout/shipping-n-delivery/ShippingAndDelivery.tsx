@@ -38,7 +38,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
   const [isSingleAddress, setIsSingleAddress] = useState(true);
   const [shouldShowNewAddress, setShouldShowNewAddress] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [selectedConsignmentId, setSelectedConsignmentId] = useState<string | null>(null);
+  const [selectedConsignment, setSelectedConsignment] = useState<Consignment | null>(null);
 
   const [isSignInActice, setIsSigninActive] = useState<boolean>(false);
   const [guestEmalId, setGuestEmailId] = useState('');
@@ -80,9 +80,11 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     // Guest email id is saving as billing address email id so use billing email as guest email
     setGuestEmailId(billingAddress && billingAddress.email ? billingAddress.email : '');
 
-    const customerShippingAddress = checkoutState.data.getShippingAddress();
-    if (customerShippingAddress) {
-      setShippingAddress(customerShippingAddress);
+    if (isSingleAddress) {
+      const customerShippingAddress = checkoutState.data.getShippingAddress();
+      if (customerShippingAddress) {
+        setShippingAddress(customerShippingAddress);
+      }
     }
 
     const selectedShippingOption = checkoutState.data.getSelectedShippingOption();
@@ -107,7 +109,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
       setIsSingleAddress(false);
     }
 
-  }, [])
+  }, []);
 
   const addItemsToCart = async (gitProductId: string | null, giftMessage: string | null) => {
 
@@ -277,7 +279,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
       {!isSingleAddress && <div>
         <SelectItems 
           selecedItemIds={selectedItems} 
-          onSelectConsignment={setSelectedConsignmentId}
+          onSelectConsignment={setSelectedConsignment}
           onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)} 
         />
 
@@ -295,9 +297,8 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
       <div className="" style={{ padding: '40px', backgroundColor: '#fff', marginTop: '40px'}}>
         <AddressOption 
           updatedShippingAddress={shippingAddress} 
-          onInputChange={handleAddressChange} 
-          selecedItemIds={selectedItems} 
-          // selectedConsignmentId={selectedConsignmentId}
+          onInputChange={handleAddressChange}
+          selectedConsignment={selectedConsignment}
         />
 
         {(!customer || customer.isGuest) &&
@@ -310,7 +311,10 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
 
         <div style={{ display: 'flex', gap: '20px' }}>
           <div style={{ width: '60%'}}>
-            <ShippingMethodOption handleChange={setSelectedShippingOptionId} selectedShippingOptionId={selectedShippingOptionId} />
+            <ShippingMethodOption 
+              handleChange={setSelectedShippingOptionId} 
+              updatedShippingOptionId={selectedShippingOptionId} 
+              selectedConsignment={selectedConsignment}/>
           </div>
           <div style={{ width: '40%'}}>
             <FutureShipDateOption />
