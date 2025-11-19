@@ -294,9 +294,10 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
 
       <div className="" style={{ padding: '40px', backgroundColor: '#fff', marginTop: '40px'}}>
         <AddressOption 
-          shippingAddress={shippingAddress} 
+          updatedShippingAddress={shippingAddress} 
           onInputChange={handleAddressChange} 
-          selectedConsignmentId={selectedConsignmentId}
+          selecedItemIds={selectedItems} 
+          // selectedConsignmentId={selectedConsignmentId}
         />
 
         {(!customer || customer.isGuest) &&

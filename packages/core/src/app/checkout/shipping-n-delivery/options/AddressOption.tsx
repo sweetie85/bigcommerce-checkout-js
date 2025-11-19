@@ -3,20 +3,38 @@ import React, { useEffect, useState } from "react";
 import { useCheckout } from "../CheckoutContext";
 
 interface AddressOptionProps {
-  shippingAddress: AddressRequestBody | null;
+  updatedShippingAddress: AddressRequestBody | null;
   onInputChange: (updated: AddressRequestBody ) => void;
-  selectedConsignmentId: string | null;
+  // selectedConsignmentId: string | null;
+  selecedItemIds: string[];
 }
 
-const AddressOption = ({ selectedConsignmentId, shippingAddress, onInputChange }: AddressOptionProps) => {
+const AddressOption = ({ selecedItemIds, updatedShippingAddress, onInputChange }: AddressOptionProps) => {
 
   const [isNewAddress, setIsNewAddress] = useState(false);
   const [provinces, setProvinces] = useState<Region[]>([]);
+  const [shippingAddress, setShippingAddress] = useState(updatedShippingAddress);
 
   const { state: checkoutState } = useCheckout();
   const customer = checkoutState.data.getCustomer();
   const countries = checkoutState.data.getShippingCountries() ?? [];
   const customerAddresses = customer?.addresses ?? [];
+
+  useEffect(() => {
+    const consignments = checkoutState.data.getConsignments();
+    // const seletedConsigmnet = consignments?.find(c => c.id == selectedConsignmentId);
+
+    const selectedConsignment = consignments?.find(c =>
+      c.lineItemIds.some(id => selecedItemIds.includes(id))
+    );
+
+    console.log('selectedConsignment shipping address: ');
+    console.log(selectedConsignment?.shippingAddress);
+
+    if (selectedConsignment) {
+      setShippingAddress({ ...selectedConsignment.shippingAddress });
+    }
+  }, [selecedItemIds]);
 
   useEffect(() => {
     console.log('shippingAddress: ');
@@ -30,14 +48,7 @@ const AddressOption = ({ selectedConsignmentId, shippingAddress, onInputChange }
         setProvinces(selectedCountry.subdivisions);
       }
     }
-
-    const consignments = checkoutState.data.getConsignments();
-    const seletedConsigmnet = consignments?.find(c => c.id == selectedConsignmentId);
-
-    if (seletedConsigmnet) {
-      
-    }
-  }, []);
+  }, [shippingAddress]);
 
   const handleChange = (e: any) => {
     console.log('e.target.value: '+e.target.value);
@@ -45,10 +56,15 @@ const AddressOption = ({ selectedConsignmentId, shippingAddress, onInputChange }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
-    onInputChange({
+    console.log({ [e.target.name]: e.target.value })
+
+    const updatedShippingAddress = {
       ...shippingAddress,
       [e.target.name]: e.target.value,
-    } as AddressRequestBody );
+    } as AddressRequestBody;
+
+    onInputChange(updatedShippingAddress);
+    setShippingAddress(updatedShippingAddress);
 
     if (e.target.name == 'countryCode') {
       const selectedCountry = countries.find(c => c.code == e.target.value);
@@ -96,7 +112,7 @@ const AddressOption = ({ selectedConsignmentId, shippingAddress, onInputChange }
       </>
       :
       <div className="step-title">
-        <label>2. Shipping Address</label>
+        <label>2. Shipping Address 1111</label>
       </div>
     }
 
