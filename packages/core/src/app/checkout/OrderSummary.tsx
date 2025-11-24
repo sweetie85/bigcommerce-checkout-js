@@ -13,7 +13,7 @@ const OrderSummary = ({ }: CartSummaryProps) => {
   const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
   const [shippingTotal, setShippingTotal] = useState<number>(0);
 
-  const { state: checkoutState } = useCheckout();
+  const { checkoutState } = useCheckout();
   
   const cart: Cart | undefined = checkoutState.data.getCart();
   const consignments: Consignment[] | undefined = checkoutState.data.getConsignments() ?? [];

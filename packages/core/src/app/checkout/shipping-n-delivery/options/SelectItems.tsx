@@ -13,7 +13,7 @@ const SelectItems = ({ selecedItemIds, onChangeSelectedItems, onSelectConsignmen
   const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
   const [showDetailsItemIds, setShowDetailsItemIds] = useState<number[]>([]);
   
-  const { state: checkoutState } = useCheckout();
+  const { checkoutState } = useCheckout();
 
   const cart: Cart | undefined = checkoutState.data.getCart();
   const consignments: Consignment[] | undefined = checkoutState.data.getConsignments() ?? [];

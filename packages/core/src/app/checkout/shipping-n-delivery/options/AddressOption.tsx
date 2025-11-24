@@ -14,7 +14,7 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
   const [provinces, setProvinces] = useState<Region[]>([]);
   const [shippingAddress, setShippingAddress] = useState(updatedShippingAddress);
 
-  const { state: checkoutState } = useCheckout();
+  const { checkoutState } = useCheckout();
   const customer = checkoutState.data.getCustomer();
   const countries = checkoutState.data.getShippingCountries() ?? [];
   const customerAddresses = customer?.addresses ?? [];

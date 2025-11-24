@@ -9,7 +9,7 @@ interface CheckoutHeaderProps {
 
 const CheckoutHeader = ({activeIndex = 0, onChangeTab} : CheckoutHeaderProps) => {
 
-  const { state: checkoutState } = useCheckout();
+  const { checkoutState } = useCheckout();
   const customer = checkoutState.data.getCustomer();
   const consignments = checkoutState.data.getConsignments() ?? [];
   const hasConsignments = consignments && consignments.length > 0;

@@ -16,8 +16,10 @@ import {
 // 👇 Define context shape
 interface CheckoutContextValue {
   checkoutService: CheckoutService;
-  state: CheckoutSelectors;
+  checkoutState: CheckoutSelectors;
   ready: boolean;
+  hasShippingAddressEnabled: boolean;
+  hasShippingMethodEnabled: Boolean;
 }
 
 // Create context
@@ -36,11 +38,15 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   const [checkoutService] = useState<CheckoutService>(() =>
     createCheckoutService()
   );
-  const [state, setState] = useState<CheckoutSelectors>(
+  const [checkoutState, setCheckoutState] = useState<CheckoutSelectors>(
     checkoutService.getState()
   );
 
   const [ready, setReady] = useState(false);
+
+  // Active Steps
+  const [hasShippingAddressEnabled, setHasShippingAddressEnabled] = useState(false);
+  const [hasShippingMethodEnabled, setHasShippingMethodEnabled] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -64,7 +70,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         // await checkoutService.loadShippingOptions();
 
         if (mounted) {
-          setState(checkoutState);
+          setCheckoutState(checkoutState);
           setReady(true);
         }
       } catch (error) {
@@ -74,7 +80,19 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
       // 3️⃣ Subscribe to updates
       const unsubscribe = checkoutService.subscribe(
-        (newState) => setState(newState),
+        (newState) => {
+          const billingAddress = newState.data.getBillingAddress();
+          const consignments = newState.data.getConsignments();
+
+          if (billingAddress && billingAddress.email) {
+            setHasShippingAddressEnabled(true);
+          }
+
+          if (consignments && consignments.length > 0) {
+            setHasShippingMethodEnabled(true);
+          }
+          setCheckoutState(newState)
+        },
         (newState) => ({
           billingAddress: newState.data.getBillingAddress(),
           shippingAddress: newState.data.getShippingAddress(),
@@ -97,7 +115,13 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     };
   }, [checkoutService]);
 
-  const value: CheckoutContextValue = { checkoutService, state, ready };
+  const value: CheckoutContextValue = { 
+    checkoutService, 
+    checkoutState, 
+    ready, 
+    hasShippingAddressEnabled,
+    hasShippingMethodEnabled
+  };
 
   return (
     <CheckoutContext.Provider value={value}>

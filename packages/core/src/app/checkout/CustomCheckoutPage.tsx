@@ -27,7 +27,7 @@ const CustomCheckoutPage = ({ data, checkoutId, cart, paymentForm  }: CustomChec
   // const checkoutContext = useContext(CheckoutContext); 
   
   const { consignments } = useShipping();
-  const { ready, state, checkoutService } = useCheckout();
+  const { ready, checkoutState, checkoutService } = useCheckout();
 
   // Initialize data to avoid re-fetch on every component load
   useEffect(() => {
@@ -53,7 +53,7 @@ const CustomCheckoutPage = ({ data, checkoutId, cart, paymentForm  }: CustomChec
 
   }, [ready]);
 
-   if (!ready || !state) {
+   if (!ready || !checkoutState) {
     return <CheckoutPageSkeleton />;
   }
 

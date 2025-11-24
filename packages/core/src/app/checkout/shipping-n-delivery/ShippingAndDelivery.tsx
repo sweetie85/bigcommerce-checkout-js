@@ -1,16 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { 
   AddressRequestBody,
   BillingAddress,
-  CheckoutStoreSelector, 
   Consignment, 
   ConsignmentAssignmentRequestBody, 
-  ConsignmentCreateRequestBody, 
   ConsignmentLineItem, 
-  createCheckoutService, 
-  CustomerAddress,
-  ShippingOption
+  CustomerAddress
 } from '@bigcommerce/checkout-sdk';
 
 import ConsignmentOption from "./options/ConsignmentOption";
@@ -18,15 +14,11 @@ import AddressOption from "./options/AddressOption";
 import ShippingMethodOption from "./options/ShippingMethodOption";
 import FutureShipDateOption from "./options/FutureShipDateOption";
 import GiftMessageOption from "./options/GiftMessageOption";
-// import { CheckoutContext } from "@bigcommerce/checkout/payment-integration-api";
 import { useCheckout } from './CheckoutContext';
 import SelectItems from "./options/SelectItems";
-import { useShipping } from "../../shipping/hooks/useShipping";
-import { useCustomer } from "../../customer/useCustomer";
 import { trim } from "lodash";
-import { LoadingSpinner } from "@bigcommerce/checkout/ui";
 import FullPageLoader from "./FullPageLoader";
-import { consignment } from "@bigcommerce/checkout/test-framework";
+
 
 interface ShippingAndDeliveryProps {
   checkoutId: string;
@@ -63,12 +55,8 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
   // Next page
   const [enabledNextStep, setEnabledNextStep] = useState(false);
   // const checkoutContext = useContext(CheckoutContext);
-  const { state: checkoutState, checkoutService } = useCheckout();
+  const { checkoutState, checkoutService, hasShippingAddressEnabled, hasShippingMethodEnabled } = useCheckout();
   const customer = checkoutState.data.getCustomer();
-
-  const { 
-    cart,
-  } = useShipping();
 
   useEffect(() => {
     // Load Customer address
@@ -195,27 +183,31 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
 
   const updateConsignments = async () : Promise<Consignment | null> => {
 
-    const lineItems = cart.lineItems.physicalItems
-      .filter(i => selectedItems.length == 0 || selectedItems.includes(i.id as string))
-      .map(i => {
-        return { itemId: i.id, quantity: i.quantity };
-      }) as ConsignmentLineItem[];
+    const cart = checkoutState.data.getCart();
 
-    const requestBody = {
-        address: shippingAddress,
-        shippingAddress: shippingAddress,
-        lineItems: lineItems
-      } as ConsignmentAssignmentRequestBody;
+    if (cart) {
+      const lineItems = cart.lineItems.physicalItems
+        .filter(i => selectedItems.length == 0 || selectedItems.includes(i.id as string))
+        .map(i => {
+          return { itemId: i.id, quantity: i.quantity };
+        }) as ConsignmentLineItem[];
 
-    const res = await checkoutService.assignItemsToAddress(requestBody);
-    const updatedConsignments = res.data.getConsignments();
+      const requestBody = {
+          address: shippingAddress,
+          shippingAddress: shippingAddress,
+          lineItems: lineItems
+        } as ConsignmentAssignmentRequestBody;
 
-    if (updatedConsignments) {
-      const selectedConsignment = updatedConsignments.find(c =>
-        c.lineItemIds.some(id => selectedItems.includes(id))
-      );
+      const res = await checkoutService.assignItemsToAddress(requestBody);
+      const updatedConsignments = res.data.getConsignments();
 
-      return selectedConsignment ?? null;
+      if (updatedConsignments) {
+        const selectedConsignment = updatedConsignments.find(c =>
+          c.lineItemIds.some(id => selectedItems.includes(id))
+        );
+
+        return selectedConsignment ?? null;
+      }
     }
 
     return null;
@@ -292,7 +284,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
       </div>
     }
 
-    { (billingAddress && billingAddress.email) &&
+    { hasShippingAddressEnabled &&
       <div>
         <>
           <ConsignmentOption isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
@@ -327,7 +319,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
               </div>
             }
 
-            {selectedConsignment && <>
+            {hasShippingMethodEnabled && <>
             <hr style={{ margin: '30px 0'}} />
 
             <div style={{ display: 'flex', gap: '20px' }}>

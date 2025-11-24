@@ -12,7 +12,7 @@ interface ShippingMethodOptionProps {
 const ShippingMethodOption = ({ updatedShippingOptionId, handleChange, selectedConsignment }: ShippingMethodOptionProps) => {
 
   const [selectedShippingOptionId, setSelectedShippingOptionId] = useState(updatedShippingOptionId);
-  const { state: checkoutState } = useCheckout();
+  const { checkoutState } = useCheckout();
   const shippingOptions = checkoutState.data.getShippingOptions() ?? [];
 
 
