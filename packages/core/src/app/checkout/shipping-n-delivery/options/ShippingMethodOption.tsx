@@ -15,12 +15,15 @@ const ShippingMethodOption = ({ updatedShippingOptionId, handleChange, selectedC
   const { checkoutState } = useCheckout();
   const shippingOptions = checkoutState.data.getShippingOptions() ?? [];
 
-
   useEffect(() => {
     if (selectedConsignment && selectedConsignment.selectedShippingOption) {
       setSelectedShippingOptionId(selectedConsignment.selectedShippingOption.id)
     }
   }, [selectedConsignment]);
+
+  useEffect(() => {
+    setSelectedShippingOptionId(updatedShippingOptionId);
+  }, [updatedShippingOptionId]);
 
   return <div style={{ display: 'flex', gap: '20px' }}>
     <div style={{ width: '60%'}}>

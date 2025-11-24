@@ -325,7 +325,10 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
             <div style={{ display: 'flex', gap: '20px' }}>
               <div style={{ width: '60%'}}>
                 <ShippingMethodOption 
-                  handleChange={setSelectedShippingOptionId} 
+                  handleChange={(id) => {
+                    console.log('ShippingMethodOption id: '+id);
+                    setSelectedShippingOptionId(id);
+                  }} 
                   updatedShippingOptionId={selectedShippingOptionId} 
                   selectedConsignment={selectedConsignment}/>
               </div>
