@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useCheckout } from './shipping-n-delivery/CheckoutContext';
 
 interface CheckoutHeaderProps {
   activeIndex?: number
@@ -7,6 +8,26 @@ interface CheckoutHeaderProps {
 }
 
 const CheckoutHeader = ({activeIndex = 0, onChangeTab} : CheckoutHeaderProps) => {
+
+  const { state: checkoutState } = useCheckout();
+  const customer = checkoutState.data.getCustomer();
+  const consignments = checkoutState.data.getConsignments() ?? [];
+  const hasConsignments = consignments && consignments.length > 0;
+
+  const verifyAndGotoStep = (stepNumber: number) =>  {
+    if (hasConsignments) {
+      onChangeTab(stepNumber)
+    }
+  }
+
+  const nextTabStyles = (): React.CSSProperties => {
+    if (hasConsignments) {
+      return { color: '#333', cursor: 'pointer' }
+    } else {
+      return { color: '#aaa', cursor: 'default' }
+    }
+  }
+
   return <><div className='checkout-header test-lalmani'>
     <div className='back-to-cart'>
       <a href='/cart.php' style={{ color: 'inherit', display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -39,11 +60,11 @@ const CheckoutHeader = ({activeIndex = 0, onChangeTab} : CheckoutHeaderProps) =>
         <div className='step-number'>1</div>
         <div className='step-title'>Shipping & Delivery</div>
       </div>
-      <div onClick={() => onChangeTab(1)} className={`header-tab ${activeIndex == 1 ? 'active' : ''}`}>
+      <div onClick={() => verifyAndGotoStep(1)} className={`header-tab ${activeIndex == 1 ? 'active' : ''} ${!hasConsignments ? 'disabled' : '' }`}>
         <div className='step-number'>2</div>
         <div className='step-title'>Order Summary</div>
       </div>
-      <div onClick={() => onChangeTab(2)} className={`header-tab ${activeIndex == 2 ? 'active' : ''}`}>
+      <div onClick={() => verifyAndGotoStep(2)} className={`header-tab ${activeIndex == 2 ? 'active' : ''} ${!hasConsignments ? 'disabled' : '' }`}>
         <div className='step-number'>3</div>
         <div className='step-title'>Payment</div>
       </div>

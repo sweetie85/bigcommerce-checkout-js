@@ -101,7 +101,7 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
       </>
       :
       <div className="step-title">
-        <label>2. Shipping Address 1111</label>
+        <label>2. Shipping Address</label>
       </div>
     }
 

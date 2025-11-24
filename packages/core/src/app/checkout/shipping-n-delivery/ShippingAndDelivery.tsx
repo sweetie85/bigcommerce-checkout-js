@@ -24,6 +24,9 @@ import SelectItems from "./options/SelectItems";
 import { useShipping } from "../../shipping/hooks/useShipping";
 import { useCustomer } from "../../customer/useCustomer";
 import { trim } from "lodash";
+import { LoadingSpinner } from "@bigcommerce/checkout/ui";
+import FullPageLoader from "./FullPageLoader";
+import { consignment } from "@bigcommerce/checkout/test-framework";
 
 interface ShippingAndDeliveryProps {
   checkoutId: string;
@@ -48,6 +51,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
   // Address
   const [customerAddresses, setCustomerAddresses] = useState<CustomerAddress[]>([]);
   const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
+  const [isInProgress, setIsInProgress] = useState(false);
 
   // Shipping options
   const [selectedShippingOptionId, setSelectedShippingOptionId] = useState<string | null>(null);
@@ -71,6 +75,9 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     if (customer) {
       setCustomerAddresses(customer.addresses);
     }
+
+    console.log('customer: ');
+    console.log(customer);
 
     const billingAddress = checkoutState.data.getBillingAddress();
     console.log('billingAddress: ');
@@ -173,12 +180,16 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
       setGuestEmalError(null);
     }
 
+    setIsInProgress(true);
+
     console.log('continueAsGuest: ');
     // checkoutService.continueAsGuest()
     const res = await checkoutService.continueAsGuest({
       email: guestEmalId,
     });
     
+    setIsInProgress(false);
+
     console.log(res);
   }
 
@@ -211,6 +222,8 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
   }
 
   const saveChanges = async () => {
+    setIsInProgress(true);
+
     console.log('saveChanges: ');
     console.log('selectedItems: ');
     console.log(selectedItems);
@@ -228,6 +241,8 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     }
 
     setEnabledNextStep(true);
+
+    setIsInProgress(false);
   }
 
   const handleGuestEmailChange = (e: any) => {
@@ -247,6 +262,9 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
   };
 
   return <div className="shipping-n-delivery">
+
+    {isInProgress && <FullPageLoader /> }
+
     {(!customer || customer.isGuest) &&
       <div className="step-title">
         <label style={{}}>1. Enter the email address:</label>
@@ -274,59 +292,65 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
       </div>
     }
 
-    <>
-      <ConsignmentOption isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
-      {!isSingleAddress && <div>
-        <SelectItems 
-          selecedItemIds={selectedItems} 
-          onSelectConsignment={setSelectedConsignment}
-          onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)} 
-        />
+    { (billingAddress && billingAddress.email) &&
+      <div>
+        <>
+          <ConsignmentOption isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
+          {!isSingleAddress && <div>
+            <SelectItems 
+              selecedItemIds={selectedItems} 
+              onSelectConsignment={setSelectedConsignment}
+              onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)} 
+            />
 
-        {selectedItems.length > 0 &&
-          <div style={{ marginTop: '20px'}}>
-            <a onClick={() => setShouldShowNewAddress(true)} style={{ borderBottom: '1px solid #315B42', color: '#315B42', padding: '5px', fontWeight: 'bold' }}>Add delivery address &gt;</a>
+            {selectedItems.length > 0 &&
+              <div style={{ marginTop: '20px'}}>
+                <a onClick={() => setShouldShowNewAddress(true)} style={{ borderBottom: '1px solid #315B42', color: '#315B42', padding: '5px', fontWeight: 'bold' }}>Add delivery address &gt;</a>
+              </div>
+            }
+          </div>
+          }
+        </> 
+
+        {(isSingleAddress || selectedItems.length > 0) &&
+
+          <div className="" style={{ padding: '40px', backgroundColor: '#fff', marginTop: '40px'}}>
+            <AddressOption 
+              updatedShippingAddress={shippingAddress} 
+              onInputChange={handleAddressChange}
+              selectedConsignment={selectedConsignment}
+            />
+
+            {(!customer || customer.isGuest) &&
+              <div style={{ marginTop: '30px' }}>
+                <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>CONTINUE</button>
+              </div>
+            }
+
+            {selectedConsignment && <>
+            <hr style={{ margin: '30px 0'}} />
+
+            <div style={{ display: 'flex', gap: '20px' }}>
+              <div style={{ width: '60%'}}>
+                <ShippingMethodOption 
+                  handleChange={setSelectedShippingOptionId} 
+                  updatedShippingOptionId={selectedShippingOptionId} 
+                  selectedConsignment={selectedConsignment}/>
+              </div>
+              <div style={{ width: '40%'}}>
+                <FutureShipDateOption />
+              </div>
+            </div>
+
+            <hr style={{ margin: '30px 0'}} />      
+            <GiftMessageOption giftProducts={giftProducts} setGiftProductId={setGiftProductId} setGiftMessage={setGiftMessage}  />
+
+            <div style={{ textAlign: 'right', marginTop: '20px' }}>
+              <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>SAVE CHANGES</button>
+            </div>
+            </>}
           </div>
         }
-      </div>
-      }
-    </> 
-
-    {(isSingleAddress || selectedItems.length > 0) &&
-
-      <div className="" style={{ padding: '40px', backgroundColor: '#fff', marginTop: '40px'}}>
-        <AddressOption 
-          updatedShippingAddress={shippingAddress} 
-          onInputChange={handleAddressChange}
-          selectedConsignment={selectedConsignment}
-        />
-
-        {(!customer || customer.isGuest) &&
-          <div style={{ marginTop: '30px' }}>
-            <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>CONTINUE</button>
-          </div>
-        }
-
-        <hr style={{ margin: '30px 0'}} />
-
-        <div style={{ display: 'flex', gap: '20px' }}>
-          <div style={{ width: '60%'}}>
-            <ShippingMethodOption 
-              handleChange={setSelectedShippingOptionId} 
-              updatedShippingOptionId={selectedShippingOptionId} 
-              selectedConsignment={selectedConsignment}/>
-          </div>
-          <div style={{ width: '40%'}}>
-            <FutureShipDateOption />
-          </div>
-        </div>
-
-        <hr style={{ margin: '30px 0'}} />      
-        <GiftMessageOption giftProducts={giftProducts} setGiftProductId={setGiftProductId} setGiftMessage={setGiftMessage}  />
-
-        <div style={{ textAlign: 'right', marginTop: '20px' }}>
-          <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>SAVE CHANGES</button>
-        </div>
       </div>
     }
 
