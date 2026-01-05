@@ -107,6 +107,8 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     if (consignments && consignments.length > 1) {
       setIsSingleAddress(false);
       setShippingAddress(null);
+
+      setEnabledNextStep(true);
     }
   
     console.log('checkoutState.data.getOrder()?.customerMessage: ');
@@ -118,7 +120,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     console.log('addItemsToCart: ');
 
     if (!gitProductId || !giftMessage) {
-      return;
+      return null;
     }
 
     const [productId, optionId] = gitProductId.split('|');
@@ -156,10 +158,17 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
       const error = await res.json();
       console.error('Add item error:', error);
       alert('Error adding add-ons: ' + (error.title || 'Unknown error'));
-      return;
+      return null;
     } else {
+
       console.log('Item added successfully.');
       // window.location.reload();
+      console.log(res);
+      const response = await res.json();
+      const cartItems = response.lineItems.physicalItems;
+      const lastItem = cartItems[cartItems.length - 1];
+
+      return { itemId: lastItem.id, quantity: lastItem.quantity };
     }
   }
 
@@ -188,7 +197,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     console.log(res);
   }
 
-  const updateConsignments = async () : Promise<Consignment | null> => {
+  const updateConsignments = async (giftItem: ConsignmentLineItem | null) : Promise<Consignment | null> => {
 
     const cart = checkoutState.data.getCart();
 
@@ -198,6 +207,13 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
         .map(i => {
           return { itemId: i.id, quantity: i.quantity };
         }) as ConsignmentLineItem[];
+
+      console.log('Gift Item:');
+      console.log(giftItem);
+
+      if (giftItem) {
+        lineItems.push(giftItem);
+      }
 
       const updatedAddress = shippingAddress ? shippingAddress : selectedConsignment?.address;
 
@@ -209,6 +225,8 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
 
       const res = await checkoutService.assignItemsToAddress(requestBody);
       const updatedConsignments = res.data.getConsignments();
+
+      // checkoutService
 
       if (updatedConsignments) {
         const selectedConsignment = updatedConsignments.find(c =>
@@ -229,9 +247,9 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     console.log('selectedItems: ');
     console.log(selectedItems);
 
-    await addItemsToCart(gitProductId, giftMessage);
+    const giftItem = await addItemsToCart(gitProductId, giftMessage);
 
-    const selectedConsignment = await updateConsignments();
+    const selectedConsignment = await updateConsignments(giftItem);
 
     if (selectedShippingOptionId) {
       if (selectedConsignment) {
@@ -245,11 +263,11 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
       console.log('Saving future save date: ');
       checkoutService.updateCheckout({ customerMessage: futureShipDate });
     }
-    
 
     setEnabledNextStep(true);
 
     setIsInProgress(false);
+    setSelectedItems([]);
   }
 
   const handleGuestEmailChange = (e: any) => {
@@ -308,7 +326,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
             <SelectItems 
               selecedItemIds={selectedItems} 
               onSelectConsignment={setSelectedConsignment}
-              onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)} 
+              onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)}
             />
 
             {selectedItems.length > 0 &&

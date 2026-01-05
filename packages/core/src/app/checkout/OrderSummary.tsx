@@ -38,7 +38,7 @@ const OrderSummary = ({ }: CartSummaryProps) => {
       totalAmount = totalAmount + shippingTotal;
     }
 
-    return totalAmount;
+    return totalAmount.toFixed(2);
   }
 
   return <div>

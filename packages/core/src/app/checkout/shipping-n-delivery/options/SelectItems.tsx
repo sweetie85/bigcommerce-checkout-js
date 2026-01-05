@@ -23,7 +23,7 @@ const SelectItems = ({ selecedItemIds, onChangeSelectedItems, onSelectConsignmen
       const mainItems = cart.lineItems.physicalItems.filter(c => !c.parentId);
       setMainCartItems(mainItems);
     }
-  }, []);
+  }, [consignments, cart]);
 
   const selectConsignmentByItems = (selecedItemIds: string[]) => {
     const consignments = checkoutState.data.getConsignments();
@@ -82,7 +82,7 @@ const SelectItems = ({ selecedItemIds, onChangeSelectedItems, onSelectConsignmen
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '10px' }}>
 
       {/* Iterate through every consignmets and filter items */}
-      { consignments.map(c => <div style={{ border: '2px solid #315B42', borderRadius: '10px', margin: '0 10px', padding: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      { consignments.map(c => <div key={c.id} style={{ border: '2px solid #315B42', borderRadius: '10px', margin: '0 10px', padding: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
           .map(i => <div key={i.id} style={{ display: 'flex', alignItems: 'center', gap: '20px'}}>
             
