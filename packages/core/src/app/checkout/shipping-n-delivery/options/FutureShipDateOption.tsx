@@ -1,11 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 
 // import "react-datepicker/dist/react-datepicker.css";
 
-const FutureShipDateOption = () => {
+interface FutureShipDateOptionProps {
+  futureShipDate: string | null;
+  handleChangeDate: (v: string | null) => void;
+}
+
+const FutureShipDateOption = ({ futureShipDate, handleChangeDate }: FutureShipDateOptionProps) => {
   const [shouldSelectShipDate, setShouldSelectShipDate] = useState(false);
   const [shipDate, setShipDate] = useState<Date | null>(new Date());
+
+  useEffect(() => {
+    if (futureShipDate) {
+      const [month, day, year] = futureShipDate.split("/").map(Number);
+
+      // Date.UTC() creates a timestamp at midnight UTC, so no timezone shift happens.
+      const selectedShipDate = new Date(Date.UTC(year, month - 1, day));
+      setShipDate(selectedShipDate);
+    }
+  }, [futureShipDate]);
+
+   useEffect(() => {
+    if (shipDate) {
+      const dateString = `${shipDate.getMonth() + 1}/${shipDate.getDate()}/${shipDate.getFullYear()}`;
+      handleChangeDate(dateString);
+    } else {
+      handleChangeDate('');
+    }
+  }, [shipDate]);
 
   const handleChange = (e: any) => {
     console.log('e.target.value: '+e.target.value);

@@ -64,7 +64,7 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
   };
 
   function isSameAddress(a: AddressRequestBody, b: AddressRequestBody): boolean {
-    debugger;
+    // debugger;
     if (!a || !b) return false;
 
     const normalize = (val?: string) => (val || '').trim().toLowerCase();

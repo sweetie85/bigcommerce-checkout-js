@@ -1,4 +1,6 @@
+import { Consignment } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react"
+import { useCheckout } from "../CheckoutContext";
 
 interface GIftProduct {
   bigcommerce_product_id: string, 
@@ -9,11 +11,42 @@ interface GiftMessageOptionProps {
   giftProducts: GIftProduct[];
   setGiftProductId: (id: string) => void;
   setGiftMessage: (message: string) => void;
+  selectedConsignment: Consignment | null;
 }
 
-const GiftMessageOption = ({ giftProducts, setGiftProductId, setGiftMessage }: GiftMessageOptionProps) => {
+const GiftMessageOption = ({ giftProducts, selectedConsignment, setGiftProductId, setGiftMessage }: GiftMessageOptionProps) => {
 
   const [isEnabled, setIsEnabled] = useState(false);
+  const [hasMultipleGiftMessage, setHasMultipleGiftMessage] = useState(false);
+
+  const { checkoutState } = useCheckout();
+  
+  useEffect(() => {
+    if (selectedConsignment) {
+
+      // selectedConsignment.lineItemIds
+
+      const cart = checkoutState.data.getCart();
+      if (cart) {
+        const selectedConsignmentItems = cart.lineItems.physicalItems.filter(i => selectedConsignment.lineItemIds.includes(i.id as string));
+        console.log(selectedConsignmentItems);
+
+        const giftItems = selectedConsignmentItems.filter(i => i.sku.startsWith('CARD-'));
+
+        if (giftItems.length >= 1) {
+          console.log('setHasMultipleGiftMessage true');
+          setHasMultipleGiftMessage(true);
+        } else {
+          console.log('setHasMultipleGiftMessage false');
+          setHasMultipleGiftMessage(false);
+        }
+      }
+    } else {
+      setHasMultipleGiftMessage(false);
+      console.log('setHasMultipleGiftMessage false');
+    }
+
+  }, [selectedConsignment]);
 
   return <div>
     <div className="step-title">
@@ -22,6 +55,7 @@ const GiftMessageOption = ({ giftProducts, setGiftProductId, setGiftMessage }: G
     </div>
 
     {isEnabled && <>
+    { hasMultipleGiftMessage && <p style={{ color: 'red' }}>NOTE: You are supposed to add only one gift message per consignment</p> }
     <div>
       <select onChange={(e) => setGiftProductId(e.target.value) } style={{ borderRadius: '6px', marginLeft: '20px', marginTop: '10px', padding: '10px', width: '500px' }}>
         <option value="">Select Gift</option>

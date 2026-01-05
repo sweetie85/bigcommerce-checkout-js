@@ -81,6 +81,8 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
       // 3️⃣ Subscribe to updates
       const unsubscribe = checkoutService.subscribe(
         (newState) => {
+          console.log('newState.data: ');
+          console.log(newState);
           const billingAddress = newState.data.getBillingAddress();
           const consignments = newState.data.getConsignments();
 

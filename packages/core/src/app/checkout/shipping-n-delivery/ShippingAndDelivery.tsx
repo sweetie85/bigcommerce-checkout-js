@@ -52,6 +52,9 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
   const [gitProductId, setGiftProductId] = useState<string | null>(null);
   const [giftMessage, setGiftMessage] = useState<string | null>(null);
 
+  // Future ship date
+  const [futureShipDate, setFutureShipDate] = useState<string | null>(null);
+
   // Next page
   const [enabledNextStep, setEnabledNextStep] = useState(false);
   // const checkoutContext = useContext(CheckoutContext);
@@ -78,6 +81,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     if (isSingleAddress) {
       const customerShippingAddress = checkoutState.data.getShippingAddress();
       if (customerShippingAddress) {
+        console.log('isSingleAddress setShippingAddress 1: ');
         setShippingAddress(customerShippingAddress);
       }
     }
@@ -102,8 +106,11 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     console.log(consignments);
     if (consignments && consignments.length > 1) {
       setIsSingleAddress(false);
+      setShippingAddress(null);
     }
-
+  
+    console.log('checkoutState.data.getOrder()?.customerMessage: ');
+    console.log(checkoutState.data.getOrder()?.customerMessage);
   }, []);
 
   const addItemsToCart = async (gitProductId: string | null, giftMessage: string | null) => {
@@ -192,9 +199,11 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
           return { itemId: i.id, quantity: i.quantity };
         }) as ConsignmentLineItem[];
 
+      const updatedAddress = shippingAddress ? shippingAddress : selectedConsignment?.address;
+
       const requestBody = {
-          address: shippingAddress,
-          shippingAddress: shippingAddress,
+          address: updatedAddress,
+          shippingAddress: updatedAddress,
           lineItems: lineItems
         } as ConsignmentAssignmentRequestBody;
 
@@ -232,6 +241,12 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
       }
     }
 
+    if (futureShipDate) {
+      console.log('Saving future save date: ');
+      checkoutService.updateCheckout({ customerMessage: futureShipDate });
+    }
+    
+
     setEnabledNextStep(true);
 
     setIsInProgress(false);
@@ -250,6 +265,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
   }
 
   const handleAddressChange = (updatedAddress: AddressRequestBody) => {
+    console.log('setShippingAddress 2: ');
     setShippingAddress(updatedAddress); // ✅ Update single source of truth
   };
 
@@ -325,7 +341,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
             <div style={{ display: 'flex', gap: '20px' }}>
               <div style={{ width: '60%'}}>
                 <ShippingMethodOption 
-                  handleChange={(id) => {
+                  handleChange={(id) => {``
                     console.log('ShippingMethodOption id: '+id);
                     setSelectedShippingOptionId(id);
                   }} 
@@ -333,12 +349,17 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
                   selectedConsignment={selectedConsignment}/>
               </div>
               <div style={{ width: '40%'}}>
-                <FutureShipDateOption />
+                <FutureShipDateOption futureShipDate={futureShipDate} handleChangeDate={setFutureShipDate }/>
               </div>
             </div>
 
             <hr style={{ margin: '30px 0'}} />      
-            <GiftMessageOption giftProducts={giftProducts} setGiftProductId={setGiftProductId} setGiftMessage={setGiftMessage}  />
+            <GiftMessageOption 
+              giftProducts={giftProducts} 
+              setGiftProductId={setGiftProductId} 
+              setGiftMessage={setGiftMessage} 
+              selectedConsignment={selectedConsignment}
+              />
 
             <div style={{ textAlign: 'right', marginTop: '20px' }}>
               <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>SAVE CHANGES</button>
