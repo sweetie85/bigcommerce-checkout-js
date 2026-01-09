@@ -1,3 +1,4 @@
+import { Consignment } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 
@@ -6,21 +7,33 @@ import DatePicker from "react-datepicker";
 interface FutureShipDateOptionProps {
   futureShipDate: string | null;
   handleChangeDate: (v: string | null) => void;
+  selectedConsignment: Consignment | null;
 }
 
-const FutureShipDateOption = ({ futureShipDate, handleChangeDate }: FutureShipDateOptionProps) => {
+const FutureShipDateOption = ({ futureShipDate, handleChangeDate, selectedConsignment }: FutureShipDateOptionProps) => {
   const [shouldSelectShipDate, setShouldSelectShipDate] = useState(false);
-  const [shipDate, setShipDate] = useState<Date | null>(new Date());
+  const [shipDate, setShipDate] = useState<Date | null>(null);
 
   useEffect(() => {
-    if (futureShipDate) {
-      const [month, day, year] = futureShipDate.split("/").map(Number);
+
+    let currentFutureShipDate = futureShipDate;
+    if (!currentFutureShipDate && selectedConsignment) {
+      const customDateField = selectedConsignment.address.customFields.find(c => c.fieldId == 'field_26')
+      if (customDateField) {
+        // currentFutureShipDate = customDateField.fieldValue as string;
+      }
+    }
+
+    if (currentFutureShipDate) {
+      const [month, day, year] = currentFutureShipDate.split("/").map(Number);
 
       // Date.UTC() creates a timestamp at midnight UTC, so no timezone shift happens.
       const selectedShipDate = new Date(Date.UTC(year, month - 1, day));
       setShipDate(selectedShipDate);
+      setShouldSelectShipDate(true);
     }
-  }, [futureShipDate]);
+
+  }, [futureShipDate, selectedConsignment]);
 
    useEffect(() => {
     if (shipDate) {
@@ -33,7 +46,11 @@ const FutureShipDateOption = ({ futureShipDate, handleChangeDate }: FutureShipDa
 
   const handleChange = (e: any) => {
     console.log('e.target.value: '+e.target.value);
-    setShouldSelectShipDate(e.target.value == '1');
+    if (e.target.value == '1') {
+      setShouldSelectShipDate(true);
+    } else {
+      setShouldSelectShipDate(false);
+    }
   };
 
   const isWeekday = (date: Date) => {

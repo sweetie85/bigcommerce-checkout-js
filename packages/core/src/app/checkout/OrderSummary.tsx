@@ -50,7 +50,8 @@ const OrderSummary = ({ }: CartSummaryProps) => {
           <div style={{ width: '100px' }}>Item</div>
           <div style={{ width: '30%' }}></div>
           <div style={{ width: '30%' }}>Delivery Address</div>
-          <div style={{ width: '20%' }}>Ship Date</div>
+          <div style={{ width: '20%' }}>Shipping Date</div>
+          <div style={{ width: '20%' }}>Shipping Method</div>
           <div style={{ width: '10%', textAlign: 'right' }}>Price</div>
         </div>
         {mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
@@ -63,6 +64,7 @@ const OrderSummary = ({ }: CartSummaryProps) => {
               {i.options?.map(o => <div key={o.nameId} className="product-option">{o.name} {o.value}</div>)}
             </div>
             <div style={{ width: '30%' }}>{formatAddress(c.address)}</div>
+            <div style={{ width: '20%' }}>{c.address.customFields[0] && c.address.customFields[0].fieldId == 'field_26' ? c.address.customFields[0].fieldValue : ''}</div>
             <div style={{ width: '20%' }}>{c.selectedShippingOption?.description}</div>
             <div style={{ width: '10%' }} className="product-price">${i.salePrice}</div>
           </div>

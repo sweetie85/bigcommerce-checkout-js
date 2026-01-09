@@ -6,9 +6,11 @@ interface AddressOptionProps {
   updatedShippingAddress: AddressRequestBody | null;
   onInputChange: (updated: AddressRequestBody ) => void;
   selectedConsignment: Consignment | null;
+  isUpdateAddressChecked: boolean;
+  setIsUpdateAddressChecked: (isUpdate: boolean) => void
 }
 
-const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignment }: AddressOptionProps) => {
+const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignment, isUpdateAddressChecked, setIsUpdateAddressChecked }: AddressOptionProps) => {
 
   const [isNewAddress, setIsNewAddress] = useState(false);
   const [provinces, setProvinces] = useState<Region[]>([]);
@@ -82,22 +84,46 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
     onInputChange(customerAddresses.find(a => a.id == (e.target.value as unknown as number)) as AddressRequestBody);
   }
 
+  const handleAddressChangeOption = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsUpdateAddressChecked(e.target.checked);
+
+    if (!e.target.checked) {
+      setShippingAddress(null);
+    } else {
+
+      if (selectedConsignment) {
+        setShippingAddress(selectedConsignment.address);
+      }
+    }
+  }
+
   return <div>
     {(customer && customer.id) ? <>
+      
       <div className="step-title">
-        <input onChange={handleChange} value={0} name="address_option_saved" id="choose_saved_address" type="radio" ></input>        
-        <label style={{ marginLeft: '10px' }} htmlFor="choose_saved_address">2. Choose a saved address:</label>
-      </div>
-      <div>
-        <select onChange={handleAddressChange} style={{ borderRadius: '6px', marginTop: '10px', padding: '10px', width: '500px' }}>
-          {customerAddresses.map((a) => <option selected={!!shippingAddress && isSameAddress(shippingAddress, a)} value={a.id} key={a.id}>{a.address1 + ' ' + a.company + ' '+a.city}</option>)}
-        </select>
+        <input id="is_shipping_address_update" type="checkbox" checked={isUpdateAddressChecked} onChange={handleAddressChangeOption}></input>        
+        <label style={{ marginLeft: '10px' }} htmlFor="is_shipping_address_update">2. Shipping Address:</label>
       </div>
 
-      <div className="step-title" style={{ marginTop: '20px' }}>
-        <input onChange={handleChange} value={1} name="address_option_saved" id="choose_new_address" type="radio" ></input>
-        <label style={{ marginLeft: '10px', color: '#315B42' }} htmlFor="choose_new_address">Enter a new adddress:</label>
+      {isUpdateAddressChecked &&
+      <div style={{ marginLeft: "10px", marginTop: '10px' }}>
+        <div className="step-title">
+          <input checked={!isNewAddress} onChange={handleChange} value={0} name="address_option_saved" id="choose_saved_address" type="radio" ></input>        
+          <label style={{ marginLeft: '10px' }} htmlFor="choose_saved_address">Choose a saved address:</label>
+        </div>
+        <div>
+          <select onChange={handleAddressChange} style={{ borderRadius: '6px', marginTop: '10px', padding: '10px', width: '500px' }}>
+            {customerAddresses.map((a) => <option selected={!!shippingAddress && isSameAddress(shippingAddress, a)} value={a.id} key={a.id}>{a.address1 + ' ' + a.company + ' '+a.city}</option>)}
+          </select>
+        </div>
+      
+
+        <div className="step-title" style={{ marginTop: '20px' }}>
+          <input onChange={handleChange} value={1} name="address_option_saved" id="choose_new_address" type="radio" ></input>
+          <label style={{ marginLeft: '10px', color: '#315B42' }} htmlFor="choose_new_address">Enter a new adddress:</label>
+        </div>
       </div>
+      }
       </>
       :
       <div className="step-title">

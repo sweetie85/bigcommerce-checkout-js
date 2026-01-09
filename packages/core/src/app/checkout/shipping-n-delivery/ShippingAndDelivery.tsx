@@ -44,6 +44,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
   const [customerAddresses, setCustomerAddresses] = useState<CustomerAddress[]>([]);
   const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
   const [isInProgress, setIsInProgress] = useState(false);
+  const [isUpdateAddressChecked, setIsUpdateAddressChecked] = useState(false);
 
   // Shipping options
   const [selectedShippingOptionId, setSelectedShippingOptionId] = useState<string | null>(null);
@@ -104,11 +105,16 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     const consignments = checkoutState.data.getConsignments();
     console.log('consignments: ');
     console.log(consignments);
-    if (consignments && consignments.length > 1) {
-      setIsSingleAddress(false);
-      setShippingAddress(null);
+    if (consignments) {
+      if (consignments.length == 1) {
+        // Select default first consignment
+        setSelectedConsignment(consignments[0]);
+      } else if (consignments.length > 1) {
+        setIsSingleAddress(false);
+        setShippingAddress(null);
 
-      setEnabledNextStep(true);
+        setEnabledNextStep(true);
+      }
     }
   
     console.log('checkoutState.data.getOrder()?.customerMessage: ');
@@ -215,18 +221,26 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
         lineItems.push(giftItem);
       }
 
-      const updatedAddress = shippingAddress ? shippingAddress : selectedConsignment?.address;
+      const updatedAddress = isUpdateAddressChecked && shippingAddress ? shippingAddress : selectedConsignment?.address;
+      if (updatedAddress && futureShipDate) {
+        updatedAddress.customFields.push({
+          fieldId: 'field_26',
+          fieldValue: futureShipDate,
+        });
+      }
 
       const requestBody = {
           address: updatedAddress,
           shippingAddress: updatedAddress,
-          lineItems: lineItems
+          lineItems: lineItems,
         } as ConsignmentAssignmentRequestBody;
 
       const res = await checkoutService.assignItemsToAddress(requestBody);
       const updatedConsignments = res.data.getConsignments();
 
-      // checkoutService
+      // Reset future ship date after saving
+      setFutureShipDate(null);
+      setIsUpdateAddressChecked(false);
 
       if (updatedConsignments) {
         const selectedConsignment = updatedConsignments.find(c =>
@@ -251,17 +265,17 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
 
     const selectedConsignment = await updateConsignments(giftItem);
 
+    if (futureShipDate) {
+      console.log('Saving future save date: ');
+      checkoutService.updateCheckout({ customerMessage: futureShipDate });
+    }
+    
     if (selectedShippingOptionId) {
       if (selectedConsignment) {
         checkoutService.selectConsignmentShippingOption(selectedConsignment.id, selectedShippingOptionId);
       } else if (isSingleAddress) {
         checkoutService.selectShippingOption(selectedShippingOptionId);
       }
-    }
-
-    if (futureShipDate) {
-      console.log('Saving future save date: ');
-      checkoutService.updateCheckout({ customerMessage: futureShipDate });
     }
 
     setEnabledNextStep(true);
@@ -342,6 +356,8 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
 
           <div className="" style={{ padding: '40px', backgroundColor: '#fff', marginTop: '40px'}}>
             <AddressOption 
+              isUpdateAddressChecked={isUpdateAddressChecked}
+              setIsUpdateAddressChecked={setIsUpdateAddressChecked}
               updatedShippingAddress={shippingAddress} 
               onInputChange={handleAddressChange}
               selectedConsignment={selectedConsignment}
@@ -367,7 +383,11 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
                   selectedConsignment={selectedConsignment}/>
               </div>
               <div style={{ width: '40%'}}>
-                <FutureShipDateOption futureShipDate={futureShipDate} handleChangeDate={setFutureShipDate }/>
+                <FutureShipDateOption 
+                  futureShipDate={futureShipDate} 
+                  handleChangeDate={setFutureShipDate}
+                  selectedConsignment={selectedConsignment}
+                  />
               </div>
             </div>
 
