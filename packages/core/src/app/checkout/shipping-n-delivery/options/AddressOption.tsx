@@ -102,7 +102,7 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
       
       <div className="step-title">
         <input id="is_shipping_address_update" type="checkbox" checked={isUpdateAddressChecked} onChange={handleAddressChangeOption}></input>        
-        <label style={{ marginLeft: '10px' }} htmlFor="is_shipping_address_update">2. Shipping Address:</label>
+        <label style={{ marginLeft: '10px' }} htmlFor="is_shipping_address_update">Add delivery address:</label>
       </div>
 
       {isUpdateAddressChecked &&

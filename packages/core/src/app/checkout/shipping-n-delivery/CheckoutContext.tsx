@@ -70,6 +70,9 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         // await checkoutService.loadShippingOptions();
 
         if (mounted) {
+          console.log('Initial Checkout state getConsignments: ');
+          console.log(checkoutState.data.getConsignments());
+
           setCheckoutState(checkoutState);
           setReady(true);
         }

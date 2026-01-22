@@ -105,6 +105,18 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     const consignments = checkoutState.data.getConsignments();
     console.log('consignments: ');
     console.log(consignments);
+
+    // consignments?.forEach(c => {
+    //   // Delete initial consignments
+    //   console.log('Delete initial consignments '+c.id)
+    //   // checkoutService.deleteConsignment(c.id);
+
+    //   checkoutService.updateConsignment({
+    //     id: c.id,
+    //     lineItems: []
+    //   });
+    // })
+
     if (consignments) {
       if (consignments.length == 1) {
         // Select default first consignment
@@ -341,6 +353,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
               selecedItemIds={selectedItems} 
               onSelectConsignment={setSelectedConsignment}
               onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)}
+              checkoutId={checkoutId}
             />
 
             {selectedItems.length > 0 &&
