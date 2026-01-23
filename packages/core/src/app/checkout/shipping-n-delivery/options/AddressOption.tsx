@@ -113,6 +113,7 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
         </div>
         <div>
           <select onChange={handleAddressChange} style={{ borderRadius: '6px', marginTop: '10px', padding: '10px', width: '500px' }}>
+            <option value={0}>Select a address</option>
             {customerAddresses.map((a) => <option selected={!!shippingAddress && isSameAddress(shippingAddress, a)} value={a.id} key={a.id}>{a.address1 + ' ' + a.company + ' '+a.city}</option>)}
           </select>
         </div>

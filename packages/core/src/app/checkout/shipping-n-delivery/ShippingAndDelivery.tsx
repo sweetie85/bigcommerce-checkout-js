@@ -350,9 +350,9 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
           <ConsignmentOption isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
           {!isSingleAddress && <div>
             <SelectItems 
-              selecedItemIds={selectedItems} 
-              onSelectConsignment={setSelectedConsignment}
-              onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)}
+              // selecedItemIds={selectedItems} 
+              // onSelectConsignment={setSelectedConsignment}
+              // onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)}
               checkoutId={checkoutId}
             />
 
@@ -365,7 +365,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
           }
         </> 
 
-        {(isSingleAddress || selectedItems.length > 0) &&
+        {isSingleAddress &&
 
           <div className="" style={{ padding: '40px', backgroundColor: '#fff', marginTop: '40px'}}>
             <AddressOption 
