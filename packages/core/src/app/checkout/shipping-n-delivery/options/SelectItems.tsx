@@ -3,15 +3,19 @@ import React, { useEffect, useState } from "react";
 import { formatAddress } from "../../custom-utility";
 import { useCheckout } from "../CheckoutContext";
 import AddressOption from "./AddressOption";
+import ShippingMethodOptionGroup from "./ShippingMethodOptionGroup";
+import FutureShipDateOptionGroup from "./FutureShipDateOptionGroup";
+import GiftMessageOptionGroup from "./GiftMessageOptionGroup";
 
 interface SelectItemsProps {
   checkoutId: string;
+  giftProducts: { bigcommerce_product_id: string, frontend_title: string }[];
   // selecedItemIds: string[];
   // onChangeSelectedItems: (ids: string[]) => void;
   // onSelectConsignment: (consignment: Consignment) => void;
 }
 
-const SelectItems = ({ checkoutId }: SelectItemsProps) => {
+const SelectItems = ({ checkoutId, giftProducts }: SelectItemsProps) => {
   const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
   const [showDetailsItemIds, setShowDetailsItemIds] = useState<number[]>([]);
   const [selecedItemIds, setSelecedItemIds] = useState<string[]>([]);
@@ -21,6 +25,9 @@ const SelectItems = ({ checkoutId }: SelectItemsProps) => {
   const [selectedConsignment, setSelectedConsignment] = useState<Consignment | null>(null);
   const [holdingConsignment, setHoldingConsignment] = useState<Consignment | null>(null);
   const [unassignedLineItems, setUnassignedLineItems] = useState<PhysicalItem[]>([]);
+  const [isNextStep, setIsNextStep] = useState<boolean>(false);
+
+  const [futureShipDate, setFutureShipDate] = useState<string | null>(null);
 
   const { checkoutState, checkoutService } = useCheckout();
 
@@ -344,19 +351,59 @@ const SelectItems = ({ checkoutId }: SelectItemsProps) => {
               </div>
             </div>
           )}
-            <div style={{ width: '100%', padding: "20px 10px", backgroundColor: '#8da292', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between' }}>
-              <div>
-                <span style={{ }}>All items in this group ship to: </span>
-                <span style={{ textDecoration: 'underline' }}>{formatAddress(c.address)}</span>
+            <div style={{ width: '100%', padding: "20px 10px", backgroundColor: '#8da292'}}>
+              <div style={{fontWeight: 'bold', display: 'flex', justifyContent: 'space-between' }}>
+                <div>
+                  <span style={{ }}>All items in this group ship to: </span>
+                  <span style={{ textDecoration: 'underline', color: '#fff' }}>{formatAddress(c.address)}</span>
+                </div>
+                <div>
+                  <a onClick={() => unassignConsignment(c)} style={{ textDecoration: 'underline', color: '#000' }}>Ungroup Items</a>
+                </div>
               </div>
-              <div>
-                <a onClick={() => unassignConsignment(c)} style={{ textDecoration: 'underline', color: '#000' }}>Ungroup Items</a>
+              { isNextStep &&
+              <div className="" style={{ display: "flex", gap: '24px', marginTop: '20px' }}>
+                <div>
+                  <ShippingMethodOptionGroup 
+                    handleChange={(id) => {
+                      console.log('ShippingMethodOption id: '+id);
+                      // setSelectedShippingOptionId(id);
+                    }}
+                    updatedShippingOptionId={c.selectedShippingOption ? c.selectedShippingOption.id : null}
+                    selectedConsignment={c}
+                  />
+                </div>
+                <div>
+                  <FutureShipDateOptionGroup 
+                    futureShipDate={futureShipDate} 
+                    handleChangeDate={(date) => setFutureShipDate(date)}
+                    selectedConsignment={c}
+                    />
+                </div>
+                <div>
+                  <GiftMessageOptionGroup 
+                    giftProducts={giftProducts}
+                    selectedConsignment={c}
+                  />
+                </div>
+                <button onClick={() => setIsNextStep(true)} style={{ fontWeight: 'bold', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '5px' }}>Save</button>
               </div>
+              }
             </div>
 
           </div>
         )}
       </>}
+    </div>
+
+    <div style={{ margin: '20px 0', display: 'flex', justifyContent: 'right', alignItems: 'center', gap: '20px' }}>
+      {unassignedLineItems.length > 0 ? <>
+        <div style={{ color: '#EB2F2F', fontWeight: 500, fontSize: '20px' }}>*Assign delivery address to all items before continuing.</div>
+        <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
+      </>
+      :
+        <button onClick={() => setIsNextStep(true)} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
+      }
     </div>
   </div>
 }
