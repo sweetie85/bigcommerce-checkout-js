@@ -384,6 +384,7 @@ const SelectItems = ({ checkoutId, giftProducts }: SelectItemsProps) => {
                   <GiftMessageOptionGroup 
                     giftProducts={giftProducts}
                     selectedConsignment={c}
+                    checkoutId={checkoutId}
                   />
                 </div>
                 <button onClick={() => setIsNextStep(true)} style={{ fontWeight: 'bold', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '5px' }}>Save</button>

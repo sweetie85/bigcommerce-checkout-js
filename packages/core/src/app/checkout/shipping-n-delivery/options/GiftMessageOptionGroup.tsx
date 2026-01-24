@@ -1,4 +1,4 @@
-import { Consignment } from "@bigcommerce/checkout-sdk";
+import { Consignment, ConsignmentAssignmentRequestBody } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react"
 import { useCheckout } from "../CheckoutContext";
 
@@ -12,9 +12,10 @@ interface GiftMessageOptionProps {
   // setGiftProductId: (id: string) => void;
   // setGiftMessage: (message: string) => void;
   selectedConsignment: Consignment | null;
+  checkoutId: string;
 }
 
-const GiftMessageOptionGroup = ({ giftProducts, selectedConsignment }: GiftMessageOptionProps) => {
+const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment }: GiftMessageOptionProps) => {
 
   const [isEnabled, setIsEnabled] = useState(false);
   const [hasMultipleGiftMessage, setHasMultipleGiftMessage] = useState(false);
@@ -23,7 +24,7 @@ const GiftMessageOptionGroup = ({ giftProducts, selectedConsignment }: GiftMessa
   const [gitProductId, setGiftProductId] = useState<string | null>(null);
   const [giftMessage, setGiftMessage] = useState<string | null>(null);
 
-  const { checkoutState } = useCheckout();
+  const { checkoutState, checkoutService } = useCheckout();
   
   useEffect(() => {
     if (selectedConsignment) {
@@ -52,6 +53,74 @@ const GiftMessageOptionGroup = ({ giftProducts, selectedConsignment }: GiftMessa
 
   }, [selectedConsignment]);
 
+  const addItemToCart = async () => {
+
+    console.log('addItemsToCart: ');
+
+    if (!gitProductId || !giftMessage) {
+      return null;
+    }
+
+    const [productId, optionId] = gitProductId.split('|');
+
+    const lineItems = [];
+    const lineItem = {
+      quantity: 1,
+      productId: parseInt(productId),
+      optionSelections: [{
+        optionId: parseInt(optionId),
+        optionValue: giftMessage
+      }],
+    };
+
+    lineItems.push(lineItem);
+
+    const endpoint = checkoutId ? `/api/storefront/cart/${checkoutId}/items` : `/api/storefront/cart`;
+
+    const payload = { lineItems };
+
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      console.error('Add item error:', error);
+      alert('Error adding add-ons: ' + (error.title || 'Unknown error'));
+      return null;
+    } else {
+
+      console.log('Item added successfully.');
+      // window.location.reload();
+      console.log(res);
+      const response = await res.json();
+      const cartItems = response.lineItems.physicalItems;
+      const lastItem = cartItems[cartItems.length - 1];
+
+      const giftItem = { itemId: lastItem.id, quantity: lastItem.quantity };
+
+      if (selectedConsignment) {
+        // selectedConsignment.lineItemIds.push(giftItem);
+
+        const requestBody = {
+          address: selectedConsignment.address,
+          shippingAddress: selectedConsignment.address,
+          lineItems: [giftItem],
+        } as ConsignmentAssignmentRequestBody;
+
+        await checkoutService.assignItemsToAddress(requestBody);
+
+        setIsEnabled(false);
+      }
+    }
+  }
+
   return <div style={{ position: 'relative' }}>
     <div style={{ position: 'relative' }}>
       <button style={{ width: '300px', textAlign: 'left', padding: '10px', background: '#fff', fontSize: '14px' }} onClick={() => setIsEnabled(!isEnabled)}>Add Gift Message</button>
@@ -76,7 +145,7 @@ const GiftMessageOptionGroup = ({ giftProducts, selectedConsignment }: GiftMessa
       <p style={{ marginLeft: '20px', marginTop: '5px', color: '#ccc'}}>150 characters remaining of 150</p>
 
       <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'right' }}>
-        <button onClick={() => {}} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>Save Changes</button>
+        <button onClick={addItemToCart} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>Save Changes</button>
       </div>
     </div>
     }
