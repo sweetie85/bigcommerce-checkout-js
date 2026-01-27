@@ -13,14 +13,16 @@ interface FutureShipDateOptionProps {
 const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedConsignment }: FutureShipDateOptionProps) => {
   const [shouldSelectShipDate, setShouldSelectShipDate] = useState(false);
   const [shipDate, setShipDate] = useState<Date | null>(null);
+  const [selectedFutureShipDate, setSelectedFutureShipDate] = useState<string | null>(null);
 
   useEffect(() => {
 
     let currentFutureShipDate = futureShipDate;
-    if (!currentFutureShipDate && selectedConsignment) {
+    if (selectedConsignment) {
       const customDateField = selectedConsignment.address.customFields.find(c => c.fieldId == 'field_26')
       if (customDateField) {
-        // currentFutureShipDate = customDateField.fieldValue as string;
+        currentFutureShipDate = customDateField.fieldValue as string;
+        // setSelectedFutureShipDate(customDateField.fieldValue as string);
       }
     }
 

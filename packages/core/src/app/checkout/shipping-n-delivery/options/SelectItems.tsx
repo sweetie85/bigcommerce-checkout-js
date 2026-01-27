@@ -27,7 +27,8 @@ const SelectItems = ({ checkoutId, giftProducts }: SelectItemsProps) => {
   const [unassignedLineItems, setUnassignedLineItems] = useState<PhysicalItem[]>([]);
   const [isNextStep, setIsNextStep] = useState<boolean>(false);
 
-  const [futureShipDate, setFutureShipDate] = useState<string | null>(null);
+  const [selectedShippingOptionIds, setSelectedShippingOptionIds] = useState<Record<string, string>>({});
+  const [futureShipDates, setFutureShipDates] = useState<Record<string, string | null>>({});
 
   const { checkoutState, checkoutService } = useCheckout();
 
@@ -182,6 +183,36 @@ const SelectItems = ({ checkoutId, giftProducts }: SelectItemsProps) => {
 
   const saveChanges = async () => {
     await updateConsignments(null);
+  }
+
+  const saveShippingMethod = async (consignment: Consignment) => {
+
+    // Save future ship date
+    if (futureShipDates[consignment.id]) {
+      const updatedAddress = consignment.address;
+      if (updatedAddress) {
+        updatedAddress.customFields.push({
+          fieldId: 'field_26',
+          fieldValue: futureShipDates[consignment.id] as string,
+        });
+      }
+
+      const items = mainCartItems.filter(i => consignment.lineItemIds.includes(i.id as string));
+      const consignmentItems = items.map(i => ({ itemId: i.id, quantity: i.quantity }));
+
+      const requestBody = {
+          address: updatedAddress,
+          shippingAddress: updatedAddress,
+          lineItems: consignmentItems,
+        } as ConsignmentAssignmentRequestBody;
+
+      await checkoutService.assignItemsToAddress(requestBody);
+    }
+
+    // Save shipping method
+    if (selectedShippingOptionIds[consignment.id]) {
+      await checkoutService.selectConsignmentShippingOption(consignment.id, selectedShippingOptionIds[consignment.id]);
+    }
   }
 
   const unassignItem = async (item: PhysicalItem) => {
@@ -366,17 +397,15 @@ const SelectItems = ({ checkoutId, giftProducts }: SelectItemsProps) => {
                 <div>
                   <ShippingMethodOptionGroup 
                     handleChange={(id) => {
-                      console.log('ShippingMethodOption id: '+id);
-                      // setSelectedShippingOptionId(id);
+                      setSelectedShippingOptionIds({ ...selectedShippingOptionIds, [c.id]: id });
                     }}
-                    updatedShippingOptionId={c.selectedShippingOption ? c.selectedShippingOption.id : null}
                     selectedConsignment={c}
                   />
                 </div>
                 <div>
                   <FutureShipDateOptionGroup 
-                    futureShipDate={futureShipDate} 
-                    handleChangeDate={(date) => setFutureShipDate(date)}
+                    futureShipDate={futureShipDates[c.id]} 
+                    handleChangeDate={(date) => setFutureShipDates({ ...futureShipDates, [c.id]: date })}
                     selectedConsignment={c}
                     />
                 </div>
@@ -387,7 +416,7 @@ const SelectItems = ({ checkoutId, giftProducts }: SelectItemsProps) => {
                     checkoutId={checkoutId}
                   />
                 </div>
-                <button onClick={() => setIsNextStep(true)} style={{ fontWeight: 'bold', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '5px' }}>Save</button>
+                <button onClick={() => saveShippingMethod(c)} style={{ fontWeight: 'bold', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '5px' }}>Save</button>
               </div>
               }
             </div>
