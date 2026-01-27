@@ -14,15 +14,17 @@ interface SelectItemsProps {
   // onChangeSelectedItems: (ids: string[]) => void;
   // onSelectConsignment: (consignment: Consignment) => void;
   setIsInProgress: (inProgress: boolean) => void;
+  gotoNextStep: () => void;
 }
 
-const SelectItems = ({ checkoutId, giftProducts, setIsInProgress }: SelectItemsProps) => {
+const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }: SelectItemsProps) => {
   const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
   const [showDetailsItemIds, setShowDetailsItemIds] = useState<number[]>([]);
   const [selecedItemIds, setSelecedItemIds] = useState<string[]>([]);
   
   const [isUpdateAddressChecked, setIsUpdateAddressChecked] = useState(false);
   const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
+  const [shippingAddressError, setShippingAddressError] = useState<string | null>(null);
   const [selectedConsignment, setSelectedConsignment] = useState<Consignment | null>(null);
   const [holdingConsignment, setHoldingConsignment] = useState<Consignment | null>(null);
   const [unassignedLineItems, setUnassignedLineItems] = useState<PhysicalItem[]>([]);
@@ -68,6 +70,12 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress }: SelectItemsP
     }
   }, [consignments, cart]);
 
+  useEffect(() => {
+    if (shippingAddress) {
+      setShippingAddressError(null);
+    }
+  }, [shippingAddress])
+
   const createHoldingConsignment = (items?: PhysicalItem[]) => {
     const PLACEHOLDER_ADDRESS = {
       countryCode: 'US',
@@ -94,8 +102,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress }: SelectItemsP
     }
   }
 
-  const handleChange = (e: any) => {
-    const selectedId = e.target.value;
+  const handleChange = (selectedId: string) => {
     toggleSelectedItemId(selectedId);
   }
 
@@ -152,7 +159,12 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress }: SelectItemsP
         lineItems.push(giftItem);
       }
 
-      const updatedAddress = isUpdateAddressChecked && shippingAddress ? shippingAddress : selectedConsignment?.address;
+      const updatedAddress = shippingAddress;
+      if (!updatedAddress) {
+        setShippingAddressError('Please select shipping address!');
+        return null;
+      }
+
       if (updatedAddress && futureShipDate) {
         updatedAddress.customFields.push({
           fieldId: 'field_26',
@@ -169,9 +181,12 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress }: SelectItemsP
       const res = await checkoutService.assignItemsToAddress(requestBody);
       const updatedConsignments = res.data.getConsignments();
 
-      // Reset future ship date after saving
-      // setFutureShipDate(null);
+      // reset shipping details form once saved
+      setFutureShipDate(null);
       setIsUpdateAddressChecked(false);
+      setSelecedItemIds([]);
+      setShippingAddress(null);
+      setShippingAddressError(null);
 
       if (updatedConsignments) {
         const selectedConsignment = updatedConsignments.find(c =>
@@ -257,9 +272,9 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress }: SelectItemsP
       {/* <p>Seletected Items</p> */}
       {/* Iterate through every consignmets and filter items */}
       <div style={{ margin: '0 10px', padding: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {unassignedLineItems.filter(i => selecedItemIds.includes(i.id as string)).map(i => <div key={i.id} style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        {unassignedLineItems.filter(i => selecedItemIds.includes(i.id as string)).map(i => <div key={i.id} onClick={() => handleChange(i.id as string)} style={{ display: 'flex', cursor: 'pointer', alignItems: 'center', gap: '20px' }}>
             
-          <input type="checkbox" value={i.id} checked={selecedItemIds.includes(i.id as string)} onChange={handleChange} />
+          <input type="checkbox" value={i.id} checked={selecedItemIds.includes(i.id as string)} />
           
           <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#80988778', boxShadow: '0px 4px 4px 0px #00000026',  paddingBlock: '5px', paddingInline: '10px', borderRadius: '20px', width: "100%" }}>
             <div style={{ width: '20%' }}><img style={{ maxWidth: '100px', maxHeight: '200px' }} src={i.imageUrl} /></div>
@@ -292,6 +307,8 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress }: SelectItemsP
             selectedConsignment={selectedConsignment}
           />
 
+          {shippingAddressError && <p style={{ color: 'red', fontWeight: 'bold' }}>{shippingAddressError}</p>}
+
           <FutureShipDateOptionGroup 
             futureShipDate={futureShipDate} 
             handleChangeDate={(date) => setFutureShipDate(date)}
@@ -313,9 +330,9 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress }: SelectItemsP
       {/* <p>UnSeletected Items: </p> */}
       {/* Iterate through every consignmets and filter items */}
       <div style={{ margin: '0 10px', padding: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {unassignedLineItems.filter(i => !selecedItemIds.includes(i.id as string)).map(i => <div key={i.id} style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        {unassignedLineItems.filter(i => !selecedItemIds.includes(i.id as string)).map(i => <div key={i.id} style={{ display: 'flex', alignItems: 'center', gap: '20px', cursor: 'pointer' }}  onClick={() => handleChange(i.id as string)}>
             
-          <input type="checkbox" value={i.id} checked={selecedItemIds.includes(i.id as string)} onChange={handleChange} />
+          <input type="checkbox" value={i.id} checked={selecedItemIds.includes(i.id as string)} />
           
           <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#fff', boxShadow: '0px 4px 4px 0px #00000026',  paddingBlock: '5px', paddingInline: '10px', borderRadius: '20px', width: "100%" }}>
             <div style={{ width: '20%' }}><img style={{ maxWidth: '100px', maxHeight: '200px' }} src={i.imageUrl} /></div>
@@ -414,6 +431,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress }: SelectItemsP
                     handleChangeDate={(date) => setFutureShipDates({ ...futureShipDates, [c.id]: date })}
                     selectedConsignment={c}
                     /> */}
+                    <input placeholder="Future Ship Date" readOnly value={c.address.customFields.find(c => c.fieldId == 'field_26')?.fieldValue} style={{ width: '300px', padding: '10px', fontSize: '14px' }} type="text" />
                 </div>
                 <div>
                   <GiftMessageOptionGroup 
@@ -438,7 +456,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress }: SelectItemsP
         <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
       </>
       :
-        <button onClick={() => setIsNextStep(true)} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
+        <button onClick={() => !isNextStep ? setIsNextStep(true) : gotoNextStep()} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
       }
     </div>
   </div>

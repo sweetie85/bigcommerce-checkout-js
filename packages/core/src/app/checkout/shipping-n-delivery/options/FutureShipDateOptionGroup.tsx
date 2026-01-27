@@ -60,7 +60,7 @@ const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedC
     return day !== 0 && day !== 6; // 0 = Sunday, 6 = Saturday
   };
 
-  return <div style={{ position: 'relative' }}>
+  return <div style={{ position: 'relative', width: '300px' }}>
     <DatePicker 
       selected={shipDate} 
       onChange={(date) => setShipDate(date)} 

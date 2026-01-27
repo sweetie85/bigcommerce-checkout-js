@@ -356,6 +356,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
               checkoutId={checkoutId}
               giftProducts={giftProducts}
               setIsInProgress={setIsInProgress}
+              gotoNextStep={gotoNextStep}
             />
 
             {selectedItems.length > 0 &&
