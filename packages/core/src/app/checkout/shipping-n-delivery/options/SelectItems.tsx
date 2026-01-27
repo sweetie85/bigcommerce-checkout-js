@@ -13,9 +13,10 @@ interface SelectItemsProps {
   // selecedItemIds: string[];
   // onChangeSelectedItems: (ids: string[]) => void;
   // onSelectConsignment: (consignment: Consignment) => void;
+  setIsInProgress: (inProgress: boolean) => void;
 }
 
-const SelectItems = ({ checkoutId, giftProducts }: SelectItemsProps) => {
+const SelectItems = ({ checkoutId, giftProducts, setIsInProgress }: SelectItemsProps) => {
   const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
   const [showDetailsItemIds, setShowDetailsItemIds] = useState<number[]>([]);
   const [selecedItemIds, setSelecedItemIds] = useState<string[]>([]);
@@ -28,7 +29,7 @@ const SelectItems = ({ checkoutId, giftProducts }: SelectItemsProps) => {
   const [isNextStep, setIsNextStep] = useState<boolean>(false);
 
   const [selectedShippingOptionIds, setSelectedShippingOptionIds] = useState<Record<string, string>>({});
-  const [futureShipDates, setFutureShipDates] = useState<Record<string, string | null>>({});
+  const [futureShipDate, setFutureShipDate] = useState<string | null>(null);
 
   const { checkoutState, checkoutService } = useCheckout();
 
@@ -57,9 +58,12 @@ const SelectItems = ({ checkoutId, giftProducts }: SelectItemsProps) => {
 
         setHoldingConsignment(holdingConsignment);
         setUnassignedLineItems(mainItems.filter(i => holdingConsignment.lineItemIds.includes(i.id as string)));
+
+        setIsNextStep(false);
       } else {
         setUnassignedLineItems([]);
         setSelecedItemIds([]);
+        setIsNextStep(true);
       }
     }
   }, [consignments, cart]);
@@ -149,12 +153,12 @@ const SelectItems = ({ checkoutId, giftProducts }: SelectItemsProps) => {
       }
 
       const updatedAddress = isUpdateAddressChecked && shippingAddress ? shippingAddress : selectedConsignment?.address;
-      // if (updatedAddress && futureShipDate) {
-      //   updatedAddress.customFields.push({
-      //     fieldId: 'field_26',
-      //     fieldValue: futureShipDate,
-      //   });
-      // }
+      if (updatedAddress && futureShipDate) {
+        updatedAddress.customFields.push({
+          fieldId: 'field_26',
+          fieldValue: futureShipDate,
+        });
+      }
 
       const requestBody = {
           address: updatedAddress,
@@ -182,40 +186,27 @@ const SelectItems = ({ checkoutId, giftProducts }: SelectItemsProps) => {
   }
 
   const saveChanges = async () => {
+    setIsInProgress(true);
     await updateConsignments(null);
+    setIsInProgress(false);
   }
 
   const saveShippingMethod = async (consignment: Consignment) => {
 
-    // Save future ship date
-    if (futureShipDates[consignment.id]) {
-      const updatedAddress = consignment.address;
-      if (updatedAddress) {
-        updatedAddress.customFields.push({
-          fieldId: 'field_26',
-          fieldValue: futureShipDates[consignment.id] as string,
-        });
-      }
-
-      const items = mainCartItems.filter(i => consignment.lineItemIds.includes(i.id as string));
-      const consignmentItems = items.map(i => ({ itemId: i.id, quantity: i.quantity }));
-
-      const requestBody = {
-          address: updatedAddress,
-          shippingAddress: updatedAddress,
-          lineItems: consignmentItems,
-        } as ConsignmentAssignmentRequestBody;
-
-      await checkoutService.assignItemsToAddress(requestBody);
-    }
+    setIsInProgress(true);
 
     // Save shipping method
     if (selectedShippingOptionIds[consignment.id]) {
       await checkoutService.selectConsignmentShippingOption(consignment.id, selectedShippingOptionIds[consignment.id]);
     }
+
+    setIsInProgress(false);
   }
 
   const unassignItem = async (item: PhysicalItem) => {
+
+    setIsInProgress(true);
+
     // Move item to holding consignment
     if (holdingConsignment) {
       const requestBody = {
@@ -231,9 +222,14 @@ const SelectItems = ({ checkoutId, giftProducts }: SelectItemsProps) => {
     } else {
       createHoldingConsignment([item]);
     }
+
+    setIsInProgress(false);
+
   }
 
   const unassignConsignment = async (consignment: Consignment) => {
+
+    setIsInProgress(true);
 
     const items = mainCartItems.filter(i => consignment.lineItemIds.includes(i.id as string));
     const consignmentItems = items.map(i => ({ itemId: i.id, quantity: i.quantity }));
@@ -250,6 +246,8 @@ const SelectItems = ({ checkoutId, giftProducts }: SelectItemsProps) => {
     } else {
       createHoldingConsignment(items);
     }
+
+    setIsInProgress(false);
   }
 
   return <div style={{marginTop: '20px'}}>
@@ -293,6 +291,12 @@ const SelectItems = ({ checkoutId, giftProducts }: SelectItemsProps) => {
             onInputChange={handleAddressChange}
             selectedConsignment={selectedConsignment}
           />
+
+          <FutureShipDateOptionGroup 
+            futureShipDate={futureShipDate} 
+            handleChangeDate={(date) => setFutureShipDate(date)}
+            selectedConsignment={null}
+            />
 
           {(!customer || customer.isGuest) &&
             <div style={{ marginTop: '30px' }}>
@@ -394,29 +398,31 @@ const SelectItems = ({ checkoutId, giftProducts }: SelectItemsProps) => {
               </div>
               { isNextStep &&
               <div className="" style={{ display: "flex", gap: '24px', marginTop: '20px' }}>
-                <div>
+                <div style={{ display: "flex", gap: '8px' }}>
                   <ShippingMethodOptionGroup 
                     handleChange={(id) => {
                       setSelectedShippingOptionIds({ ...selectedShippingOptionIds, [c.id]: id });
                     }}
                     selectedConsignment={c}
                   />
+
+                  <button onClick={() => saveShippingMethod(c)} style={{ fontWeight: 'bold', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '5px' }}>Save</button>
                 </div>
                 <div>
-                  <FutureShipDateOptionGroup 
+                  {/* <FutureShipDateOptionGroup 
                     futureShipDate={futureShipDates[c.id]} 
                     handleChangeDate={(date) => setFutureShipDates({ ...futureShipDates, [c.id]: date })}
                     selectedConsignment={c}
-                    />
+                    /> */}
                 </div>
                 <div>
                   <GiftMessageOptionGroup 
                     giftProducts={giftProducts}
                     selectedConsignment={c}
                     checkoutId={checkoutId}
+                    setIsInProgress={setIsInProgress}
                   />
                 </div>
-                <button onClick={() => saveShippingMethod(c)} style={{ fontWeight: 'bold', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '5px' }}>Save</button>
               </div>
               }
             </div>

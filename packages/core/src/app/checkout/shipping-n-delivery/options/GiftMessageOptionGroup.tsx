@@ -13,9 +13,10 @@ interface GiftMessageOptionProps {
   // setGiftMessage: (message: string) => void;
   selectedConsignment: Consignment | null;
   checkoutId: string;
+  setIsInProgress: (inProgress: boolean) => void;
 }
 
-const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment }: GiftMessageOptionProps) => {
+const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment, setIsInProgress }: GiftMessageOptionProps) => {
 
   const [isEnabled, setIsEnabled] = useState(false);
   const [hasMultipleGiftMessage, setHasMultipleGiftMessage] = useState(false);
@@ -61,6 +62,8 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment 
       return null;
     }
 
+    setIsInProgress(true);
+
     const [productId, optionId] = gitProductId.split('|');
 
     const lineItems = [];
@@ -93,6 +96,8 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment 
       const error = await res.json();
       console.error('Add item error:', error);
       alert('Error adding add-ons: ' + (error.title || 'Unknown error'));
+      
+      setIsInProgress(false);
       return null;
     } else {
 
@@ -119,6 +124,8 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment 
         setIsEnabled(false);
       }
     }
+
+    setIsInProgress(false);
   }
 
   return <div style={{ position: 'relative' }}>
