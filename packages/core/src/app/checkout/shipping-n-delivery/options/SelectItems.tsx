@@ -6,6 +6,7 @@ import AddressOption from "./AddressOption";
 import ShippingMethodOptionGroup from "./ShippingMethodOptionGroup";
 import FutureShipDateOptionGroup from "./FutureShipDateOptionGroup";
 import GiftMessageOptionGroup from "./GiftMessageOptionGroup";
+import AddressOptionGroup from "./AddressOptionGroup";
 
 interface SelectItemsProps {
   checkoutId: string;
@@ -272,6 +273,98 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
 
     <div className="assignment-categories">
 
+    {consignments.length > 1 && <>
+
+      {/* <p>Consignments: </p> */}
+      
+      {/* Iterate through every consignmets and filter items */}
+      { consignments.filter(c => c.address.address1 !== 'TO_BE_ASSIGNED').map(c => <div key={c.id} style={{ margin: '0 10px', backgroundColor: '#c7cfc5', boxShadow: '0px 4px 4px 0px #00000026', borderRadius: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
+          .map(i => <div key={i.id} style={{ padding: '10px', display: 'flex', alignItems: 'center', gap: '20px' }}>
+            
+            {/* { (consignments.length < 2 || selecedItemIds.length > 0) &&
+              <input type="checkbox" value={i.id} checked={selecedItemIds.includes(i.id as string)} onChange={handleChange} />
+            } */}
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingInline: '20px', paddingBlock: '5px', width: "100%" }}>
+              
+              <div style={{ position: 'relative', display: 'flex', gap: '12px' }}>
+                <div onClick={() => unassignItem(i)} style={{ position: 'absolute', left: '-4px', top: '-4px', cursor: 'pointer' }}>
+                  <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="14.5" cy="14.5" r="14" fill="#D9D9D9" stroke="#315B42"/>
+                    <path d="M12.7715 9.785L15.2615 13.55H14.7515L17.2265 9.785H19.8665L16.1765 15.185L16.0865 14.48L19.8965 20H17.1965L14.5865 16.1H15.3215L12.7415 20H10.0415L13.8065 14.48L13.8215 15.185L10.1465 9.785H12.7715Z" fill="#315B42"/>
+                  </svg>
+                </div>
+                <img style={{ maxWidth: '100px', maxHeight: '200px' }} src={i.imageUrl} />
+              
+                <div style={{ fontWeight: 'bold', marginLeft: '10px' }}>
+                  <div className="product-title">{i.quantity} x {i.name}</div>
+
+                  {(i.options && i.options.length > 0) ?
+                    (showDetailsItemIds.includes(i.id as number) ?
+                      <div>
+                        {i.options?.map(o => <div key={o.nameId} style={{ fontWeight: '500' }} className="product-option">{o.name} {o.value}</div>)}
+                        <div style={{ marginTop: '10px', cursor: 'pointer', color: '#315B42', opacity: 0.5, textDecoration: 'underline' }} onClick={() => toggleViewDetails(i.id as number)}>View Less</div>
+                      </div>
+                      : 
+                      <div style={{ marginTop: '10px', cursor: 'pointer', color: '#315B42', opacity: 0.5, textDecoration: 'underline' }} onClick={() => toggleViewDetails(i.id as number)}>View Details</div>
+                    )
+                  : <></>}
+                </div>
+              </div>
+              <div style={{ fontWeight: 'bold' }} className="product-price">
+                <div>${i.salePrice}</div>
+                <div>{c.selectedShippingOption?.description}</div>
+              </div>
+            </div>
+          </div>
+        )}
+          <div style={{ width: '100%', borderBottomRightRadius: '20px', borderBottomLeftRadius: '20px', padding: "20px", backgroundColor: '#8da292'}}>
+            <div style={{fontWeight: 'bold', display: 'flex', justifyContent: 'space-between' }}>
+              <div>
+                <span style={{ }}>All items in this group ship to: </span>
+                <span style={{ textDecoration: 'underline', color: '#fff' }}>{formatAddress(c.address)}</span>
+              </div>
+              <div>
+                <a onClick={() => unassignConsignment(c)} style={{ textDecoration: 'underline', color: '#000' }}>Ungroup Items</a>
+              </div>
+            </div>
+            { isNextStep &&
+            <div className="" style={{ display: "flex", gap: '24px', marginTop: '20px' }}>
+              <div style={{ display: "flex", gap: '8px' }}>
+                <ShippingMethodOptionGroup 
+                  handleChange={(id) => {
+                    setSelectedShippingOptionIds({ ...selectedShippingOptionIds, [c.id]: id });
+                  }}
+                  selectedConsignment={c}
+                />
+
+                <button onClick={() => saveShippingMethod(c)} style={{ fontWeight: 'bold', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '5px' }}>Save</button>
+              </div>
+              <div>
+                {/* <FutureShipDateOptionGroup 
+                  futureShipDate={futureShipDates[c.id]} 
+                  handleChangeDate={(date) => setFutureShipDates({ ...futureShipDates, [c.id]: date })}
+                  selectedConsignment={c}
+                  /> */}
+                  <input placeholder="Future Ship Date" readOnly value={c.address.customFields.find(c => c.fieldId == 'field_26')?.fieldValue} style={{ width: '300px', padding: '10px', fontSize: '14px' }} type="text" />
+              </div>
+              <div>
+                <GiftMessageOptionGroup 
+                  giftProducts={giftProducts}
+                  selectedConsignment={c}
+                  checkoutId={checkoutId}
+                  setIsInProgress={setIsInProgress}
+                />
+              </div>
+            </div>
+            }
+          </div>
+
+        </div>
+      )}
+    </>}
+
       {/* <p>Seletected Items</p> */}
       {/* Iterate through every consignmets and filter items */}
       <div className="assignment-category-wrapper selected-items">
@@ -301,22 +394,18 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
           </div>
         </div> )}
 
-        {selecedItemIds.length > 0 && <>
-          <AddressOption 
+        {selecedItemIds.length > 0 && <div>
+          <AddressOptionGroup 
             isUpdateAddressChecked={isUpdateAddressChecked}
             setIsUpdateAddressChecked={setIsUpdateAddressChecked}
             updatedShippingAddress={shippingAddress} 
             onInputChange={handleAddressChange}
             selectedConsignment={selectedConsignment}
+            futureShipDate={futureShipDate}
+            setFutureShipDate={(date) => setFutureShipDate(date)}
           />
 
           {shippingAddressError && <p style={{ color: 'red', fontWeight: 'bold' }}>{shippingAddressError}</p>}
-
-          <FutureShipDateOptionGroup 
-            futureShipDate={futureShipDate} 
-            handleChangeDate={(date) => setFutureShipDate(date)}
-            selectedConsignment={null}
-            />
 
           {(!customer || customer.isGuest) &&
             <div style={{ marginTop: '30px' }}>
@@ -327,7 +416,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
           <div style={{ textAlign: 'right', marginTop: '20px' }}>
             <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>SAVE CHANGES</button>
           </div>
-        </>}
+        </div>}
       </div>
 
       {/* <p>UnSeletected Items: </p> */}
@@ -360,97 +449,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
         </div> )}
       </div>
       
-      {consignments.length > 1 && <>
-
-        {/* <p>Consignments: </p> */}
-        
-        {/* Iterate through every consignmets and filter items */}
-        { consignments.filter(c => c.address.address1 !== 'TO_BE_ASSIGNED').map(c => <div key={c.id} style={{ margin: '0 10px', backgroundColor: '#c7cfc5', boxShadow: '0px 4px 4px 0px #00000026', borderRadius: '20px', padding: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
-            .map(i => <div key={i.id} style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-              
-              {/* { (consignments.length < 2 || selecedItemIds.length > 0) &&
-                <input type="checkbox" value={i.id} checked={selecedItemIds.includes(i.id as string)} onChange={handleChange} />
-              } */}
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingInline: '20px', paddingBlock: '5px', width: "100%" }}>
-                
-                <div style={{ position: 'relative', display: 'flex', gap: '12px' }}>
-                  <div onClick={() => unassignItem(i)} style={{ position: 'absolute', left: '-4px', top: '-4px', cursor: 'pointer' }}>
-                    <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <circle cx="14.5" cy="14.5" r="14" fill="#D9D9D9" stroke="#315B42"/>
-                      <path d="M12.7715 9.785L15.2615 13.55H14.7515L17.2265 9.785H19.8665L16.1765 15.185L16.0865 14.48L19.8965 20H17.1965L14.5865 16.1H15.3215L12.7415 20H10.0415L13.8065 14.48L13.8215 15.185L10.1465 9.785H12.7715Z" fill="#315B42"/>
-                    </svg>
-                  </div>
-                  <img style={{ maxWidth: '100px', maxHeight: '200px' }} src={i.imageUrl} />
-                
-                  <div style={{ fontWeight: 'bold', marginLeft: '10px' }}>
-                    <div className="product-title">{i.quantity} x {i.name}</div>
-
-                    {(i.options && i.options.length > 0) ?
-                      (showDetailsItemIds.includes(i.id as number) ?
-                        <div>
-                          {i.options?.map(o => <div key={o.nameId} style={{ fontWeight: '500' }} className="product-option">{o.name} {o.value}</div>)}
-                          <div style={{ marginTop: '10px', cursor: 'pointer', color: '#315B42', opacity: 0.5, textDecoration: 'underline' }} onClick={() => toggleViewDetails(i.id as number)}>View Less</div>
-                        </div>
-                        : 
-                        <div style={{ marginTop: '10px', cursor: 'pointer', color: '#315B42', opacity: 0.5, textDecoration: 'underline' }} onClick={() => toggleViewDetails(i.id as number)}>View Details</div>
-                      )
-                    : <></>}
-                  </div>
-                </div>
-                <div style={{ fontWeight: 'bold' }} className="product-price">
-                  <div>${i.salePrice}</div>
-                  <div>{c.selectedShippingOption?.description}</div>
-                </div>
-              </div>
-            </div>
-          )}
-            <div style={{ width: '100%', padding: "20px 10px", backgroundColor: '#8da292'}}>
-              <div style={{fontWeight: 'bold', display: 'flex', justifyContent: 'space-between' }}>
-                <div>
-                  <span style={{ }}>All items in this group ship to: </span>
-                  <span style={{ textDecoration: 'underline', color: '#fff' }}>{formatAddress(c.address)}</span>
-                </div>
-                <div>
-                  <a onClick={() => unassignConsignment(c)} style={{ textDecoration: 'underline', color: '#000' }}>Ungroup Items</a>
-                </div>
-              </div>
-              { isNextStep &&
-              <div className="" style={{ display: "flex", gap: '24px', marginTop: '20px' }}>
-                <div style={{ display: "flex", gap: '8px' }}>
-                  <ShippingMethodOptionGroup 
-                    handleChange={(id) => {
-                      setSelectedShippingOptionIds({ ...selectedShippingOptionIds, [c.id]: id });
-                    }}
-                    selectedConsignment={c}
-                  />
-
-                  <button onClick={() => saveShippingMethod(c)} style={{ fontWeight: 'bold', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '5px' }}>Save</button>
-                </div>
-                <div>
-                  {/* <FutureShipDateOptionGroup 
-                    futureShipDate={futureShipDates[c.id]} 
-                    handleChangeDate={(date) => setFutureShipDates({ ...futureShipDates, [c.id]: date })}
-                    selectedConsignment={c}
-                    /> */}
-                    <input placeholder="Future Ship Date" readOnly value={c.address.customFields.find(c => c.fieldId == 'field_26')?.fieldValue} style={{ width: '300px', padding: '10px', fontSize: '14px' }} type="text" />
-                </div>
-                <div>
-                  <GiftMessageOptionGroup 
-                    giftProducts={giftProducts}
-                    selectedConsignment={c}
-                    checkoutId={checkoutId}
-                    setIsInProgress={setIsInProgress}
-                  />
-                </div>
-              </div>
-              }
-            </div>
-
-          </div>
-        )}
-      </>}
+      
     </div>
 
     <div style={{ margin: '20px 0', display: 'flex', justifyContent: 'right', alignItems: 'center', gap: '20px' }}>

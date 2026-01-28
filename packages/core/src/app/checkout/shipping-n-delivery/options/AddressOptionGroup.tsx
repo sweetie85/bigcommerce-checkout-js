@@ -1,0 +1,197 @@
+import { AddressRequestBody, Consignment, Country, Customer, CustomerAddress, Region } from "@bigcommerce/checkout-sdk";
+import React, { useEffect, useState } from "react";
+import { useCheckout } from "../CheckoutContext";
+import FutureShipDateOptionGroup from "./FutureShipDateOptionGroup";
+
+interface AddressOptionProps {
+  updatedShippingAddress: AddressRequestBody | null;
+  onInputChange: (updated: AddressRequestBody ) => void;
+  selectedConsignment: Consignment | null;
+  isUpdateAddressChecked: boolean;
+  setIsUpdateAddressChecked: (isUpdate: boolean) => void
+  futureShipDate: string | null;
+  setFutureShipDate: (date: string | null) => void
+}
+
+const AddressOptionGroup = ({ 
+  updatedShippingAddress, 
+  onInputChange, 
+  selectedConsignment, 
+  isUpdateAddressChecked, 
+  setIsUpdateAddressChecked,
+  futureShipDate,
+  setFutureShipDate
+}: AddressOptionProps) => {
+
+  const [isNewAddress, setIsNewAddress] = useState(false);
+  const [provinces, setProvinces] = useState<Region[]>([]);
+  const [shippingAddress, setShippingAddress] = useState(updatedShippingAddress);
+
+  const { checkoutState } = useCheckout();
+  const customer = checkoutState.data.getCustomer();
+  const countries = checkoutState.data.getShippingCountries() ?? [];
+  const customerAddresses = customer?.addresses ?? [];
+
+  useEffect(() => {
+    if (selectedConsignment) {
+      setShippingAddress(selectedConsignment.address);
+    }
+  }, [selectedConsignment])
+
+  useEffect(() => {
+    console.log('AddressOption shippingAddress: ');
+    console.log(shippingAddress);
+
+    console.log(shippingAddress?.countryCode);
+
+    if (shippingAddress?.countryCode) {
+      const selectedCountry = countries.find(c => c.code == shippingAddress.countryCode);
+      if (selectedCountry?.subdivisions) {
+        setProvinces(selectedCountry.subdivisions);
+      }
+    }
+  }, [shippingAddress]);
+
+  const handleChange = (e: any) => {
+    console.log('e.target.value: '+e.target.value);
+    setIsNewAddress(e.target.value == '1');
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
+    console.log({ [e.target.name]: e.target.value })
+
+    const updatedShippingAddress = {
+      ...shippingAddress,
+      [e.target.name]: e.target.value,
+    } as AddressRequestBody;
+
+    onInputChange(updatedShippingAddress);
+    setShippingAddress(updatedShippingAddress);
+
+    if (e.target.name == 'countryCode') {
+      const selectedCountry = countries.find(c => c.code == e.target.value);
+      if (selectedCountry?.subdivisions) {
+        setProvinces(selectedCountry.subdivisions);
+      }
+    }
+  };
+
+  function isSameAddress(a: AddressRequestBody, b: AddressRequestBody): boolean {
+    // debugger;
+    if (!a || !b) return false;
+
+    const normalize = (val?: string) => (val || '').trim().toLowerCase();
+
+    return (
+      normalize(a.address1) === normalize(b.address1) &&
+      normalize(a.city) === normalize(b.city) &&
+      normalize(a.postalCode) === normalize(b.postalCode) &&
+      normalize(a.countryCode) === normalize(b.countryCode) &&
+      normalize(a.stateOrProvinceCode) === normalize(b.stateOrProvinceCode)
+    );
+  }
+
+  const handleAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    onInputChange(customerAddresses.find(a => a.id == (e.target.value as unknown as number)) as AddressRequestBody);
+  }
+
+  const handleAddressChangeOption = () => {
+
+    const shouldShowAddressUpdate = !isUpdateAddressChecked;
+
+    setIsUpdateAddressChecked(shouldShowAddressUpdate);
+
+    if (!shouldShowAddressUpdate) {
+      setShippingAddress(null);
+    } else {
+
+      if (selectedConsignment) {
+        setShippingAddress(selectedConsignment.address);
+      }
+    }
+  }
+
+  return <div style={{ marginLeft: '20px' }}>
+    {(customer && customer.id) ? <>
+      
+      <div className="step-title" style={{ cursor: 'pointer', display: 'flex', gap: '8px', alignItems: 'center' }} onClick={() => handleAddressChangeOption()}>
+        {/* <input id="is_shipping_address_update" type="checkbox" checked={isUpdateAddressChecked} onChange={handleAddressChangeOption}></input>         */}
+        <label style={{ marginLeft: '10px', textDecoration: 'underline' }} htmlFor="is_shipping_address_update">Add delivery address</label>
+        <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2.14483 0L9 6.97857L2.14483 14L0 11.7841L4.70206 7.02143L0 2.21585L2.14483 0Z" fill="#315B42"/>
+        </svg>
+
+      </div>
+
+      {isUpdateAddressChecked &&
+      <div style={{ marginLeft: "10px", backgroundColor: '#fff', marginTop: '30px', padding: '30px 80px' }}>
+        <div className="step-title">
+          <input checked={!isNewAddress} onChange={handleChange} value={0} name="address_option_saved" id="choose_saved_address" type="radio" ></input>        
+          <label style={{ marginLeft: '10px' }} htmlFor="choose_saved_address">Choose a saved address:</label>
+        </div>
+        <div>
+          <select onChange={handleAddressChange} style={{ borderRadius: '6px', marginTop: '10px', padding: '10px', width: '500px' }}>
+            <option value={0}>Select a address</option>
+            {customerAddresses.map((a) => <option selected={!!shippingAddress && isSameAddress(shippingAddress, a)} value={a.id} key={a.id}>{a.address1 + ' ' + a.company + ' '+a.city}</option>)}
+          </select>
+        </div>
+      
+        <div className="step-title" style={{ marginTop: '20px' }}>
+          <input onChange={handleChange} value={1} name="address_option_saved" id="choose_new_address" type="radio" ></input>
+          <label style={{ marginLeft: '10px', color: '#315B42' }} htmlFor="choose_new_address">Enter a new adddress:</label>
+        </div>
+
+        {(!customer || customer.isGuest || isNewAddress) && <div>
+          <div className="form-field-row">
+            <input className="custom-form-input text" type="text" placeholder="First Name" name="firstName" value={shippingAddress?.firstName} onChange={handleInputChange} />
+            <input className="custom-form-input text" type="text" placeholder="Last Name" name="lastName" value={shippingAddress?.lastName} onChange={handleInputChange} />
+          </div>
+          <div className="form-field-row">
+            <input className="custom-form-input text" type="text" placeholder="Company Name" name="company" value={shippingAddress?.company} onChange={handleInputChange} />
+            <input className="custom-form-input text" type="text" placeholder="Phone Number" name="phone" value={shippingAddress?.phone} onChange={handleInputChange} />
+          </div>
+          <div className="form-field-row">
+            <input className="custom-form-input text" type="text" placeholder="Address" name="address1" value={shippingAddress?.address1} onChange={handleInputChange} />
+            <input className="custom-form-input text" type="text" placeholder="Address/Suite/Building" name="address2" value={shippingAddress?.address2} onChange={handleInputChange} />
+          </div>
+          <div className="form-field-row">
+            <input className="custom-form-input text" type="text" placeholder="City" name="city" value={shippingAddress?.city} onChange={handleInputChange} />
+            {/* <input className="custom-form-input text" type="text" placeholder="Country" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange} /> */}
+            <select className="custom-form-input select" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange}>
+              <option value="">-- Select a Country --</option>
+              {countries.map(c => <option value={c.code}>{c.name}</option>)}
+            </select>
+          </div>
+          <div className="form-field-row">
+            {provinces.length == 0 ?
+              <input className="custom-form-input text" type="text" placeholder="State/Province" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange} />
+            : 
+              <select className="custom-form-input select" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange}>
+                <option value="">-- Select a State --</option>
+                {provinces.map(c => <option value={c.code}>{c.name}</option>)}
+              </select>
+            }
+            <input className="custom-form-input text" type="text" placeholder="Postal Code" name="postalCode" value={shippingAddress?.postalCode} onChange={handleInputChange} />
+          </div>
+        </div>}
+
+        <div className="step-title" style={{ marginTop: '20px'}}>
+          <label style={{ marginBottom: '10px' }}>Future Ship Date:</label>
+          <FutureShipDateOptionGroup 
+            futureShipDate={futureShipDate} 
+            handleChangeDate={(date) => setFutureShipDate(date)}
+            selectedConsignment={null}
+            />
+          </div>
+      </div>
+      }
+      </>
+      :
+      <div className="step-title">
+        <label>2. Shipping Address</label>
+      </div>
+    }
+ </div>
+}
+
+export default AddressOptionGroup;
