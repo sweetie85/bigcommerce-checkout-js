@@ -265,19 +265,22 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
     setIsInProgress(false);
   }
 
-  return <div style={{marginTop: '20px'}}>
-      <p className="step-title">2. Select an item(s) to add a delivery address. Apply future ship date and an optional gift message for each destination.</p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '10px' }}>
+  return <div className="consignments-wrapper">
+    <p className="step-title">
+      2. Select an item(s) to add a delivery address. Apply future ship date and an optional gift message for each destination.
+    </p>
+
+    <div className="assignment-categories">
 
       {/* <p>Seletected Items</p> */}
       {/* Iterate through every consignmets and filter items */}
-      <div style={{ margin: '0 10px', padding: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {unassignedLineItems.filter(i => selecedItemIds.includes(i.id as string)).map(i => <div key={i.id} onClick={() => handleChange(i.id as string)} style={{ display: 'flex', cursor: 'pointer', alignItems: 'center', gap: '20px' }}>
+      <div className="assignment-category-wrapper selected-items">
+        {unassignedLineItems.filter(i => selecedItemIds.includes(i.id as string)).map(i => <div className="item-card-wrapper" key={i.id} onClick={() => handleChange(i.id as string)}>
             
           <input type="checkbox" value={i.id} checked={selecedItemIds.includes(i.id as string)} />
           
-          <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#80988778', boxShadow: '0px 4px 4px 0px #00000026',  paddingBlock: '5px', paddingInline: '10px', borderRadius: '20px', width: "100%" }}>
-            <div style={{ width: '20%' }}><img style={{ maxWidth: '100px', maxHeight: '200px' }} src={i.imageUrl} /></div>
+          <div className="item-card">
+            <div style={{ width: '20%' }}><img className="item-card__image" src={i.imageUrl} /></div>
             <div style={{ width: '60%', fontWeight: 'bold' }}>
               <div className="product-title">{i.quantity} x {i.name}</div>
 
@@ -285,10 +288,10 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
                 (showDetailsItemIds.includes(i.id as number) ?
                   <div>
                     {i.options?.map(o => <div key={o.nameId} style={{ fontWeight: '500' }} className="product-option">{o.name} {o.value}</div>)}
-                    <div style={{ marginTop: '10px', cursor: 'pointer', color: '#315B42', opacity: 0.5, textDecoration: 'underline' }} onClick={() => toggleViewDetails(i.id as number)}>View Less</div>
+                    <div className="item-card__toggle-view" onClick={() => toggleViewDetails(i.id as number)}>View Less</div>
                   </div>
                   : 
-                  <div style={{ marginTop: '10px', cursor: 'pointer', color: '#315B42', opacity: 0.5, textDecoration: 'underline' }} onClick={() => toggleViewDetails(i.id as number)}>View Details</div>
+                  <div className="item-card__toggle-view" onClick={() => toggleViewDetails(i.id as number)}>View Details</div>
                 )
               : <></>}
             </div>
@@ -329,13 +332,13 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
 
       {/* <p>UnSeletected Items: </p> */}
       {/* Iterate through every consignmets and filter items */}
-      <div style={{ margin: '0 10px', padding: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div className="assignment-category-wrapper un-selected-items">
         {unassignedLineItems.filter(i => !selecedItemIds.includes(i.id as string)).map(i => <div key={i.id} style={{ display: 'flex', alignItems: 'center', gap: '20px', cursor: 'pointer' }}  onClick={() => handleChange(i.id as string)}>
             
           <input type="checkbox" value={i.id} checked={selecedItemIds.includes(i.id as string)} />
           
-          <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#fff', boxShadow: '0px 4px 4px 0px #00000026',  paddingBlock: '5px', paddingInline: '10px', borderRadius: '20px', width: "100%" }}>
-            <div style={{ width: '20%' }}><img style={{ maxWidth: '100px', maxHeight: '200px' }} src={i.imageUrl} /></div>
+          <div className="item-card">
+            <div style={{ width: '20%' }}><img className="item-card__image" src={i.imageUrl} /></div>
             <div style={{ width: '60%', fontWeight: 'bold' }}>
               <div className="product-title">{i.quantity} x {i.name}</div>
 
@@ -343,10 +346,10 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
                 (showDetailsItemIds.includes(i.id as number) ?
                   <div>
                     {i.options?.map(o => <div key={o.nameId} style={{ fontWeight: '500' }} className="product-option">{o.name} {o.value}</div>)}
-                    <div style={{ marginTop: '10px', cursor: 'pointer', color: '#315B42', opacity: 0.5, textDecoration: 'underline' }} onClick={() => toggleViewDetails(i.id as number)}>View Less</div>
+                    <div className="item-card__toggle-view" onClick={() => toggleViewDetails(i.id as number)}>View Less</div>
                   </div>
                   : 
-                  <div style={{ marginTop: '10px', cursor: 'pointer', color: '#315B42', opacity: 0.5, textDecoration: 'underline' }} onClick={() => toggleViewDetails(i.id as number)}>View Details</div>
+                  <div className="item-card__toggle-view" onClick={() => toggleViewDetails(i.id as number)}>View Details</div>
                 )
               : <></>}
             </div>

@@ -322,10 +322,10 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
         <label style={{}}>1. Enter the email address:</label>
         <div className="form-field-row" style={{ justifyContent: 'left', gap: '20px' }}>
           <input className="custom-form-input text" type="text" placeholder="Email Id" onChange={handleGuestEmailChange} value={guestEmalId} />
-          <button onClick={saveGuestEmail} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '5px', padding: '10px'}}>Continue</button>
+          <button className="button-continue" onClick={saveGuestEmail}>Continue</button>
         </div>
         
-        { guestEmalError && <div><span style={{ fontWeight: 'normal', color: '#d14343'}}>{guestEmalError}</span></div>}
+        { guestEmalError && <div><span className="text-error">{guestEmalError}</span></div>}
         
         {isSignInActice ? <>
           <div className="form-field-row">
