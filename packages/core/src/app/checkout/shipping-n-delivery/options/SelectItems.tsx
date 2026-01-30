@@ -81,8 +81,10 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
 
   // Verify if all consignment are assinged a shipping method
   useEffect(() => {
-    const pendingShipppingMethod = consignments.find(c => c.address.address1 != 'TO_BE_ASSIGNED' && (!selectedShippingOptionIds[c.id] || selectedShippingOptionIds[c.id] == ''));
-    if (!pendingShipppingMethod) {
+    const pendingShipppingMethod = consignments.find(c => !c.selectedShippingOption && c.address.address1 != 'TO_BE_ASSIGNED'  && (!selectedShippingOptionIds[c.id] || selectedShippingOptionIds[c.id] == ''));
+    const pendingShipppingMethodEdit = consignments.find(c => c.address.address1 != 'TO_BE_ASSIGNED' && selectedShippingOptionIds[c.id] == '');
+
+    if (!pendingShipppingMethod && !pendingShipppingMethodEdit) {
       setIsGoTOOrderSummary(true);
     } else {
       setIsGoTOOrderSummary(false);
@@ -467,21 +469,41 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
       
     </div>
 
-    <div style={{ margin: '20px 0', display: 'flex', justifyContent: 'right', alignItems: 'center', gap: '20px' }}>
-      {unassignedLineItems.length > 0 ? <>
-        <div style={{ color: '#EB2F2F', fontWeight: 500, fontSize: '20px' }}>*Assign delivery address to all items before continuing.</div>
-        <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
-      </>
+    {/* Buttom Buttons */}
+    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      { isNextStep ?
+        <div className="step-title" style={{ cursor: 'pointer', display: 'flex', gap: '8px', alignItems: 'center' }} onClick={() => { setIsNextStep(false) }}>
+          <svg style={{ transform: 'rotate(180deg)' }} width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.14483 0L9 6.97857L2.14483 14L0 11.7841L4.70206 7.02143L0 2.21585L2.14483 0Z" fill="#315B42"/>
+          </svg>
+          <label style={{ marginLeft: '10px', textDecoration: 'underline' }}>Previous Step</label>
+        </div>
       :
-        !isGoTOOrderSummary ?
-        <>
-          <div style={{ color: '#EB2F2F', fontWeight: 500, fontSize: '20px' }}>**Choose shipping method and date for all groups before continuing.</div>
-          <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
+        <div></div>
+      }
+
+      <div style={{ margin: '20px 0', display: 'flex', justifyContent: 'right', alignItems: 'center', gap: '20px' }}>
+        {unassignedLineItems.length > 0 ? <>
+          <div style={{ color: '#EB2F2F', fontWeight: 500, fontSize: '20px', maxWidth: '400px' }}>*Assign delivery address to all items before continuing.</div>
+          <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
         </>
         :
-          <button onClick={() => saveShippingMethods()} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
+          <>
+            { !isNextStep &&
+              <button onClick={() => { setIsNextStep(true) }} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
+            }
+            { isNextStep && !isGoTOOrderSummary ?
+              <>
+                <div style={{ color: '#EB2F2F', fontWeight: 500, fontSize: '20px', maxWidth: '400px' }}>**Choose shipping method and date for all groups before continuing.</div>
+                <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
+              </>
+            :
+              isNextStep && <button onClick={() => saveShippingMethods()} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
+            }
+          </>
         }
-      
+        
+      </div>
     </div>
   </div>
 }
