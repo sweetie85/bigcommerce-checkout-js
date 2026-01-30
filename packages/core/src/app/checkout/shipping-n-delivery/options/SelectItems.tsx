@@ -30,6 +30,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
   const [holdingConsignment, setHoldingConsignment] = useState<Consignment | null>(null);
   const [unassignedLineItems, setUnassignedLineItems] = useState<PhysicalItem[]>([]);
   const [isNextStep, setIsNextStep] = useState<boolean>(false);
+  const [isGoTOOrderSummary, setIsGoTOOrderSummary] = useState<boolean>(false);
 
   const [selectedShippingOptionIds, setSelectedShippingOptionIds] = useState<Record<string, string>>({});
   const [futureShipDate, setFutureShipDate] = useState<string | null>(null);
@@ -63,6 +64,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
         setUnassignedLineItems(mainItems.filter(i => holdingConsignment.lineItemIds.includes(i.id as string)));
 
         setIsNextStep(false);
+        setIsGoTOOrderSummary(false);
       } else {
         setUnassignedLineItems([]);
         setSelecedItemIds([]);
@@ -76,6 +78,16 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
       setShippingAddressError(null);
     }
   }, [shippingAddress])
+
+  // Verify if all consignment are assinged a shipping method
+  useEffect(() => {
+    const pendingShipppingMethod = consignments.find(c => c.address.address1 != 'TO_BE_ASSIGNED' && (!selectedShippingOptionIds[c.id] || selectedShippingOptionIds[c.id] == ''));
+    if (!pendingShipppingMethod) {
+      setIsGoTOOrderSummary(true);
+    } else {
+      setIsGoTOOrderSummary(false);
+    }
+  }, [consignments, selectedShippingOptionIds]);
 
   const createHoldingConsignment = (items?: PhysicalItem[]) => {
     const PLACEHOLDER_ADDRESS = {
@@ -207,16 +219,19 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
     setIsInProgress(false);
   }
 
-  const saveShippingMethod = async (consignment: Consignment) => {
+  const saveShippingMethods = async () => {
 
     setIsInProgress(true);
 
-    // Save shipping method
-    if (selectedShippingOptionIds[consignment.id]) {
-      await checkoutService.selectConsignmentShippingOption(consignment.id, selectedShippingOptionIds[consignment.id]);
+    for (const [consignmentId, shippingMethodId] of Object.entries(selectedShippingOptionIds)) {
+      // Save shipping method
+      if (shippingMethodId && shippingMethodId != '') {
+        await checkoutService.selectConsignmentShippingOption(consignmentId, shippingMethodId);
+      }
     }
 
     setIsInProgress(false);
+    gotoNextStep();
   }
 
   const unassignItem = async (item: PhysicalItem) => {
@@ -339,7 +354,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
                   selectedConsignment={c}
                 />
 
-                <button onClick={() => saveShippingMethod(c)} style={{ fontWeight: 'bold', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '5px' }}>Save</button>
+                {/* <button onClick={() => saveShippingMethod(c)} style={{ fontWeight: 'bold', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '5px' }}>Save</button> */}
               </div>
               <div>
                 {/* <FutureShipDateOptionGroup 
@@ -458,8 +473,15 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
         <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
       </>
       :
-        <button onClick={() => !isNextStep ? setIsNextStep(true) : gotoNextStep()} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
-      }
+        !isGoTOOrderSummary ?
+        <>
+          <div style={{ color: '#EB2F2F', fontWeight: 500, fontSize: '20px' }}>**Choose shipping method and date for all groups before continuing.</div>
+          <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
+        </>
+        :
+          <button onClick={() => saveShippingMethods()} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
+        }
+      
     </div>
   </div>
 }

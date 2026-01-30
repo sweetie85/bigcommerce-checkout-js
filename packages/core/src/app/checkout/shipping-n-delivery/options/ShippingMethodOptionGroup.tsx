@@ -15,7 +15,7 @@ const ShippingMethodOptionGroup = ({ handleChange, selectedConsignment }: Shippi
 
   return <div>
     <select style={{ width: '300px', padding: '10px' }} onChange={(e) => handleChange(e.target.value)}>
-      <option value={0}>Shipping Method</option>
+      <option value={''}>Shipping Method</option>
       {shippingOptions.map((so, index) => 
         <option selected={selectedConsignment?.selectedShippingOption?.id == so.id} value={so.id}>{so.description} - ${so.cost}</option>
       )}
