@@ -147,9 +147,9 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
       </div>
 
       <div>
-        <textarea onChange={(e) => setGiftMessage(e.target.value)} style={{ marginTop: '10px', width: '500px', height: '100px', borderRadius: '6px' }} placeholder="Type your message here"></textarea>
+        <textarea onChange={(e) => setGiftMessage(e.target.value)} style={{ padding: '8px', marginTop: '10px', width: '500px', height: '150px', borderRadius: '4px', borderColor: '#315B4287', resize: 'none' }} placeholder="Type your message here"></textarea>
       </div>
-      <p style={{ marginLeft: '20px', marginTop: '5px', color: '#ccc'}}>150 characters remaining of 150</p>
+      {/* <p style={{ marginLeft: '20px', marginTop: '5px', color: '#ccc'}}>150 characters remaining of 150</p> */}
 
       <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'right' }}>
         <button onClick={addItemToCart} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>Save Changes</button>

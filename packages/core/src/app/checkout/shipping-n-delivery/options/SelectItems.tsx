@@ -295,7 +295,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
       {/* <p>Consignments: </p> */}
       
       {/* Iterate through every consignmets and filter items */}
-      { consignments.filter(c => c.address.address1 !== 'TO_BE_ASSIGNED').map(c => <div key={c.id} style={{ margin: '0 10px', backgroundColor: '#c7cfc5', boxShadow: '0px 4px 4px 0px #00000026', borderRadius: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      { consignments.filter(c => c.address.address1 !== 'TO_BE_ASSIGNED').map(c => <div key={c.id} style={{ margin: '0 10px', backgroundColor: '#c7cfc5', boxShadow: '0px 4px 4px 0px #00000026', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
           .map(i => <div key={i.id} style={{ padding: '10px', display: 'flex', alignItems: 'center', gap: '20px' }}>
             
@@ -305,7 +305,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingInline: '20px', paddingBlock: '5px', width: "100%" }}>
               
-              <div style={{ position: 'relative', display: 'flex', gap: '12px' }}>
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div onClick={() => unassignItem(i)} style={{ position: 'absolute', left: '-4px', top: '-4px', cursor: 'pointer' }}>
                   <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="14.5" cy="14.5" r="14" fill="#D9D9D9" stroke="#315B42"/>
@@ -340,7 +340,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
             <div style={{fontWeight: 'bold', display: 'flex', justifyContent: 'space-between' }}>
               <div>
                 <span style={{ }}>All items in this group ship to: </span>
-                <span style={{ textDecoration: 'underline', color: '#fff' }}>{formatAddress(c.address)}</span>
+                <span style={{ marginLeft: '20px', textDecoration: 'underline', color: '#fff' }}>{formatAddress(c.address)}</span>
               </div>
               <div>
                 <a onClick={() => unassignConsignment(c)} style={{ textDecoration: 'underline', color: '#000' }}>Ungroup Items</a>
@@ -384,57 +384,63 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
 
       {/* <p>Seletected Items</p> */}
       {/* Iterate through every consignmets and filter items */}
-      <div className="assignment-category-wrapper selected-items">
-        {unassignedLineItems.filter(i => selecedItemIds.includes(i.id as string)).map(i => <div className="item-card-wrapper" key={i.id} onClick={() => handleChange(i.id as string)}>
+      { selecedItemIds.length > 0 &&
+        <div className="assignment-category-wrapper selected-items">
+          {unassignedLineItems.filter(i => selecedItemIds.includes(i.id as string)).map(i => <div className="item-card-wrapper" key={i.id} onClick={() => handleChange(i.id as string)}>
+              
+            <input type="checkbox" value={i.id} checked={selecedItemIds.includes(i.id as string)} />
             
-          <input type="checkbox" value={i.id} checked={selecedItemIds.includes(i.id as string)} />
-          
-          <div className="item-card">
-            <div style={{ width: '20%' }}><img className="item-card__image" src={i.imageUrl} /></div>
-            <div style={{ width: '60%', fontWeight: 'bold' }}>
-              <div className="product-title">{i.quantity} x {i.name}</div>
+            <div className="item-card">
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                <div><img className="item-card__image" src={i.imageUrl} /></div>
+                <div>
+                  <div className="product-title">{i.quantity} x {i.name}</div>
 
-              {(i.options && i.options.length > 0) ?
-                (showDetailsItemIds.includes(i.id as number) ?
-                  <div>
-                    {i.options?.map(o => <div key={o.nameId} style={{ fontWeight: '500' }} className="product-option">{o.name} {o.value}</div>)}
-                    <div className="item-card__toggle-view" onClick={() => toggleViewDetails(i.id as number)}>View Less</div>
-                  </div>
-                  : 
-                  <div className="item-card__toggle-view" onClick={() => toggleViewDetails(i.id as number)}>View Details</div>
-                )
-              : <></>}
+                  {(i.options && i.options.length > 0) ?
+                    (showDetailsItemIds.includes(i.id as number) ?
+                      <div>
+                        {i.options?.map(o => <div key={o.nameId} style={{ fontWeight: '500' }} className="product-option">{o.name} {o.value}</div>)}
+                        <div className="item-card__toggle-view" onClick={() => toggleViewDetails(i.id as number)}>View Less</div>
+                      </div>
+                      : 
+                      <div className="item-card__toggle-view" onClick={() => toggleViewDetails(i.id as number)}>View Details</div>
+                    )
+                  : <></>}
+                </div>
+              </div>
+              <div style={{ fontWeight: 'bold' }} className="product-price">
+                <div>${i.salePrice}</div>
+              </div>
             </div>
-            <div style={{ width: '15%', fontWeight: 'bold' }} className="product-price">
-              <div>${i.salePrice}</div>
-            </div>
-          </div>
-        </div> )}
+          </div> )}
 
-        {selecedItemIds.length > 0 && <div>
-          <AddressOptionGroup 
-            isUpdateAddressChecked={isUpdateAddressChecked}
-            setIsUpdateAddressChecked={setIsUpdateAddressChecked}
-            updatedShippingAddress={shippingAddress} 
-            onInputChange={handleAddressChange}
-            selectedConsignment={selectedConsignment}
-            futureShipDate={futureShipDate}
-            setFutureShipDate={(date) => setFutureShipDate(date)}
-          />
+          {selecedItemIds.length > 0 && <div>
+            <AddressOptionGroup 
+              isUpdateAddressChecked={isUpdateAddressChecked}
+              setIsUpdateAddressChecked={setIsUpdateAddressChecked}
+              updatedShippingAddress={shippingAddress} 
+              onInputChange={handleAddressChange}
+              selectedConsignment={selectedConsignment}
+              futureShipDate={futureShipDate}
+              setFutureShipDate={(date) => setFutureShipDate(date)}
+            />
 
-          {shippingAddressError && <p style={{ color: 'red', fontWeight: 'bold' }}>{shippingAddressError}</p>}
+            {shippingAddressError && <p style={{ color: 'red', fontWeight: 'bold' }}>{shippingAddressError}</p>}
 
-          {(!customer || customer.isGuest) &&
-            <div style={{ marginTop: '30px' }}>
-              <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>CONTINUE</button>
-            </div>
-          }
+            {(!customer || customer.isGuest) &&
+              <div style={{ marginTop: '30px' }}>
+                <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>CONTINUE</button>
+              </div>
+            }
 
-          <div style={{ textAlign: 'right', marginTop: '20px' }}>
-            <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>SAVE CHANGES</button>
-          </div>
-        </div>}
-      </div>
+            { isUpdateAddressChecked &&
+              <div style={{ textAlign: 'right', marginTop: '20px' }}>
+                <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>SAVE CHANGES</button>
+              </div>
+            }
+          </div>}
+        </div>
+      }
 
       {/* <p>UnSeletected Items: </p> */}
       {/* Iterate through every consignmets and filter items */}
@@ -444,22 +450,24 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
           <input type="checkbox" value={i.id} checked={selecedItemIds.includes(i.id as string)} />
           
           <div className="item-card">
-            <div style={{ width: '20%' }}><img className="item-card__image" src={i.imageUrl} /></div>
-            <div style={{ width: '60%', fontWeight: 'bold' }}>
-              <div className="product-title">{i.quantity} x {i.name}</div>
+            <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+              <div><img className="item-card__image" src={i.imageUrl} /></div>
+              <div>
+                <div className="product-title">{i.quantity} x {i.name}</div>
 
-              {(i.options && i.options.length > 0) ?
-                (showDetailsItemIds.includes(i.id as number) ?
-                  <div>
-                    {i.options?.map(o => <div key={o.nameId} style={{ fontWeight: '500' }} className="product-option">{o.name} {o.value}</div>)}
-                    <div className="item-card__toggle-view" onClick={() => toggleViewDetails(i.id as number)}>View Less</div>
-                  </div>
-                  : 
-                  <div className="item-card__toggle-view" onClick={() => toggleViewDetails(i.id as number)}>View Details</div>
-                )
-              : <></>}
+                {(i.options && i.options.length > 0) ?
+                  (showDetailsItemIds.includes(i.id as number) ?
+                    <div>
+                      {i.options?.map(o => <div key={o.nameId} style={{ fontWeight: '500' }} className="product-option">{o.name} {o.value}</div>)}
+                      <div className="item-card__toggle-view" onClick={() => toggleViewDetails(i.id as number)}>View Less</div>
+                    </div>
+                    : 
+                    <div className="item-card__toggle-view" onClick={() => toggleViewDetails(i.id as number)}>View Details</div>
+                  )
+                : <></>}
+              </div>
             </div>
-            <div style={{ width: '15%', fontWeight: 'bold' }} className="product-price">
+            <div style={{ fontWeight: 'bold' }} className="product-price">
               <div>${i.salePrice}</div>
             </div>
           </div>
@@ -484,7 +492,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
 
       <div style={{ margin: '20px 0', display: 'flex', justifyContent: 'right', alignItems: 'center', gap: '20px' }}>
         {unassignedLineItems.length > 0 ? <>
-          <div style={{ color: '#EB2F2F', fontWeight: 500, fontSize: '20px', maxWidth: '400px' }}>*Assign delivery address to all items before continuing.</div>
+          <div style={{ color: '#EB2F2F', fontSize: '14px', maxWidth: '400px' }}>*Assign delivery address to all items before continuing.</div>
           <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
         </>
         :
@@ -494,7 +502,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
             }
             { isNextStep && !isGoTOOrderSummary ?
               <>
-                <div style={{ color: '#EB2F2F', fontWeight: 500, fontSize: '20px', maxWidth: '400px' }}>**Choose shipping method and date for all groups before continuing.</div>
+                <div style={{ color: '#EB2F2F', fontSize: '16px', maxWidth: '400px' }}>**Choose shipping method and date for all groups before continuing.</div>
                 <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
               </>
             :
