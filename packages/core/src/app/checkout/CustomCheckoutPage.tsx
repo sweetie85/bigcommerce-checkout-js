@@ -10,6 +10,7 @@ import CheckoutPayment from "./CheckoutPayment";
 import { CheckoutProvider, useCheckout } from "./shipping-n-delivery/CheckoutContext";
 import { useShipping } from "../shipping/hooks/useShipping";
 import { CheckoutPageSkeleton } from "@bigcommerce/checkout/ui";
+import CheckoutFooter from "./shipping-n-delivery/CheckoutFooter";
 
 interface CustomCheckoutPageProps {
   data: CheckoutStoreSelector;
@@ -60,8 +61,8 @@ const CustomCheckoutPage = ({ data, checkoutId, cart, paymentForm  }: CustomChec
   return <div>
     <CheckoutHeader activeIndex={activeTabIndex} onChangeTab={setActiveTabIndex} />
     <div style={{ display: 'flex' }}>
-      <div style={{ width: '75%' }} className="shipping-n-delivery">
-        <div className='tag-page-content'>
+      <div style={{ width: '75%', }} className="shipping-n-delivery">
+        <div className='tag-page-content' style={{ paddingBottom: '40px' }}>
           { activeTabIndex == 0 && <ShippingAndDelivery 
             checkoutId={checkoutId} 
             gotoNextStep={() => setActiveTabIndex(1)} 
@@ -80,6 +81,7 @@ const CustomCheckoutPage = ({ data, checkoutId, cart, paymentForm  }: CustomChec
           <CartSummary /> 
       </div>
     </div>
+    <CheckoutFooter />
   </div>
 }
 

@@ -37,17 +37,19 @@ const CartSummary = () => {
     return totalAmount.toFixed(2);
   }
 
-  return <div>
+  return <div style={{ marginTop: '40px' }}>
     <p className="title"> Cart Summary ({mainCartItems.length} Items)</p>
+    <hr style={{ borderColor: '#315B42', marginBottom: '20px'}} />
+
     <div className="cart-items">
       { cart ?
        (mainCartItems.map(i => <div key={i.id} className="cart-item">
         <div style={{ width: '20%' }}><img src={i.imageUrl} /></div>
         <div style={{ width: '60%' }}>
-          <div className="product-title">{i.quantity} x {i.name}</div>
-          {i.options?.map(o => <div key={o.nameId} className="product-option">{o.name} {o.value}</div>)}
+          <div className="product-title" style={{ fontSize: '14px' }}>{i.quantity} x {i.name}</div>
+          {i.options?.map(o => <div key={o.nameId} style={{ fontSize: '14px' }} className="product-option">{o.name} {o.value}</div>)}
         </div>
-        <div style={{ width: '20%' }} className="product-price">${i.salePrice}</div>
+        <div style={{ width: '20%', fontSize: '14px' }} className="product-price">${i.salePrice}</div>
       </div>))
       : <></>
       }
