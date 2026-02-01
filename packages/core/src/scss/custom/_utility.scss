@@ -1,0 +1,75 @@
+html {
+  font-size: 16px; // default
+}
+
+@function rem($px, $base: 16) {
+  @return ($px / $base) * 1rem;
+}
+
+$space: (
+  0: 0,
+  1: rem(4),
+  2: rem(8),
+  3: rem(12),
+  4: rem(16),
+  5: rem(20),
+  6: rem(24),
+  7: rem(28),
+  8: rem(32),
+  9: rem(36),
+  10: rem(40),
+  11: rem(44),
+  12: rem(48),
+);
+
+@function space($step) {
+  @return map-get($space, $step);
+}
+
+$font-sizes: (
+  xs: rem(12),
+  sm: rem(14),
+  base: rem(16),
+  md: rem(18),
+  lg: rem(20),
+  xl: rem(24),
+  xxl: rem(32)
+);
+
+@function fs($key) {
+  @return map-get($font-sizes, $key);
+}
+
+
+$breakpoints: (
+  "xsmall": 320px,
+  "small": 576px,
+  "medium": 768px,
+  "large": 992px,
+  "xlarge": 1200px
+);
+
+@mixin breakpoint($size) {
+  $value: map-get($breakpoints, $size);
+
+  @if $value {
+    @media (min-width: $value) {
+      @content;
+    }
+  } @else {
+    @error "❌ Unknown breakpoint: #{$size}";
+  }
+}
+
+@mixin breakpoint-max($size) {
+  $value: map-get($breakpoints, $size);
+
+  @if $value {
+    // subtract 1px to avoid overlap
+    @media (max-width: ($value - 1px)) {
+      @content;
+    }
+  } @else {
+    @error "❌ Unknown breakpoint: #{$size}";
+  }
+}

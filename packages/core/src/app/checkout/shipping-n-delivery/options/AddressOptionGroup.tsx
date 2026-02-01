@@ -11,6 +11,7 @@ interface AddressOptionProps {
   setIsUpdateAddressChecked: (isUpdate: boolean) => void
   futureShipDate: string | null;
   setFutureShipDate: (date: string | null) => void
+  saveChanges: () => {}
 }
 
 const AddressOptionGroup = ({ 
@@ -20,7 +21,8 @@ const AddressOptionGroup = ({
   isUpdateAddressChecked, 
   setIsUpdateAddressChecked,
   futureShipDate,
-  setFutureShipDate
+  setFutureShipDate,
+  saveChanges
 }: AddressOptionProps) => {
 
   const [isNewAddress, setIsNewAddress] = useState(false);
@@ -124,13 +126,13 @@ const AddressOptionGroup = ({
       </div>
 
       {isUpdateAddressChecked &&
-      <div style={{ marginLeft: "10px", backgroundColor: '#fff', marginTop: '30px', padding: '30px 80px' }}>
+      <div className="address-card-wrapper">
         <div className="step-title">
           <input checked={!isNewAddress} onChange={handleChange} value={0} name="address_option_saved" id="choose_saved_address" type="radio" ></input>        
           <label style={{ marginLeft: '10px' }} htmlFor="choose_saved_address">Choose a saved address:</label>
         </div>
         <div>
-          <select onChange={handleAddressChange} style={{ borderRadius: '6px', marginTop: '10px', padding: '10px', width: '500px' }}>
+          <select onChange={handleAddressChange} className="input-select">
             <option value={0}>Select a address</option>
             {customerAddresses.map((a) => <option selected={!!shippingAddress && isSameAddress(shippingAddress, a)} value={a.id} key={a.id}>{a.address1 + ' ' + a.company + ' '+a.city}</option>)}
           </select>
@@ -182,7 +184,11 @@ const AddressOptionGroup = ({
             handleChangeDate={(date) => setFutureShipDate(date)}
             selectedConsignment={null}
             />
-          </div>
+        </div>
+
+        <div style={{ marginTop: '20px' }}>
+          <button className="save-changes-button" onClick={() => saveChanges()}>SAVE CHANGES</button>
+        </div>
       </div>
       }
       </>

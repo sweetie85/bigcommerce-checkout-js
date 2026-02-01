@@ -1,0 +1,396 @@
+
+@import "utility";
+
+.checkout-body {
+  display: flex;
+  flex-direction: column;
+
+  @include breakpoint("medium") {
+    flex-direction: row;
+  }
+
+  .shipping-n-delivery {
+    width: 100%;
+
+    @include breakpoint("medium") {
+      width: 75%;
+    }
+  }
+
+  .cart-summary {
+    width: 100%;
+
+    @include breakpoint("medium") {
+      width: 25%;
+    }
+  }
+}
+
+.desktop-only {
+  @include breakpoint-max("small") {
+    display: none!important;
+  }
+}
+
+.mobile-only {
+  @include breakpoint("medium") {
+    display: none!important;
+  }
+}
+
+.choose-consignment-type {
+  @include breakpoint-max('small') {
+    padding-inline: space(5);
+  }
+
+  .step-title {
+    @include breakpoint-max('small') {
+      margin-bottom: space(3);
+    }
+  }
+}
+
+.button-continue {
+  width: rem(200);
+  text-align: center;
+  background-color: #315B42;
+  color: #fff;
+  border-radius: rem(4);
+  padding: space(2);
+}
+
+.text-error {
+  font-weight: normal;
+  color: #d14343;
+}
+
+.consignments-wrapper {
+  margin-top: space(5);
+  font-size: fs('sm');
+
+  @include breakpoint('medium') {
+    font-size: fs('base');
+  }
+
+  .step-2-title {
+    @include breakpoint-max('small') {
+      padding-inline: space(5);
+      display: flex;
+      gap: space(1);
+    }
+  }
+
+  .assignment-categories {
+    display: flex;
+    flex-direction: column;
+    gap: space(5);
+    margin-top: space(4);
+
+    @include breakpoint('medium') {
+      margin-top: space(2);
+    }
+  }
+
+  .assignment-category-wrapper {
+    margin: 0 10px;
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+    
+    @include breakpoint('medium') {
+      padding: space(2);
+      margin: 0 -50px;
+      gap: space(5);
+    }
+  }
+
+  .consignment-item-wrapper {
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+    gap: space(2);
+    padding-inline: space(2); 
+    padding-block: space(1);
+    width: 100%;
+
+    @include breakpoint('medium') { 
+      padding-inline: space(5); 
+    }
+  }
+
+  .consignment-item-details {
+    position: relative; 
+    display: flex; 
+    align-items: center;
+    gap: space(1);
+
+    @include breakpoint('medium') { 
+      gap: space(3);
+    }
+  }
+
+  .item-card-wrapper {
+    display: flex;
+    align-items: center;
+    gap: space(2);
+
+    @include breakpoint('medium') { 
+      gap: space(5);
+    }
+
+  }
+
+  .item-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #fff;
+    box-shadow: 0px 4px 4px 0px #00000026;  
+    padding-block: space(2);
+    padding-inline: space(2);
+    border-radius: 10px;
+    width: 100%;
+
+    @include breakpoint('medium') {
+      padding-inline: space(6);
+    }
+
+  }
+
+  .item-card__image {
+    border: 1px solid #315B426B;
+    max-width: rem(50); 
+    max-height: rem(50);
+
+    @include breakpoint('medium') {
+      max-width: rem(100); 
+      max-height: rem(200);
+    }
+  }
+
+  .item-card__toggle-view {
+    margin-top: space(2);
+    cursor: pointer;
+    color: #315B42; 
+    opacity: 0.5;
+    text-decoration: 'underline'
+  }
+
+  .selected-items .item-card {
+    background-color: #80988778;
+  }
+
+  .product-price {
+    font-weight: bold;
+    color: #315B42;
+  }
+
+  .item-options-wrapper {
+    width: 100%;
+    border-bottom-right-radius: 20px; 
+    border-bottom-left-radius: 20px;
+    padding: 20px;
+    background-color: #8da292;
+  }
+
+  .item-options {
+    &__unassign-consignment {
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    &__shipping-option-wrapper {
+      display: flex; 
+      gap: 24px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .item-options__shipping-option {
+      @include breakpoint-max('small') {
+        width: 45%;
+      }
+    }
+    
+    .item-options__ship_date {
+      @include breakpoint-max('small') {
+        width: 48%;
+      }
+    }
+
+    .item-options__gift-message {
+      @include breakpoint-max('small') {
+        width: 100%;
+      }
+    }
+
+    .assigned-address-line {
+      display: flex;
+      flex-direction: column;
+      gap: space(2);
+
+      @include breakpoint('medium') {
+        flex-direction: row;
+      }
+
+      .line-2 {
+        text-decoration: underline;
+        color: #fff;
+
+        @include breakpoint('medium') {
+          margin-left: 20px; 
+        }
+      }
+
+    }
+  }
+
+  .button-add-gift-message {
+    width: 100%;
+    align-items: left;
+    padding: space(2);
+    background: #fff; 
+    font-size: fs('xs');
+    display: flex;
+
+    @include breakpoint('medium') { 
+      width: 300px;
+      font-size: fs('sm');
+    }
+  }
+
+  .add-gift-popup-wrapper {
+    position: absolute;
+    z-index: 99;
+    background: #fff;
+    left: 0;
+    top: 30px; 
+    padding: 20px;
+
+    @include breakpoint-max('small') { 
+      width: 100%;
+    }
+
+    @include breakpoint('medium') { 
+      top: 50px; 
+    }
+
+    select {
+      border-radius: 6px;
+      margin-top: space(2);
+      padding: space(2);
+      width: 100%;
+
+      @include breakpoint('medium') { 
+        width: 500px;
+      }
+    }
+
+    textarea {
+      padding: 8px;
+      margin-top: 10px;
+      width: 100%;
+      height: 100px;
+      border-radius: 4px;
+      border-color: #315B4287;
+      resize: none;
+
+      @include breakpoint('medium') { 
+        width: 500px;
+        height: 150px;
+      }
+    }
+
+    .save-button-wrapper {
+      margin-top: space(5);
+      display: flex; 
+      justify-content: right;
+
+      .save-button {
+        background-color: #F6A601;
+        padding: space(2) space(2);
+        border-radius: space(2);
+
+        @include breakpoint('medium') {
+          padding: space(3) space(5);
+        }
+      }
+    }
+  }
+}
+
+.address-card-wrapper {
+  margin-left: space(2);
+  background-color: #fff;
+  margin-top: space(7);
+  padding: space(2);
+
+  @include breakpoint('medium') {
+    padding: space(7) 80px;
+  }
+
+  .input-select {
+    border-radius: 6px;
+    margin-top: space(2);
+    padding: space(2);
+    width: 95%;
+    font-size: fs('sm');
+
+    @include breakpoint('medium') {
+      width: 500px;
+      font-size: fs('base');
+    }
+
+    option {
+      font-size: fs('xs');
+
+      @include breakpoint('medium') {
+        font-size: fs('base');
+      }
+
+    }
+  }
+
+  .input-text {
+    border-radius: 6px;
+    margin-top: space(2);
+    padding: space(2);
+    width: 100%;
+    font-size: fs('sm');
+    font-weight: normal;
+    border-width: 1px;
+
+    @include breakpoint('medium') {
+      width: 500px;
+      font-size: fs('base');
+    }
+  }
+
+  .react-datepicker-wrapper {
+    width: 100%
+  }
+
+  .future-ship-date-wrapper {
+    position: relative; 
+    width: 95%;
+    
+    @include breakpoint('medium') {
+      width: 500px;
+    }
+  }
+
+  .save-changes-button {
+    width: 200px; 
+    text-align: center;
+    background-color: #315B42;
+    color: #fff;
+    border-radius: 6px;
+    padding: space(2);
+    font-size: fs('xs');
+
+    @include breakpoint('medium') {
+      font-size: fs('sm');
+    }
+  }
+}

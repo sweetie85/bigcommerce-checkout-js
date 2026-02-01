@@ -60,8 +60,8 @@ const CustomCheckoutPage = ({ data, checkoutId, cart, paymentForm  }: CustomChec
 
   return <div>
     <CheckoutHeader activeIndex={activeTabIndex} onChangeTab={setActiveTabIndex} />
-    <div style={{ display: 'flex' }}>
-      <div style={{ width: '75%', }} className="shipping-n-delivery">
+    <div className="checkout-body">
+      <div className="shipping-n-delivery">
         <div className='tag-page-content' style={{ paddingBottom: '40px' }}>
           { activeTabIndex == 0 && <ShippingAndDelivery 
             checkoutId={checkoutId} 
@@ -77,7 +77,7 @@ const CustomCheckoutPage = ({ data, checkoutId, cart, paymentForm  }: CustomChec
           {activeTabIndex == 2 && <CheckoutPayment data={data} checkoutId={checkoutId} paymentForm={paymentForm}/>}
         </div>
       </div>
-      <div style={{ width: '25%' }} className='cart-summary'>
+      <div className='cart-summary'>
           <CartSummary /> 
       </div>
     </div>

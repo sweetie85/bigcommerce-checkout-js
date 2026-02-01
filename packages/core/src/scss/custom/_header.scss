@@ -1,0 +1,265 @@
+
+@import "utility";
+@import "~react-datepicker/dist/react-datepicker.css";
+
+.checkoutHeader {
+  background-color: container("fill", "dark");
+  border-bottom: container("border");
+  text-align: center;
+
+  @include breakpoint("small") {
+    min-height: remCalc(120px);
+  }
+
+  @include breakpoint("medium") {
+    text-align: left;
+  }
+}
+
+.checkoutHeader-content {
+  @include grid-row;
+
+  padding: spacing("single");
+
+  @include breakpoint("small") {
+    padding: spacing("double");
+  }
+}
+
+.checkoutHeader-heading {
+  @include headingStyle("h1");
+
+  color: inherit;
+  margin-bottom: 0;
+  word-wrap: break-word;
+}
+
+.layout {
+  max-width: initial!important;
+  padding: 0!important;
+}
+
+.header-tabs {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 10px 0;
+
+  @include breakpoint("medium") {
+    margin: 40px 0;
+  }
+
+}
+
+.header-tabs .header-tab {
+  display: flex;
+  font-size: fs('xs');
+  gap: space(1) space(2);
+  background-color: #315B4226;
+  padding: 10px;
+  align-items: center;
+  font-weight: 500;
+  cursor: pointer;
+  flex: 0 0 33.3333%;
+  max-width: 33.33%;
+
+  @include breakpoint("medium") {
+    padding: space(2) space(12);
+    font-size: fs('base');
+  }
+
+  &.disabled {
+    cursor: default;
+    color: #aaa;
+  }
+
+  &.active {
+    background-color: #315B42;
+    color: #fff;
+
+    .step-number {
+      background-color: #F6A601;
+      color: #315B42;
+      border-color: #F6A601;
+    }
+  }
+}
+
+.header-tabs .header-tab .step-number {
+  border: 2px solid #315B4287;
+  width: 24px;
+  height: 24px;
+  border-radius: 99px;
+  text-align: center;
+}
+
+.tag-page-content {
+  padding-top: space(5);
+  background-color: #f7f3ee;
+  min-height: 800px;
+
+  @include breakpoint('medium') {
+    padding-top: space(12);
+  }
+}
+
+.shipping-n-delivery {
+  width: 80%;
+  margin: auto;
+}
+
+.shipping-n-delivery .step-title {
+  color: #315B42;
+  font-weight: bold;
+  font-size: fs('sm');
+
+  @include breakpoint('medium') {
+    font-size: fs('base');
+  }
+}
+
+.cart-summary {
+  background-color: #315B4233;
+  padding: 16px;
+
+  .title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+
+  .cart-items {
+    background-color: #fff;
+    padding: 16px;
+    padding-top: 0;
+    border-radius: 10px;
+  }
+
+  .cart-item {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 16px;
+
+    img {
+        width: 100%;
+    }
+
+    .product-title, .product-option {
+        padding: 0 10px;
+    }
+
+    .product-title, .product-price {
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .product-option {
+        font-size: 12px;
+    }
+
+    .product-price {
+        text-align: right;
+    }
+  }
+
+  .cart-amount-line {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 12px;
+    font-size: 16px;
+  }
+}
+
+.react-datepicker__input-container input[type="text"] {
+  padding: 5px;
+  border-radius: 4px;
+  outline: none;
+}
+
+.form-field-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+
+  .custom-form-input.text {
+    padding: 10px 12px;
+    width: 49%;
+    outline: none;
+    border: 1px solid #315B4287;
+    border-radius: 4px;
+  }
+
+  .custom-form-input.select {
+    padding: 10px 12px;
+    width: 49%;
+    outline: none;
+    border: 1px solid #315B4287;
+    border-radius: 4px;
+  }
+
+}
+
+
+
+.checkoutHeader.optimizedCheckout-header, 
+.checkoutHeader-heading {
+  display: none;
+}
+
+.checkout-header {
+  background-color: #315B42;
+  display: flex;
+  align-items: center; /* Vertically centers all items */
+  padding: space(6) space(3);
+  justify-content: space-between;
+
+  @include breakpoint('medium') {
+    padding: space(2) space(7);
+  }
+
+  .back-to-cart-wrapper {
+    color: inherit;
+    display: flex;
+    gap: space(2);
+    align-items: center;
+    font-size: fs('xs');
+
+    @include breakpoint('medium') {
+      gap: space(2);
+      font-size: fs('base');
+    }
+  }
+  
+  .back-to-cart {
+    color: #F6A601;
+
+    @include breakpoint('medium') {
+      margin-right: auto;
+    }
+  }
+
+  .site-sub-title-text {
+    font-size: fs('xs');
+    color: #fff;
+  }
+
+  .center-content {
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 28px;
+    flex-grow: 1;
+  }
+
+  .checkout-header-logo {
+    width: 90px;
+
+    @include breakpoint('medium') {
+      width: 100px;
+    }
+  }
+}
+
+
+

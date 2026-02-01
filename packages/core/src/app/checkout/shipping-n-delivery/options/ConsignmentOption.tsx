@@ -12,7 +12,7 @@ const ConsignmentOption = ({ isSingleAddress, setIsSingleAddress }: ConsignmentO
     setIsSingleAddress(e.target.value == 'SINGLE');
   }
 
-  return <div>
+  return <div className="choose-consignment-type">
     <p className="step-title">1. Choose delivery and gift message options:</p>
     <div style={{ marginLeft: '16px' }}>
       <div>
