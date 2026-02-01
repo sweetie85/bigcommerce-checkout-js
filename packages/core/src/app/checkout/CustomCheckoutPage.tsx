@@ -70,7 +70,7 @@ const CustomCheckoutPage = ({ data, checkoutId, cart, paymentForm  }: CustomChec
             giftProducts={giftProducts}
             /> 
           }
-          { activeTabIndex == 1 && <div className="cart-summary" style={{ background: 'none' }}>
+          { activeTabIndex == 1 && <div className="" style={{ background: 'none' }}>
             <OrderSummary />
             </div>
           }

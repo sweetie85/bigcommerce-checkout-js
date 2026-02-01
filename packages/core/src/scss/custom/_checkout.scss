@@ -38,6 +38,10 @@
   }
 }
 
+.shipping-n-delivery .cart-items .cart-item {
+  display: flex;
+}
+
 .choose-consignment-type {
   @include breakpoint-max('small') {
     padding-inline: space(5);
@@ -173,7 +177,7 @@
     cursor: pointer;
     color: #315B42; 
     opacity: 0.5;
-    text-decoration: 'underline'
+    text-decoration: underline;
   }
 
   .selected-items .item-card {
@@ -325,6 +329,7 @@
   background-color: #fff;
   margin-top: space(7);
   padding: space(2);
+  position: relative;
 
   @include breakpoint('medium') {
     padding: space(7) 80px;
@@ -392,5 +397,15 @@
     @include breakpoint('medium') {
       font-size: fs('sm');
     }
+  }
+}
+
+.next-step-buttons-wrapper {
+  display: flex;
+  justify-content: space-between;
+  padding-inline: space(4);
+
+  @include breakpoint('medium') {
+    padding-inline: space(0);
   }
 }

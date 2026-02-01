@@ -397,7 +397,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
     </div>
 
     {/* Buttom Buttons */}
-    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+    <div className="next-step-buttons-wrapper">
       { isNextStep ?
         <div className="step-title" style={{ cursor: 'pointer', display: 'flex', gap: '8px', alignItems: 'center' }} onClick={() => { setIsNextStep(false) }}>
           <svg style={{ transform: 'rotate(180deg)' }} width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -411,7 +411,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
 
       <div style={{ margin: '20px 0', display: 'flex', justifyContent: 'right', alignItems: 'center', gap: '20px' }}>
         {unassignedLineItems.length > 0 ? <>
-          <div style={{ color: '#EB2F2F', fontSize: '14px', maxWidth: '400px' }}>*Assign delivery address to all items before continuing.</div>
+          <div className="desktop-only" style={{ color: '#EB2F2F', fontSize: '14px', maxWidth: '400px' }}>*Assign delivery address to all items before continuing.</div>
           <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
         </>
         :
@@ -421,7 +421,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
             }
             { isNextStep && !isGoTOOrderSummary ?
               <>
-                <div style={{ color: '#EB2F2F', fontSize: '16px', maxWidth: '400px' }}>**Choose shipping method and date for all groups before continuing.</div>
+                <div className="desktop-only" style={{ color: '#EB2F2F', fontSize: '16px', maxWidth: '400px' }}>**Choose shipping method and date for all groups before continuing.</div>
                 <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
               </>
             :
@@ -431,6 +431,17 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
         }
         
       </div>
+    </div>
+
+    <div className="mobile-only" style={{ display: 'flex', justifyContent: 'right' }}>
+      {unassignedLineItems.length > 0 &&
+        <div className="mobile-only" style={{ color: '#EB2F2F', fontSize: '14px', maxWidth: '250px' }}>*Assign delivery address to all items before continuing.</div>
+      }
+
+      { (isNextStep && !isGoTOOrderSummary) &&
+        <div className="mobile-only" style={{ color: '#EB2F2F', fontSize: '14px', maxWidth: '250px' }}>**Choose shipping method and date for all groups before continuing.</div>
+      }
+
     </div>
   </div>
 }
