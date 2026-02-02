@@ -3,13 +3,7 @@ import React, { useEffect, useState } from "react";
 import { formatAddress } from "./custom-utility";
 import { useCheckout } from "./shipping-n-delivery/CheckoutContext";
 
-interface CartSummaryProps {
-  // data: CheckoutStoreSelector;
-  // cart: Cart | undefined;
-  // consignments: Consignment[];
-}
-
-const OrderSummary = ({ }: CartSummaryProps) => {
+const OrderSummary = () => {
   const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
   const [shippingTotal, setShippingTotal] = useState<number>(0);
 
@@ -42,28 +36,34 @@ const OrderSummary = ({ }: CartSummaryProps) => {
   }
 
   return <div>
-    <p className="title" style={{ textAlign: 'center' }}> Order Summary</p>
-    <div className="cart-items">
+    <p className="title" style={{ textAlign: 'center', fontWeight: 'bold', color: '#315B42' }}> Order Summary</p>
+    <div className="cart-items" style={{ backgroundColor: '#fff', padding: '20px', marginInline: '40px' }}>
 
-      { consignments.map(c => <div style={{ border: '2px solid #315B42', borderRadius: '10px', margin: '10px', padding: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        <div className="cart-item" style={{ fontWeight: 'bold' }}>
-          <div style={{ width: '100px' }}>Item</div>
-          <div style={{ width: '30%' }}></div>
-          <div style={{ width: '30%' }}>Delivery Address</div>
-          <div style={{ width: '20%' }}>Shipping Date</div>
-          <div style={{ width: '20%' }}>Shipping Method</div>
-          <div style={{ width: '10%', textAlign: 'right' }}>Price</div>
-        </div>
+      <div className="cart-item" style={{ fontWeight: 'bold' }}>
+        <div style={{ width: '100px' }}>Item</div>
+        <div style={{ width: '30%' }}></div>
+        <div style={{ width: '30%' }}>Delivery Address</div>
+        <div style={{ width: '20%' }}>Shipping Date</div>
+        <div style={{ width: '20%' }}>Shipping Method</div>
+        <div style={{ width: '10%', textAlign: 'right' }}>Price</div>
+      </div>
+      { consignments.map(c => <div style={{ borderTop: '2px solid #ccc', margin: '10px', padding: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
-        .map(i => <div key={i.id}>
-          <hr style={{ borderColor: '#315B42'}} />
+        .map((i, index) => <div key={i.id}>
+          
+          {/* <hr style={{ borderColor: '#315B42'}} /> */}
+
           <div key={i.id} className="cart-item">
             <div style={{ width: '100px' }}><img src={i.imageUrl} /></div>
             <div style={{ width: '30%' }}>
               <div className="product-title">{i.quantity} x {i.name}</div>
               {i.options?.map(o => <div key={o.nameId} className="product-option">{o.name} {o.value}</div>)}
             </div>
-            <div style={{ width: '30%' }}>{formatAddress(c.address)}</div>
+            
+            <div style={{ width: '30%' }}>
+              {index == 0 && formatAddress(c.address)}
+            </div>
+
             <div style={{ width: '20%' }}>{c.address.customFields[0] && c.address.customFields[0].fieldId == 'field_26' ? c.address.customFields[0].fieldValue : ''}</div>
             <div style={{ width: '20%' }}>{c.selectedShippingOption?.description}</div>
             <div style={{ width: '10%' }} className="product-price">${i.salePrice}</div>
@@ -73,9 +73,9 @@ const OrderSummary = ({ }: CartSummaryProps) => {
       )}
     </div>
 
-    <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'space-between' }}>
+    <div style={{ marginTop: '20px', marginInline: '40px', display: 'flex', justifyContent: 'space-between' }}>
       <p style={{ width: '40%', fontWeight: 'bold' }}>*Please review your order carefully-due to our baking schedule, changes cannot be made once orders are submitted. Thank you for understanding!</p>
-      <div style={{ width: '40%' }}>
+      <div className="cart-summary" style={{ width: '40%', backgroundColor: '#fff' }}>
         <div className="cart-amount-line">
           <span>Subtotal</span>
           <span>${cart?.baseAmount}</span>
