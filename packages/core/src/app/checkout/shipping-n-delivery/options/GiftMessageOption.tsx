@@ -48,7 +48,7 @@ const GiftMessageOption = ({ giftProducts, selectedConsignment, setGiftProductId
 
   }, [selectedConsignment]);
 
-  return <div>
+  return <div className="add-gift-single-popup-wrapper">
     <div className="step-title">
       <input onChange={(e) => setIsEnabled(!isEnabled)} name="address_option_saved" id="choose_gift_item" type="radio" value={1} ></input>
       <label htmlFor="choose_gift_item" style={{ marginLeft: '10px' }}>5. Add gift message::</label>
@@ -57,14 +57,14 @@ const GiftMessageOption = ({ giftProducts, selectedConsignment, setGiftProductId
     {isEnabled && <>
     { hasMultipleGiftMessage && <p style={{ color: 'red' }}>NOTE: You are supposed to add only one gift message per consignment</p> }
     <div>
-      <select onChange={(e) => setGiftProductId(e.target.value) } style={{ borderRadius: '6px', marginLeft: '20px', marginTop: '10px', padding: '10px', width: '500px' }}>
+      <select onChange={(e) => setGiftProductId(e.target.value) }>
         <option value="">Select Gift</option>
         { giftProducts.map((p) => <option key={p.bigcommerce_product_id} value={p.bigcommerce_product_id}>{p.frontend_title}</option>) }
       </select>
       </div>
 
       <div>
-        <textarea onChange={(e) => setGiftMessage(e.target.value)} style={{ marginTop: '10px',  marginLeft: '20px', width: '500px', height: '100px', borderRadius: '6px' }} placeholder="Type your message here"></textarea>
+        <textarea onChange={(e) => setGiftMessage(e.target.value)} placeholder="Type your message here"></textarea>
       </div>
       <p style={{ marginLeft: '20px', marginTop: '5px', color: '#ccc'}}>150 characters remaining of 150</p>
     </>

@@ -25,8 +25,8 @@ const ShippingMethodOption = ({ updatedShippingOptionId, handleChange, selectedC
     setSelectedShippingOptionId(updatedShippingOptionId);
   }, [updatedShippingOptionId]);
 
-  return <div style={{ display: 'flex', gap: '20px' }}>
-    <div style={{ width: '60%'}}>
+  return <div>
+    <div>
       <div className="step-title">
         <label style={{ marginLeft: '10px' }}>3. Shipping Method:</label>
       </div>
@@ -40,9 +40,6 @@ const ShippingMethodOption = ({ updatedShippingOptionId, handleChange, selectedC
         </div>
       )}
       </div>
-    </div>
-    <div style={{ width: '40%'}}>
-      
     </div>
   </div>
 }

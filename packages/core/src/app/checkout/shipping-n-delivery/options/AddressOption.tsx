@@ -106,13 +106,13 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
       </div> */}
 
       {/* {isUpdateAddressChecked && */}
-      <div style={{ marginLeft: "10px", marginTop: '10px' }}>
+      <div className="single-address-card-wrapper">
         <div className="step-title">
           <input checked={!isNewAddress} onChange={handleChange} value={0} name="address_option_saved" id="choose_saved_address" type="radio" ></input>        
           <label style={{ marginLeft: '10px' }} htmlFor="choose_saved_address">Choose a saved address:</label>
         </div>
         <div>
-          <select onChange={handleAddressChange} style={{ borderRadius: '6px', marginTop: '10px', padding: '10px', width: '500px' }}>
+          <select className="input-select--address" onChange={handleAddressChange}>
             <option value={0}>Select a address</option>
             {customerAddresses.map((a) => <option selected={!!shippingAddress && isSameAddress(shippingAddress, a)} value={a.id} key={a.id}>{a.address1 + ' ' + a.company + ' '+a.city}</option>)}
           </select>

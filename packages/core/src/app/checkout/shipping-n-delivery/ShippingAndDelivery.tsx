@@ -370,7 +370,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
 
         {isSingleAddress &&
 
-          <div className="" style={{ padding: '40px', backgroundColor: '#fff', marginTop: '40px'}}>
+          <div className="single-consignment-wrapper">
             <AddressOption 
               isUpdateAddressChecked={isUpdateAddressChecked}
               setIsUpdateAddressChecked={setIsUpdateAddressChecked}
@@ -388,8 +388,8 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
             {hasShippingMethodEnabled && <>
             <hr style={{ margin: '30px 0'}} />
 
-            <div style={{ display: 'flex', gap: '20px' }}>
-              <div style={{ width: '60%'}}>
+            <div className="shipping-options-wrapper">
+              <div className="shipping-options">
                 <ShippingMethodOption 
                   handleChange={(id) => {``
                     console.log('ShippingMethodOption id: '+id);
@@ -398,7 +398,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
                   updatedShippingOptionId={selectedShippingOptionId} 
                   selectedConsignment={selectedConsignment}/>
               </div>
-              <div style={{ width: '40%'}}>
+              <div className="future-ship-date-option">
                 <FutureShipDateOption 
                   futureShipDate={futureShipDate} 
                   handleChangeDate={setFutureShipDate}
