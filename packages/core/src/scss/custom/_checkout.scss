@@ -215,6 +215,30 @@
       @include breakpoint-max('small') {
         width: 45%;
       }
+
+      select {
+        @include breakpoint('medium') {
+          width: 100%;
+          height: 42px;
+          width: 300px;
+        }
+      }
+
+      .button-add-gift-message {
+        width: 100%;
+        @include breakpoint('medium') {
+          height: 40px;
+          width: 300px;
+        }
+      }
+    }
+
+    .future-ship-date-value {
+      width: 100%;
+      @include breakpoint('medium') {
+        height: 42px;
+        width: 300px;
+      }
     }
     
     .item-options__ship_date {

@@ -282,7 +282,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
             </div>
             { isNextStep &&
             <div className="item-options item-options__shipping-option-wrapper">
-              <div style={{ display: 'flex'}}>
+              <div style={{ display: 'flex', gap: '24px' }}>
                 <div className="item-options__shipping-option">
                   <ShippingMethodOptionGroup 
                     handleChange={(id) => {
@@ -292,7 +292,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
                   />
                 </div>
                 <div className="item-options__ship_date">
-                  <input placeholder="Future Ship Date" readOnly value={c.address.customFields.find(c => c.fieldId == 'field_26')?.fieldValue} style={{ padding: '10px', fontSize: '14px' }} type="text" />
+                  <input className="future-ship-date-value" placeholder="Future Ship Date" readOnly value={c.address.customFields.find(c => c.fieldId == 'field_26')?.fieldValue} style={{ padding: '10px', fontSize: '14px' }} type="text" />
                 </div>
               </div>
               <div className="item-options__gift-message">

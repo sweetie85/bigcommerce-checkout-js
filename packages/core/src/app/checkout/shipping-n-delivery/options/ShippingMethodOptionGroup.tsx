@@ -14,7 +14,7 @@ const ShippingMethodOptionGroup = ({ handleChange, selectedConsignment }: Shippi
   const shippingOptions = checkoutState.data.getShippingOptions() ?? [];
 
   return <div>
-    <select style={{ padding: '10px' }} onChange={(e) => handleChange(e.target.value)}>
+    <select className="shipping-option-selector" style={{ padding: '10px' }} onChange={(e) => handleChange(e.target.value)}>
       <option value={''}>Shipping Method</option>
       {shippingOptions.map((so, index) => 
         <option selected={selectedConsignment?.selectedShippingOption?.id == so.id} value={so.id}>{so.description} - ${so.cost}</option>
