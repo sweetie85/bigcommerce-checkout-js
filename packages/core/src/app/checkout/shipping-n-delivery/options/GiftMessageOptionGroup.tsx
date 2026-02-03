@@ -113,6 +113,9 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
       if (selectedConsignment) {
         // selectedConsignment.lineItemIds.push(giftItem);
 
+        // Capture selected shipping option
+        const shippingOptionId = selectedConsignment.selectedShippingOption?.id;
+
         const requestBody = {
           address: selectedConsignment.address,
           shippingAddress: selectedConsignment.address,
@@ -120,6 +123,11 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
         } as ConsignmentAssignmentRequestBody;
 
         await checkoutService.assignItemsToAddress(requestBody);
+
+        // Setting back shipping methods again
+        if (shippingOptionId) {
+          await checkoutService.selectConsignmentShippingOption(selectedConsignment.id, shippingOptionId);
+        }
 
         setIsEnabled(false);
       }

@@ -32,7 +32,6 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
   // consignment address 
   const [isSingleAddress, setIsSingleAddress] = useState(true);
   const [shouldShowNewAddress, setShouldShowNewAddress] = useState(false);
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [selectedConsignment, setSelectedConsignment] = useState<Consignment | null>(null);
 
   const [isSignInActice, setIsSigninActive] = useState<boolean>(false);
@@ -219,12 +218,14 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
 
     const cart = checkoutState.data.getCart();
 
+    if (!shippingAddress) {
+      console.log('Please select shippingAddress');
+      return null;
+    }
+
     if (cart) {
       const lineItems = cart.lineItems.physicalItems
-        .filter(i => selectedItems.length == 0 || selectedItems.includes(i.id as string))
-        .map(i => {
-          return { itemId: i.id, quantity: i.quantity };
-        }) as ConsignmentLineItem[];
+        .map(i => ({itemId: i.id, quantity: i.quantity})) as ConsignmentLineItem[];
 
       console.log('Gift Item:');
       console.log(giftItem);
@@ -233,13 +234,16 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
         lineItems.push(giftItem);
       }
 
-      const updatedAddress = isUpdateAddressChecked && shippingAddress ? shippingAddress : selectedConsignment?.address;
+      const updatedAddress = shippingAddress;
       if (updatedAddress && futureShipDate) {
         updatedAddress.customFields.push({
           fieldId: 'field_26',
           fieldValue: futureShipDate,
         });
       }
+
+      console.log('updatedAddress:');
+      console.log(updatedAddress);
 
       const requestBody = {
           address: updatedAddress,
@@ -254,13 +258,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
       setFutureShipDate(null);
       setIsUpdateAddressChecked(false);
 
-      if (updatedConsignments) {
-        const selectedConsignment = updatedConsignments.find(c =>
-          c.lineItemIds.some(id => selectedItems.includes(id))
-        );
-
-        return selectedConsignment ?? null;
-      }
+      return updatedConsignments ? updatedConsignments[0] : null;
     }
 
     return null;
@@ -270,9 +268,6 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     setIsInProgress(true);
 
     console.log('saveChanges: ');
-    console.log('selectedItems: ');
-    console.log(selectedItems);
-
     const giftItem = await addItemsToCart(gitProductId, giftMessage);
 
     const selectedConsignment = await updateConsignments(giftItem);
@@ -293,7 +288,6 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     setEnabledNextStep(true);
 
     setIsInProgress(false);
-    setSelectedItems([]);
   }
 
   const handleGuestEmailChange = (e: any) => {
@@ -350,20 +344,11 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
           <ConsignmentOption isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
           {!isSingleAddress && <div>
             <SelectItems 
-              // selecedItemIds={selectedItems} 
-              // onSelectConsignment={setSelectedConsignment}
-              // onChangeSelectedItems={(selectedIds) => setSelectedItems(selectedIds)}
               checkoutId={checkoutId}
               giftProducts={giftProducts}
               setIsInProgress={setIsInProgress}
               gotoNextStep={gotoNextStep}
             />
-
-            {selectedItems.length > 0 &&
-              <div style={{ marginTop: '20px'}}>
-                <a onClick={() => setShouldShowNewAddress(true)} style={{ borderBottom: '1px solid #315B42', color: '#315B42', padding: '5px', fontWeight: 'bold' }}>Add delivery address &gt;</a>
-              </div>
-            }
           </div>
           }
         </> 

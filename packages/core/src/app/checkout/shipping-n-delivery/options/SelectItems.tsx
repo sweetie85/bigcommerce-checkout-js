@@ -122,21 +122,6 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
     toggleSelectedItemId(selectedId);
   }
 
-  const toggleViewDetails = (id: number) => {
-    const index = showDetailsItemIds.indexOf(id);
-    const newShowDetailsItemIds = [...showDetailsItemIds];
-    
-    if (index === -1) {
-      // number not exist → add it
-      newShowDetailsItemIds.push(id);
-    } else {
-      // number exist → remove it
-      newShowDetailsItemIds.splice(index, 1);
-    }
-
-    setShowDetailsItemIds(newShowDetailsItemIds);
-  }
-
   const toggleSelectedItemId = (id: string) => {
     const index = selecedItemIds.indexOf(id);
     const newSelecedItemIds = [...selecedItemIds];
@@ -157,7 +142,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
     setShippingAddress(updatedAddress); // ✅ Update single source of truth
   };
 
-  const updateConsignments = async (giftItem: ConsignmentLineItem | null) : Promise<Consignment | null> => {
+  const updateConsignments = async () => {
 
     const cart = checkoutState.data.getCart();
 
@@ -167,13 +152,6 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
         .map(i => {
           return { itemId: i.id, quantity: i.quantity };
         }) as ConsignmentLineItem[];
-
-      console.log('Gift Item:');
-      console.log(giftItem);
-
-      if (giftItem) {
-        lineItems.push(giftItem);
-      }
 
       const updatedAddress = shippingAddress;
       if (!updatedAddress) {
@@ -189,13 +167,12 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
       }
 
       const requestBody = {
-          address: updatedAddress,
-          shippingAddress: updatedAddress,
-          lineItems: lineItems,
-        } as ConsignmentAssignmentRequestBody;
+        address: updatedAddress,
+        shippingAddress: updatedAddress,
+        lineItems: lineItems,
+      } as ConsignmentAssignmentRequestBody;
 
-      const res = await checkoutService.assignItemsToAddress(requestBody);
-      const updatedConsignments = res.data.getConsignments();
+      await checkoutService.assignItemsToAddress(requestBody);
 
       // reset shipping details form once saved
       setFutureShipDate(null);
@@ -203,22 +180,12 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
       setSelecedItemIds([]);
       setShippingAddress(null);
       setShippingAddressError(null);
-
-      if (updatedConsignments) {
-        const selectedConsignment = updatedConsignments.find(c =>
-          c.lineItemIds.some(id => selecedItemIds.includes(id))
-        );
-
-        return selectedConsignment ?? null;
-      }
     }
-
-    return null;
   }
 
   const saveChanges = async () => {
     setIsInProgress(true);
-    await updateConsignments(null);
+    await updateConsignments();
     setIsInProgress(false);
   }
 
