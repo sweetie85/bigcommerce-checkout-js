@@ -73,9 +73,9 @@ const CheckoutPayment = ({ data, checkoutId, paymentForm } :CheckoutPaymentProps
       <p style={{fontSize: '16px', fontWeight: 'bold', marginTop: '20px'}}>Payment: </p>
       { paymentForm }
 
-      <div style={{ margin: '0 30px' }}>
+      {/* <div style={{ margin: '0 30px' }}>
         <button disabled={!enabledNextStep} style={{ opacity: enabledNextStep ? '1' : '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>PLACE YOUR ORDER</button>
-      </div>
+      </div> */}
     </div>
   </div>
 }

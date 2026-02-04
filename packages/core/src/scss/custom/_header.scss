@@ -1,6 +1,13 @@
-
-@import "utility";
 @import "~react-datepicker/dist/react-datepicker.css";
+@import 'https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700&display=swap';
+
+.optimizedCheckout-contentPrimary {
+  font-family: Gabarito,Montserrat,Arial,Helvetica,sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.015em;
+  line-height: 1.4;
+  color: #315B42;
+}
 
 .checkoutHeader {
   background-color: container("fill", "dark");
@@ -63,9 +70,10 @@
   cursor: pointer;
   flex: 0 0 33.3333%;
   max-width: 33.33%;
+  color: #315B4287;
 
   @include breakpoint("medium") {
-    padding: space(2) space(12);
+    padding: space(3) space(12);
     font-size: fs('base');
   }
 
@@ -88,10 +96,13 @@
 
 .header-tabs .header-tab .step-number {
   border: 2px solid #315B4287;
-  width: 24px;
-  height: 24px;
-  border-radius: 99px;
-  text-align: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: fs('base');
 }
 
 .tag-page-content {
@@ -110,7 +121,6 @@
 }
 
 .shipping-n-delivery .step-title {
-  color: #315B42;
   font-weight: bold;
   font-size: fs('sm');
 
@@ -199,8 +209,6 @@
   }
 
 }
-
-
 
 .checkoutHeader.optimizedCheckout-header, 
 .checkoutHeader-heading {

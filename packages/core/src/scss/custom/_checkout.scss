@@ -1,6 +1,3 @@
-
-@import "utility";
-
 .checkout-body {
   display: flex;
   flex-direction: column;
@@ -54,6 +51,21 @@
   }
 }
 
+.step-title-radio {
+  label {
+    margin-left: 10px;
+    opacity: 0.6;
+
+    &.selected {
+      opacity: 1;
+    }
+
+    span.highlight {
+      font-weight: bold;
+    }
+  }
+}
+
 .button-continue {
   width: rem(200);
   text-align: center;
@@ -73,6 +85,7 @@
   font-size: fs('sm');
 
   @include breakpoint('medium') {
+    margin-top: space(8);
     font-size: fs('base');
   }
 
@@ -91,7 +104,7 @@
     margin-top: space(4);
 
     @include breakpoint('medium') {
-      margin-top: space(2);
+      margin-top: space(5);
     }
   }
 
@@ -167,15 +180,14 @@
     max-height: rem(50);
 
     @include breakpoint('medium') {
-      max-width: rem(100); 
-      max-height: rem(200);
+      max-width: rem(75); 
+      max-height: rem(100);
     }
   }
 
   .item-card__toggle-view {
     margin-top: space(2);
     cursor: pointer;
-    color: #315B42; 
     opacity: 0.5;
     text-decoration: underline;
   }
@@ -186,7 +198,6 @@
 
   .product-price {
     font-weight: bold;
-    color: #315B42;
   }
 
   .item-options-wrapper {
@@ -199,7 +210,7 @@
 
   .item-options {
     &__unassign-consignment {
-      font-weight: bold;
+      // font-weight: bold;
       display: flex;
       justify-content: space-between;
     }
@@ -220,15 +231,7 @@
         @include breakpoint('medium') {
           width: 100%;
           height: 42px;
-          width: 300px;
-        }
-      }
-
-      .button-add-gift-message {
-        width: 100%;
-        @include breakpoint('medium') {
-          height: 40px;
-          width: 300px;
+          width: 250px;
         }
       }
     }
@@ -237,7 +240,7 @@
       width: 100%;
       @include breakpoint('medium') {
         height: 42px;
-        width: 300px;
+        width: 250px;
       }
     }
     
@@ -277,13 +280,13 @@
   .button-add-gift-message {
     width: 100%;
     align-items: left;
-    padding: space(2);
+    padding: 0.6rem;
     background: #fff; 
     font-size: fs('xs');
     display: flex;
 
     @include breakpoint('medium') { 
-      width: 300px;
+      width: 250px;
       font-size: fs('sm');
     }
   }

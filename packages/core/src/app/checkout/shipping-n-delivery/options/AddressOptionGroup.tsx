@@ -128,16 +128,16 @@ const AddressOptionGroup = ({
       {isUpdateAddressChecked &&
       <div className="address-card-wrapper">
 
-        <div onClick={() => setIsUpdateAddressChecked(false)} style={{ position: 'absolute', right: '4px', top: '4px', cursor: 'pointer' }}>
+        <div onClick={() => setIsUpdateAddressChecked(false)} style={{ position: 'absolute', right: '16px', top: '16px', cursor: 'pointer' }}>
           <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="14.5" cy="14.5" r="14" fill="#D9D9D9" stroke="#315B42"/>
+            <circle cx="14.5" cy="14.5" r="14" fill="#D9D9D9" stroke="#D9D9D9"/>
             <path d="M12.7715 9.785L15.2615 13.55H14.7515L17.2265 9.785H19.8665L16.1765 15.185L16.0865 14.48L19.8965 20H17.1965L14.5865 16.1H15.3215L12.7415 20H10.0415L13.8065 14.48L13.8215 15.185L10.1465 9.785H12.7715Z" fill="#315B42"/>
           </svg>
         </div>
 
-        <div className="step-title">
+        <div className="step-title step-title-radio flex-align-center">
           <input checked={!isNewAddress} onChange={handleChange} value={0} name="address_option_saved" id="choose_saved_address" type="radio" ></input>        
-          <label style={{ marginLeft: '10px' }} htmlFor="choose_saved_address">Choose a saved address:</label>
+          <label className={!isNewAddress ? 'selected' : ''} htmlFor="choose_saved_address" >Choose a saved address:</label>
         </div>
         <div>
           <select onChange={handleAddressChange} className="input-select">
@@ -146,9 +146,9 @@ const AddressOptionGroup = ({
           </select>
         </div>
       
-        <div className="step-title" style={{ marginTop: '20px' }}>
+        <div className="step-title step-title-radio flex-align-center" style={{ marginTop: '40px' }}>
           <input onChange={handleChange} value={1} name="address_option_saved" id="choose_new_address" type="radio" ></input>
-          <label style={{ marginLeft: '10px', color: '#315B42' }} htmlFor="choose_new_address">Enter a new adddress:</label>
+          <label className={isNewAddress ? 'selected' : ''} htmlFor="choose_new_address">Enter a new adddress:</label>
         </div>
 
         {(!customer || customer.isGuest || isNewAddress) && <div>
@@ -185,7 +185,7 @@ const AddressOptionGroup = ({
           </div>
         </div>}
 
-        <div className="step-title" style={{ marginTop: '20px'}}>
+        <div className="step-title" style={{ marginTop: '40px'}}>
           <label style={{ marginBottom: '10px' }}>Future Ship Date:</label>
           <FutureShipDateOptionGroup 
             futureShipDate={futureShipDate} 

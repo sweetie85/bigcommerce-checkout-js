@@ -73,3 +73,8 @@ $breakpoints: (
     @error "❌ Unknown breakpoint: #{$size}";
   }
 }
+
+.flex-align-center {
+  display: flex;
+  align-items: center;
+}

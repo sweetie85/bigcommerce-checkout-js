@@ -1,16 +1,16 @@
 
-import React, { ReactNode, useContext, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import CartSummary from "./CartSummary";
 import CheckoutHeader from "./CheckoutHeader";
 import ShippingAndDelivery from "./shipping-n-delivery/ShippingAndDelivery";
-import { CheckoutStoreSelector, Cart, ShippingOption } from "@bigcommerce/checkout-sdk";
+import { CheckoutStoreSelector, Cart } from "@bigcommerce/checkout-sdk";
 import OrderSummary from "./OrderSummary";
 import CheckoutPayment from "./CheckoutPayment";
-// import { CheckoutContext, CheckoutProvider } from "@bigcommerce/checkout/payment-integration-api";
-import { CheckoutProvider, useCheckout } from "./shipping-n-delivery/CheckoutContext";
-import { useShipping } from "../shipping/hooks/useShipping";
+import { useCheckout } from "./shipping-n-delivery/CheckoutContext";
+
 import { CheckoutPageSkeleton } from "@bigcommerce/checkout/ui";
 import CheckoutFooter from "./shipping-n-delivery/CheckoutFooter";
+import { CheckoutStep } from '../types';
 
 interface CustomCheckoutPageProps {
   data: CheckoutStoreSelector;
@@ -21,14 +21,9 @@ interface CustomCheckoutPageProps {
 
 const CustomCheckoutPage = ({ data, checkoutId, cart, paymentForm  }: CustomCheckoutPageProps) => {
 
-  const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const [activeTabIndex, setActiveTabIndex] = useState<CheckoutStep>(CheckoutStep.Consignment);
   const [giftProducts, setGiftProduct] = useState<{ bigcommerce_product_id: string, frontend_title: string }[]>([]);
-  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
-  
-  // const checkoutContext = useContext(CheckoutContext); 
-  
-  const { consignments } = useShipping();
-  const { ready, checkoutState, checkoutService } = useCheckout();
+  const { ready, checkoutState } = useCheckout();
 
   // Initialize data to avoid re-fetch on every component load
   useEffect(() => {
@@ -36,15 +31,6 @@ const CustomCheckoutPage = ({ data, checkoutId, cart, paymentForm  }: CustomChec
     if (!ready) {
       return;
     }
-
-    // Load shipping options
-    // checkoutService.loadShippingOptions()
-    // .then((res) => {
-    //   const shippingOptions = res.data.getShippingOptions();
-    //   setShippingOptions(shippingOptions ? shippingOptions : []);
-    // });
-
-    // checkoutService.loadShippingCountries()
 
     fetch('https://phpstack-1452029-5845393.cloudwaysapps.com/bigcommerce-toms/cardproducts/list')
     .then(r => r.json())
@@ -58,31 +44,36 @@ const CustomCheckoutPage = ({ data, checkoutId, cart, paymentForm  }: CustomChec
     return <CheckoutPageSkeleton />;
   }
 
-  return <div>
-    <CheckoutHeader activeIndex={activeTabIndex} onChangeTab={setActiveTabIndex} />
+  const renderStep = (step: CheckoutStep): ReactNode => {
+    switch(step) {
+      case CheckoutStep.Consignment:
+        return <ShippingAndDelivery checkoutId={checkoutId} gotoNextStep={() => setActiveTabIndex(CheckoutStep.OrderSummary)}  giftProducts={giftProducts} />
+
+      case CheckoutStep.OrderSummary:
+        return <OrderSummary onChangeTab={setActiveTabIndex} />
+
+      case CheckoutStep.Payment:
+        return <CheckoutPayment data={data} checkoutId={checkoutId} paymentForm={paymentForm}/>
+
+      default:
+        return null;
+    }
+  }
+
+  return <section>
+    <CheckoutHeader activeStep={activeTabIndex} onChangeStep={setActiveTabIndex} />
     <div className="checkout-body">
       <div className="shipping-n-delivery">
         <div className='tag-page-content' style={{ paddingBottom: '40px' }}>
-          { activeTabIndex == 0 && <ShippingAndDelivery 
-            checkoutId={checkoutId} 
-            gotoNextStep={() => setActiveTabIndex(1)} 
-            // shippingOptions={shippingOptions}
-            giftProducts={giftProducts}
-            /> 
-          }
-          { activeTabIndex == 1 && <div className="" style={{ background: 'none' }}>
-            <OrderSummary />
-            </div>
-          }
-          {activeTabIndex == 2 && <CheckoutPayment data={data} checkoutId={checkoutId} paymentForm={paymentForm}/>}
+          { renderStep(activeTabIndex) }
         </div>
       </div>
       <div className='cart-summary'>
-          <CartSummary /> 
+        <CartSummary /> 
       </div>
     </div>
     <CheckoutFooter />
-  </div>
+  </section>
 }
 
 export default CustomCheckoutPage;

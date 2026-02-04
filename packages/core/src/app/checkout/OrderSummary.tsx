@@ -2,8 +2,13 @@ import { AddressRequestBody, Cart, CheckoutStoreSelector, Consignment, PhysicalI
 import React, { useEffect, useState } from "react";
 import { formatAddress } from "./custom-utility";
 import { useCheckout } from "./shipping-n-delivery/CheckoutContext";
+import { CheckoutStep } from "../types";
 
-const OrderSummary = () => {
+interface OrderSummaryProps {
+  onChangeTab: (index: CheckoutStep) => void;
+}
+
+const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
   const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
   const [shippingTotal, setShippingTotal] = useState<number>(0);
 
@@ -35,11 +40,11 @@ const OrderSummary = () => {
     return totalAmount.toFixed(2);
   }
 
-  return <div>
-    <p className="title" style={{ textAlign: 'center', fontWeight: 'bold', color: '#315B42' }}> Order Summary</p>
-    <div className="cart-items" style={{ backgroundColor: '#fff', padding: '20px', marginInline: '40px' }}>
+  return <section className="order-summary">
+    <p className="order-summary__title"> Order Summary</p>
+    <div className="order-summary__cart-items">
 
-      <div className="cart-item" style={{ fontWeight: 'bold' }}>
+      <div className="order-summary__cart-item header">
         <div style={{ width: '100px' }}>Item</div>
         <div style={{ width: '30%' }}></div>
         <div style={{ width: '30%' }}>Delivery Address</div>
@@ -47,13 +52,11 @@ const OrderSummary = () => {
         <div style={{ width: '20%' }}>Shipping Method</div>
         <div style={{ width: '10%', textAlign: 'right' }}>Price</div>
       </div>
-      { consignments.map(c => <div style={{ borderTop: '2px solid #ccc', margin: '10px', padding: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      { consignments.map(c => <div className="order-summary__consignment">
         {mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
         .map((i, index) => <div key={i.id}>
           
-          {/* <hr style={{ borderColor: '#315B42'}} /> */}
-
-          <div key={i.id} className="cart-item">
+          <div key={i.id} className="order-summary__cart-item">
             <div style={{ width: '100px' }}><img src={i.imageUrl} /></div>
             <div style={{ width: '30%' }}>
               <div className="product-title">{i.quantity} x {i.name}</div>
@@ -71,33 +74,42 @@ const OrderSummary = () => {
         </div>)}
       </div>
       )}
-    </div>
+    
+      <hr style={{ borderColor: '#315B42'}} />
 
-    <div style={{ marginTop: '20px', marginInline: '40px', display: 'flex', justifyContent: 'space-between' }}>
-      <p style={{ width: '40%', fontWeight: 'bold' }}>*Please review your order carefully-due to our baking schedule, changes cannot be made once orders are submitted. Thank you for understanding!</p>
-      <div className="cart-summary" style={{ width: '40%', backgroundColor: '#fff' }}>
-        <div className="cart-amount-line">
-          <span>Subtotal</span>
-          <span>${cart?.baseAmount}</span>
-        </div>
-        <div className="cart-amount-line">
-          <span>Shipping</span>
-          <span>{ shippingTotal ? '$'+shippingTotal.toFixed(2) : 'TBD' }</span>
-        </div>
-        <div className="cart-amount-line">
-          <span>Tax</span>
-          <span>$0.00</span>
-        </div>
+      <div className="order-summary__footer">
+        <p style={{ width: '40%', fontWeight: 'bold' }}>
+          *Please review your order carefully-due to our baking schedule, changes cannot be made once orders are submitted. Thank you for understanding!
+        </p>
 
-        <hr style={{ borderColor: '#315B42'}} />
+        <div className="cart-summary">
+          <div className="cart-amount-line">
+            <span>Subtotal</span>
+            <span>${cart?.baseAmount}</span>
+          </div>
+          <div className="cart-amount-line">
+            <span>Shipping</span>
+            <span>{ shippingTotal ? '$'+shippingTotal.toFixed(2) : 'TBD' }</span>
+          </div>
+          <div className="cart-amount-line">
+            <span>Tax</span>
+            <span>$0.00</span>
+          </div>
 
-        <div className="cart-amount-line">
-          <span style={{ fontSize: '18px' }}>Total (USD)</span>
-          <span style={{ fontSize: '20px', fontWeight: 'bold' }}>${cartTotalAmount()}</span>
+          <hr style={{ borderColor: '#315B42'}} />
+
+          <div className="cart-amount-line">
+            <span style={{ fontSize: '18px' }}>Total (USD)</span>
+            <span style={{ fontSize: '20px', fontWeight: 'bold' }}>${cartTotalAmount()}</span>
+          </div>
         </div>
       </div>
+
+      <div style={{ display: 'flex', justifyContent: 'right' }}>
+        <button onClick={() => { onChangeTab(CheckoutStep.Payment) }} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO PAYMENT</button>
+      </div>
     </div>
-  </div>
+  </section>
 }
 
 export default OrderSummary;

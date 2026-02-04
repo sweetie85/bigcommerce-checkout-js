@@ -253,7 +253,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
 
   return <div className="consignments-wrapper">
     <div className="step-2-title step-title">
-      <span>2.</span>
+      <span>2. </span>
       <span>Select an item to add a delivery address; select & group items going to the same address.</span>
     </div>
 
@@ -295,7 +295,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
                   <input className="future-ship-date-value" placeholder="Future Ship Date" readOnly value={c.address.customFields.find(c => c.fieldId == 'field_26')?.fieldValue} style={{ padding: '10px', fontSize: '14px' }} type="text" />
                 </div>
               </div>
-              <div className="item-options__gift-message">
+              <div className="item-options__gift-message flex-align-center">
                 <GiftMessageOptionGroup 
                   giftProducts={giftProducts}
                   selectedConsignment={c}
