@@ -1,28 +1,29 @@
 import { AddressRequestBody, CheckoutStoreSelector } from "@bigcommerce/checkout-sdk";
 import React, { ReactNode, useEffect, useState } from "react";
 import { useCheckout } from "./shipping-n-delivery/CheckoutContext";
+import PaymentOptionsImage from "../../static/payment-gateways.png"
+import FullPageLoader from "./shipping-n-delivery/FullPageLoader";
 
 interface CheckoutPaymentProps {
-  data: CheckoutStoreSelector;
   checkoutId: string;
   paymentForm: ReactNode;
 }
 
-const CheckoutPayment = ({ data, checkoutId, paymentForm } :CheckoutPaymentProps) => {
+const CheckoutPayment = ({ checkoutId, paymentForm } :CheckoutPaymentProps) => {
 
   const [billingAddress, setBillingAddress] = useState<AddressRequestBody | null>(null);
-  
-  const { checkoutService } = useCheckout();
+  const [isInProgress, setIsInProgress] = useState(false);
 
-  // Next page
-  const [enabledNextStep, setEnabledNextStep] = useState(true);
+  const { checkoutService, checkoutState } = useCheckout();
+  const savedBillingAddress = checkoutState.data.getBillingAddress();
 
   useEffect(() => {
-    const customerShippingAddress = data.getBillingAddress();
-    if (customerShippingAddress) {
-      setBillingAddress(customerShippingAddress);
+    if (savedBillingAddress) {
+      setBillingAddress(savedBillingAddress);
+    } else {
+      setBillingAddress(null);
     }
-  }, []);
+  }, [savedBillingAddress]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setBillingAddress({
@@ -31,21 +32,31 @@ const CheckoutPayment = ({ data, checkoutId, paymentForm } :CheckoutPaymentProps
       } as AddressRequestBody);
     };
 
-  const updateBillingAddress = () => {
+  const updateBillingAddress = async () => {
     if (billingAddress) {
-      checkoutService.updateBillingAddress(billingAddress);
+      setIsInProgress(true);
+      
+      await checkoutService.updateBillingAddress(billingAddress);
       console.log('Billing address updated.');
+
+      setIsInProgress(false);
     }
   }
 
-  return <div style={{ margin: '0 30px' }}>
-    <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>Billing & Payment Information</p>
+  return <section className="payment-page">
+    {isInProgress && <FullPageLoader /> }
+    
+    <p className="payment-page__title">Billing & Payment Information</p>
+    <div className="payment-page__wrapper">
+      <div>
+        <div style={{ fontSize: '16px', fontWeight: 'bold'}}>Check out faster with:</div>
+        <div>
+          <img style={{ width: '70%' }} src={PaymentOptionsImage} alt="Payment options"/>
+        </div>
+      </div>
 
-    <div style={{ backgroundColor: '#fff', padding: '30px 40px' }}>
-      <p style={{ fontSize: '16px', fontWeight: 'bold'}}>Check out faster with:</p>
-
-      <p style={{fontSize: '16px', fontWeight: 'bold'}}>Billing Address: </p>
-      <div style={{ padding: '0 30px' }}>
+      <p style={{fontSize: '16px', fontWeight: 'bold', marginTop: '20px' }}>Billing Address: </p>
+      <div style={{ padding: '0 60px' }}>
         <div className="form-field-row">
           <input className="custom-form-input text" type="text" placeholder="First Name" name="firstName" value={billingAddress?.firstName} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="Last Name" name="lastName" value={billingAddress?.lastName} onChange={handleInputChange} />
@@ -68,16 +79,21 @@ const CheckoutPayment = ({ data, checkoutId, paymentForm } :CheckoutPaymentProps
         </div>
       </div>
 
-      <button onClick={updateBillingAddress} style={{ marginTop: '24px', width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '5px', padding: '10px'}}>Continue</button>
+      <div style={{ display: 'flex', justifyContent: 'right' }}>
+        <button onClick={updateBillingAddress} style={{ marginTop: '24px', width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '5px', padding: '10px'}}>Continue</button>
+      </div>
 
-      <p style={{fontSize: '16px', fontWeight: 'bold', marginTop: '20px'}}>Payment: </p>
-      { paymentForm }
+      {(savedBillingAddress && savedBillingAddress.postalCode) && <>
+        <p style={{fontSize: '16px', fontWeight: 'bold', marginTop: '20px'}}>Payment: </p>
+          { paymentForm }
+        </>
+      }
 
       {/* <div style={{ margin: '0 30px' }}>
         <button disabled={!enabledNextStep} style={{ opacity: enabledNextStep ? '1' : '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>PLACE YOUR ORDER</button>
       </div> */}
     </div>
-  </div>
+  </section>
 }
 
 export default CheckoutPayment;

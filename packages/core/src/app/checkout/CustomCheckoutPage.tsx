@@ -19,7 +19,7 @@ interface CustomCheckoutPageProps {
   paymentForm: ReactNode;
 }
 
-const CustomCheckoutPage = ({ data, checkoutId, cart, paymentForm  }: CustomCheckoutPageProps) => {
+const CustomCheckoutPage = ({ checkoutId, paymentForm  }: CustomCheckoutPageProps) => {
 
   const [activeTabIndex, setActiveTabIndex] = useState<CheckoutStep>(CheckoutStep.Consignment);
   const [giftProducts, setGiftProduct] = useState<{ bigcommerce_product_id: string, frontend_title: string }[]>([]);
@@ -53,7 +53,7 @@ const CustomCheckoutPage = ({ data, checkoutId, cart, paymentForm  }: CustomChec
         return <OrderSummary onChangeTab={setActiveTabIndex} />
 
       case CheckoutStep.Payment:
-        return <CheckoutPayment data={data} checkoutId={checkoutId} paymentForm={paymentForm}/>
+        return <CheckoutPayment checkoutId={checkoutId} paymentForm={paymentForm}/>
 
       default:
         return null;
