@@ -14,9 +14,10 @@ interface GiftMessageOptionProps {
   selectedConsignment: Consignment | null;
   checkoutId: string;
   setIsInProgress: (inProgress: boolean) => void;
+  giftItemError: string | null;
 }
 
-const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment, setIsInProgress }: GiftMessageOptionProps) => {
+const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment, setIsInProgress, giftItemError }: GiftMessageOptionProps) => {
 
   const [isEnabled, setIsEnabled] = useState(false);
   const [hasMultipleGiftMessage, setHasMultipleGiftMessage] = useState(false);
@@ -104,6 +105,7 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
       console.log('Item added successfully.');
       // window.location.reload();
       console.log(res);
+
       const response = await res.json();
       const cartItems = response.lineItems.physicalItems;
       const lastItem = cartItems[cartItems.length - 1];
@@ -147,6 +149,7 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
 
     {isEnabled && <div className="add-gift-popup-wrapper">
     { hasMultipleGiftMessage && <p style={{ color: 'red' }}>NOTE: You are supposed to add only one gift message per consignment</p> }
+    { giftItemError && <p style={{ color: 'red' }}>Error: {giftItemError}</p> }
     <div>
       <select onChange={(e) => setGiftProductId(e.target.value) }>
         <option value="">Select Gift</option>

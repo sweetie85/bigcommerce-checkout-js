@@ -35,6 +35,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
 
   const [selectedShippingOptionIds, setSelectedShippingOptionIds] = useState<Record<string, string>>({});
   const [futureShipDate, setFutureShipDate] = useState<string | null>(null);
+  const [giftItemError, setGiftItemError] = useState<string | null>(null);
 
   const { checkoutState, checkoutService } = useCheckout();
 
@@ -172,7 +173,16 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
         lineItems: lineItems,
       } as ConsignmentAssignmentRequestBody;
 
-      await checkoutService.assignItemsToAddress(requestBody);
+      try {
+        await checkoutService.assignItemsToAddress(requestBody);
+      } catch(e: unknown) {
+        if (e instanceof Error) {
+          setGiftItemError(e.message);
+        } else {
+          console.log('Unexpected Error:');
+          console.log(e);
+        }
+      }
 
       // reset shipping details form once saved
       setFutureShipDate(null);
@@ -301,6 +311,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
                   selectedConsignment={c}
                   checkoutId={checkoutId}
                   setIsInProgress={setIsInProgress}
+                  giftItemError={giftItemError}
                 />
               </div>
             </div>
