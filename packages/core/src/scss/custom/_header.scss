@@ -1,7 +1,7 @@
 @import "~react-datepicker/dist/react-datepicker.css";
 @import 'https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700&display=swap';
 
-.optimizedCheckout-contentPrimary {
+.layout.optimizedCheckout-contentPrimary {
   font-family: Gabarito,Montserrat,Arial,Helvetica,sans-serif;
   font-weight: 400;
   letter-spacing: 0.015em;
@@ -71,9 +71,10 @@
   flex: 0 0 33.3333%;
   max-width: 33.33%;
   color: #315B4287;
+  justify-content: center;
 
   @include breakpoint("medium") {
-    padding: space(3) space(12);
+    padding: space(3) 0;
     font-size: fs('base');
   }
 
@@ -117,7 +118,7 @@
 
 .shipping-n-delivery {
   width: 80%;
-  margin: auto;
+  margin-inline: auto;
 }
 
 .shipping-n-delivery .step-title {
@@ -127,6 +128,10 @@
   @include breakpoint('medium') {
     font-size: fs('base');
   }
+}
+
+.custom-box-shadow {
+  box-shadow: 0px 4px 4px 0px #00000026;
 }
 
 .cart-summary {

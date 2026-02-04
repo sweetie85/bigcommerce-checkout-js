@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { formatAddress } from "./custom-utility";
 import { useCheckout } from "./shipping-n-delivery/CheckoutContext";
 import { CheckoutStep } from "../types";
+import { formatedDate } from "./utility";
 
 interface OrderSummaryProps {
   onChangeTab: (index: CheckoutStep) => void;
@@ -42,15 +43,14 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
 
   return <section className="order-summary">
     <p className="order-summary__title"> Order Summary</p>
-    <div className="order-summary__cart-items">
+    <div className="order-summary__cart-items custom-box-shadow">
 
     <div className="order-summary__cart-item header">
       <div style={{ width: '100px' }}>Item</div>
       <div style={{ width: '30%' }}></div>
       <div style={{ width: '30%' }}>Delivery Address</div>
-      <div style={{ width: '20%' }}>Shipping Date</div>
-      <div style={{ width: '20%' }}>Shipping Method</div>
-      <div style={{ width: '10%', textAlign: 'right' }}>Price</div>
+      <div style={{ width: '20%' }}>Ship Date</div>
+      <div style={{ width: '10%' }}>Price</div>
     </div>
 
       { consignments.map(c => <div className="order-summary__consignment">
@@ -68,8 +68,13 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
               {index == 0 && formatAddress(c.address)}
             </div>
 
-            <div style={{ width: '20%' }}>{c.address.customFields[0] && c.address.customFields[0].fieldId == 'field_26' ? c.address.customFields[0].fieldValue : ''}</div>
-            <div style={{ width: '20%' }}>{c.selectedShippingOption?.description}</div>
+            <div style={{ width: '20%' }}>
+              {index == 0 && <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div>{c.address.customFields[0] && c.address.customFields[0].fieldId == 'field_26' ? formatedDate(c.address.customFields[0].fieldValue as string) : ''}</div>
+                <div>{c.selectedShippingOption?.description}</div>
+              </div>}
+            </div>
+
             <div style={{ width: '10%' }} className="product-price">${i.salePrice}</div>
           </div>
         </div>)}
@@ -83,8 +88,8 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
           *Please review your order carefully-due to our baking schedule, changes cannot be made once orders are submitted. Thank you for understanding!
         </p>
 
-        <div className="cart-summary">
-          <div className="cart-amount-line">
+        <div className="cart-summary" style={{ padding: 0 }}>
+          <div className="cart-amount-line" style={{ paddingTop: 0 }}>
             <span>Subtotal</span>
             <span>${cart?.baseAmount}</span>
           </div>

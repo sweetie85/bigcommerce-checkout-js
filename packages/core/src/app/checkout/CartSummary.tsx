@@ -42,7 +42,7 @@ const CartSummary = () => {
       <p className="title"> Cart Summary ({mainCartItems.length} Items)</p>
       <hr className="" style={{ borderColor: '#315B42', marginBottom: '20px'}} />
 
-      <div className="cart-items">
+      <div className="cart-items custom-box-shadow">
         { cart ?
         (mainCartItems.map(i => <div key={i.id} className="cart-item">
           <div style={{ width: '20%' }}><img src={i.imageUrl} /></div>

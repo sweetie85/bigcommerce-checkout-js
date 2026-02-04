@@ -65,7 +65,7 @@ export const OrderConfirmationPage = ({
     supportPhoneNumber,
 }: OrderConfirmationPageProps): ReactElement => (
     <div
-        className={classNames('layout optimizedCheckout-contentPrimary', {
+        className={classNames('layout optimizedCheckout-contentPrimary custom-checkout', {
             'is-embedded': isEmbedded(),
         })}
     >

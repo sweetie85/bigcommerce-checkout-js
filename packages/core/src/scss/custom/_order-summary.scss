@@ -16,10 +16,12 @@
     background-color: #fff;
     padding: 20px;
     margin-inline: 40px;
+    border-radius: 4px;
   }
 
   &__cart-item {
     display: flex;
+    gap: space(6);
   }
 
   &__cart-item.header {
@@ -29,7 +31,7 @@
   
   &__consignment {
     border-top: 2px solid rgb(204, 204, 204); 
-    padding-top: 20px; 
+    padding-block: 20px; 
     display: flex; 
     flex-direction: column; 
     gap: 20px;
