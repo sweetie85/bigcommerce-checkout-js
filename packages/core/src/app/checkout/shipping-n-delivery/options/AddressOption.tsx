@@ -107,9 +107,9 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
 
       {/* {isUpdateAddressChecked && */}
       <div className="single-address-card-wrapper">
-        <div className="step-title">
+        <div className="step-title step-title-radio flex-align-center">
           <input checked={!isNewAddress} onChange={handleChange} value={0} name="address_option_saved" id="choose_saved_address" type="radio" ></input>        
-          <label style={{ marginLeft: '10px' }} htmlFor="choose_saved_address">Choose a saved address:</label>
+          <label className={!isNewAddress ? 'selected' : ''} htmlFor="choose_saved_address">Choose a saved address:</label>
         </div>
         <div>
           <select className="input-select--address" onChange={handleAddressChange}>
@@ -118,9 +118,9 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
           </select>
         </div>
       
-        <div className="step-title" style={{ marginTop: '20px' }}>
+        <div className="step-title step-title-radio flex-align-center" style={{ marginTop: '20px' }}>
           <input onChange={handleChange} value={1} name="address_option_saved" id="choose_new_address" type="radio" ></input>
-          <label style={{ marginLeft: '10px', color: '#315B42' }} htmlFor="choose_new_address">Enter a new adddress:</label>
+          <label className={isNewAddress ? 'selected' : ''} htmlFor="choose_new_address">Enter a new adddress:</label>
         </div>
       </div>
       {/* } */}

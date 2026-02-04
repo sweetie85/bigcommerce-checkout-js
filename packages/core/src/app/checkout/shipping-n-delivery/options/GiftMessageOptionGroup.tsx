@@ -136,7 +136,7 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
     setIsInProgress(false);
   }
 
-  return <div style={{ position: 'relative' }}>
+  return <div style={{ position: 'relative', width: '100%' }}>
     <div style={{ position: 'relative' }}>
       <button className="button-add-gift-message" onClick={() => setIsEnabled(!isEnabled)}>Add Gift Message</button>
       <svg style={{ position: 'absolute', right: '10px', top: '16px' }} width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
