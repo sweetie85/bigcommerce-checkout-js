@@ -44,14 +44,15 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
     <p className="order-summary__title"> Order Summary</p>
     <div className="order-summary__cart-items">
 
-      <div className="order-summary__cart-item header">
-        <div style={{ width: '100px' }}>Item</div>
-        <div style={{ width: '30%' }}></div>
-        <div style={{ width: '30%' }}>Delivery Address</div>
-        <div style={{ width: '20%' }}>Shipping Date</div>
-        <div style={{ width: '20%' }}>Shipping Method</div>
-        <div style={{ width: '10%', textAlign: 'right' }}>Price</div>
-      </div>
+    <div className="order-summary__cart-item header">
+      <div style={{ width: '100px' }}>Item</div>
+      <div style={{ width: '30%' }}></div>
+      <div style={{ width: '30%' }}>Delivery Address</div>
+      <div style={{ width: '20%' }}>Shipping Date</div>
+      <div style={{ width: '20%' }}>Shipping Method</div>
+      <div style={{ width: '10%', textAlign: 'right' }}>Price</div>
+    </div>
+
       { consignments.map(c => <div className="order-summary__consignment">
         {mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
         .map((i, index) => <div key={i.id}>
@@ -106,7 +107,7 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'right' }}>
-        <button onClick={() => { onChangeTab(CheckoutStep.Payment) }} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO PAYMENT</button>
+        <button onClick={() => { onChangeTab(CheckoutStep.Payment) }} style={{ backgroundColor: '#F6A601', padding: '12px 50px', marginTop: '30px', borderRadius: '8px' }}>GO TO PAYMENT</button>
       </div>
     </div>
   </section>

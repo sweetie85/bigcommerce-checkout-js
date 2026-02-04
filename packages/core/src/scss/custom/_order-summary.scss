@@ -1,14 +1,15 @@
 .order-summary {
-  font-size: fs('xs');
+  font-size: fs('sm');
 
   @include breakpoint("medium") {
-    font-size: fs('sm');
+    font-size: fs('base');
   }
 
   &__title {
     text-align: center; 
     font-weight: bold; 
     color: #315B42;
+    font-size: fs('lg');
   }
 
   &__cart-items {
@@ -23,12 +24,12 @@
 
   &__cart-item.header {
     font-weight: bold;
+    padding-bottom: space(5);
   }
   
   &__consignment {
     border-top: 2px solid rgb(204, 204, 204); 
-    margin: 10px; 
-    padding: 10px; 
+    padding-top: 20px; 
     display: flex; 
     flex-direction: column; 
     gap: 20px;
@@ -36,7 +37,6 @@
 
   &__footer {
     margin-top: 20px; 
-    margin-inline: 40px; 
     display: flex; 
     justify-content: space-between;
 
