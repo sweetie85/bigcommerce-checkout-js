@@ -143,6 +143,62 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
     setShippingAddress(updatedAddress); // ✅ Update single source of truth
   };
 
+  const addFutureShipDateToCart = async (futureShipDate: string): Promise<PhysicalItem | null> => {
+
+    console.log('addFutureShipDateToCart: ');
+
+    const [productId, optionId] = ['140', '148'];
+
+    const lineItems = [];
+    const lineItem = {
+      quantity: 1,
+      productId: parseInt(productId),
+      optionSelections: [{
+        optionId: parseInt(optionId),
+        optionValue: futureShipDate
+      }],
+    };
+
+    lineItems.push(lineItem);
+
+    const endpoint = checkoutId ? `/api/storefront/cart/${checkoutId}/items` : `/api/storefront/cart`;
+
+    const payload = { lineItems };
+
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if(!res.ok) {
+      const error = await res.json();
+      console.error('Add item error:', error);
+      alert('Error adding add-ons: ' + (error.title || 'Unknown error'));
+      
+      setIsInProgress(false);
+      return null;
+    } else {
+
+      console.log('Item added successfully.');
+      // window.location.reload();
+      console.log(res);
+
+      const response = await res.json();
+      const physicalItems = response.lineItems.physicalItems as PhysicalItem[];
+
+      // Collect only main products
+      const cartItems = physicalItems.filter(i => !i.parentId);
+      const lastItem = cartItems[cartItems.length - 1];
+
+      return lastItem;
+    }
+  }
+
   const updateConsignments = async () => {
 
     const cart = checkoutState.data.getCart();
@@ -165,7 +221,18 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
           fieldId: 'field_26',
           fieldValue: futureShipDate,
         });
+
+        // Add new product: SH-DATE
+        const shipDateItem = await addFutureShipDateToCart(futureShipDate);
+
+        console.log('shipDateItem: ');
+        console.log(shipDateItem);
+
+        if (shipDateItem) {
+          lineItems.push({ itemId: shipDateItem.id, quantity: 1 });
+        }
       }
+      
 
       const requestBody = {
         address: updatedAddress,
