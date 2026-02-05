@@ -1,4 +1,4 @@
-import { Consignment, ConsignmentAssignmentRequestBody } from "@bigcommerce/checkout-sdk";
+import { Consignment, ConsignmentAssignmentRequestBody, PhysicalItem } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react"
 import { useCheckout } from "../CheckoutContext";
 
@@ -35,7 +35,7 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
 
       const cart = checkoutState.data.getCart();
       if (cart) {
-        const selectedConsignmentItems = cart.lineItems.physicalItems.filter(i => selectedConsignment.lineItemIds.includes(i.id as string));
+        const selectedConsignmentItems = cart.lineItems.physicalItems.filter(i => !i.parentId && selectedConsignment.lineItemIds.includes(i.id as string));
         console.log(selectedConsignmentItems);
 
         const giftItems = selectedConsignmentItems.filter(i => i.sku.startsWith('CARD-'));
@@ -107,7 +107,10 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
       console.log(res);
 
       const response = await res.json();
-      const cartItems = response.lineItems.physicalItems;
+      const physicalItems = response.lineItems.physicalItems as PhysicalItem[];
+
+      // Collect only main products
+      const cartItems = physicalItems.filter(i => !i.parentId);
       const lastItem = cartItems[cartItems.length - 1];
 
       const giftItem = { itemId: lastItem.id, quantity: lastItem.quantity };
@@ -123,6 +126,9 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
           shippingAddress: selectedConsignment.address,
           lineItems: [giftItem],
         } as ConsignmentAssignmentRequestBody;
+
+        console.log('assignItemsToAddress: ');
+        console.log(requestBody);
 
         await checkoutService.assignItemsToAddress(requestBody);
 

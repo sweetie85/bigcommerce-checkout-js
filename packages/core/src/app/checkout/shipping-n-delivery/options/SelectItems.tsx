@@ -107,7 +107,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
       // If no selected item
       if (!items) {
         // All items
-        items = cart.lineItems.physicalItems;
+        items = cart.lineItems.physicalItems.filter(c => !c.parentId);
       }
 
       checkoutService.createConsignments([{

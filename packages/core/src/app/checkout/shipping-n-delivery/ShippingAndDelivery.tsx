@@ -6,7 +6,8 @@ import {
   Consignment, 
   ConsignmentAssignmentRequestBody, 
   ConsignmentLineItem, 
-  CustomerAddress
+  CustomerAddress,
+  PhysicalItem
 } from '@bigcommerce/checkout-sdk';
 
 import ConsignmentOption from "./options/ConsignmentOption";
@@ -182,7 +183,9 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
       // window.location.reload();
       console.log(res);
       const response = await res.json();
-      const cartItems = response.lineItems.physicalItems;
+      const physicalItems = response.lineItems.physicalItems as PhysicalItem[];
+      
+      const cartItems = physicalItems.filter(c => !c.parentId);;
       const lastItem = cartItems[cartItems.length - 1];
 
       return { itemId: lastItem.id, quantity: lastItem.quantity };
@@ -224,7 +227,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     }
 
     if (cart) {
-      const lineItems = cart.lineItems.physicalItems
+      const lineItems = cart.lineItems.physicalItems.filter(i => !i.parentId)
         .map(i => ({itemId: i.id, quantity: i.quantity})) as ConsignmentLineItem[];
 
       console.log('Gift Item:');
