@@ -1,6 +1,6 @@
 import { Cart, CheckoutStoreSelector, Consignment, PhysicalItem, ShippingOption } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
-import { useCheckout } from "./shipping-n-delivery/CheckoutContext";
+import { useCheckout } from "../context/CheckoutContext";
 // import { useShipping } from "../shipping/hooks/useShipping";
 
 const CartSummary = () => {

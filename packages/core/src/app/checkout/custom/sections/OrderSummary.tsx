@@ -1,9 +1,9 @@
-import { AddressRequestBody, Cart, CheckoutStoreSelector, Consignment, PhysicalItem, ShippingOption } from "@bigcommerce/checkout-sdk";
+import { Cart, Consignment, PhysicalItem } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
-import { formatAddress } from "./custom-utility";
-import { useCheckout } from "./shipping-n-delivery/CheckoutContext";
+import { formatAddress } from "../../custom-utility";
+import { useCheckout } from "../context/CheckoutContext";
 import { CheckoutStep } from "../types";
-import { formatedDate } from "./utility";
+import { formatedDate } from "../utility";
 
 interface OrderSummaryProps {
   onChangeTab: (index: CheckoutStep) => void;

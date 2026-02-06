@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { Consignment, ShippingOption } from '@bigcommerce/checkout-sdk';
-import { useCheckout } from "../CheckoutContext";
+import { useCheckout } from "../context/CheckoutContext";
 
 interface ShippingMethodOptionProps {
   handleChange: (id: string) => void,

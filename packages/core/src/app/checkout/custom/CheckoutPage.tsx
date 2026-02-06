@@ -1,16 +1,16 @@
 
 import React, { ReactNode, useEffect, useState } from "react";
-import CartSummary from "./CartSummary";
-import CheckoutHeader from "./CheckoutHeader";
-import ShippingAndDelivery from "./shipping-n-delivery/ShippingAndDelivery";
+import CartSummary from "./sections/CartSummary";
+import CheckoutHeader from "./sections/CheckoutHeader";
+import ShippingAndDelivery from "./sections/ShippingAndDelivery";
 import { CheckoutStoreSelector, Cart } from "@bigcommerce/checkout-sdk";
-import OrderSummary from "./OrderSummary";
-import CheckoutPayment from "./CheckoutPayment";
-import { useCheckout } from "./shipping-n-delivery/CheckoutContext";
+import OrderSummary from "./sections/OrderSummary";
+import CheckoutPayment from "./sections/CheckoutPayment";
+import { useCheckout } from "./context/CheckoutContext";
 
 import { CheckoutPageSkeleton } from "@bigcommerce/checkout/ui";
-import CheckoutFooter from "./shipping-n-delivery/CheckoutFooter";
-import { CheckoutStep } from '../types';
+import CheckoutFooter from "./sections/CheckoutFooter";
+import { CheckoutStep } from './types';
 
 interface CustomCheckoutPageProps {
   data: CheckoutStoreSelector;
@@ -19,7 +19,7 @@ interface CustomCheckoutPageProps {
   paymentForm: ReactNode;
 }
 
-const CustomCheckoutPage = ({ checkoutId, paymentForm  }: CustomCheckoutPageProps) => {
+const CheckoutPage = ({ checkoutId, paymentForm  }: CustomCheckoutPageProps) => {
 
   const [activeTabIndex, setActiveTabIndex] = useState<CheckoutStep>(CheckoutStep.Consignment);
   const [giftProducts, setGiftProduct] = useState<{ bigcommerce_product_id: string, frontend_title: string }[]>([]);
@@ -76,4 +76,4 @@ const CustomCheckoutPage = ({ checkoutId, paymentForm  }: CustomCheckoutPageProp
   </section>
 }
 
-export default CustomCheckoutPage;
+export default CheckoutPage;

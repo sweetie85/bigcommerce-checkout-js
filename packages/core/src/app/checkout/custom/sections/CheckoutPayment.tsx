@@ -1,8 +1,8 @@
 import { AddressRequestBody, CheckoutStoreSelector } from "@bigcommerce/checkout-sdk";
 import React, { ReactNode, useEffect, useState } from "react";
-import { useCheckout } from "./shipping-n-delivery/CheckoutContext";
-import PaymentOptionsImage from "../../static/payment-gateways.png"
-import FullPageLoader from "./shipping-n-delivery/FullPageLoader";
+import { useCheckout } from "../context/CheckoutContext";
+import PaymentOptionsImage from "../../../../static/payment-gateways.png"
+import FullPageLoader from "../FullPageLoader";
 
 interface CheckoutPaymentProps {
   checkoutId: string;

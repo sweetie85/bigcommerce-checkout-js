@@ -59,8 +59,8 @@ import CheckoutStepType from './CheckoutStepType';
 import type CheckoutSupport from './CheckoutSupport';
 import { mapCheckoutComponentErrorMessage } from './mapErrorMessage';
 import mapToCheckoutProps from './mapToCheckoutProps';
-import CustomCheckoutPage from './CustomCheckoutPage';
-import { CheckoutProvider } from './shipping-n-delivery/CheckoutContext';
+import CustomCheckoutPage from './custom/CheckoutPage';
+import { CheckoutProvider } from './custom/context/CheckoutContext';
 
 const Billing = lazy(() =>
     retry(

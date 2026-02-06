@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useCheckout } from './shipping-n-delivery/CheckoutContext';
+import { useCheckout } from '../context/CheckoutContext';
 import { CheckoutStep } from '../types';
 
 interface CheckoutHeaderProps {

@@ -1,27 +1,23 @@
 import { AddressRequestBody, Cart, Consignment, ConsignmentAssignmentRequestBody, ConsignmentLineItem, PhysicalItem } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
 import { formatAddress } from "../../custom-utility";
-import { useCheckout } from "../CheckoutContext";
-import AddressOption from "./AddressOption";
-import ShippingMethodOptionGroup from "./ShippingMethodOptionGroup";
-import FutureShipDateOptionGroup from "./FutureShipDateOptionGroup";
-import GiftMessageOptionGroup from "./GiftMessageOptionGroup";
-import AddressOptionGroup from "./AddressOptionGroup";
+import { useCheckout } from "../context/CheckoutContext";
+import AddressOption from "../options/AddressOption";
+import ShippingMethodOptionGroup from "../options/ShippingMethodOptionGroup";
+import FutureShipDateOptionGroup from "../options/FutureShipDateOptionGroup";
+import GiftMessageOptionGroup from "../options/GiftMessageOptionGroup";
+import AddressOptionGroup from "../options/AddressOptionGroup";
 import ConsignmentItemCard from "../components/ConsignmentItemCard";
 
 interface SelectItemsProps {
   checkoutId: string;
   giftProducts: { bigcommerce_product_id: string, frontend_title: string }[];
-  // selecedItemIds: string[];
-  // onChangeSelectedItems: (ids: string[]) => void;
-  // onSelectConsignment: (consignment: Consignment) => void;
   setIsInProgress: (inProgress: boolean) => void;
   gotoNextStep: () => void;
 }
 
 const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }: SelectItemsProps) => {
   const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
-  const [showDetailsItemIds, setShowDetailsItemIds] = useState<number[]>([]);
   const [selecedItemIds, setSelecedItemIds] = useState<string[]>([]);
   
   const [isUpdateAddressChecked, setIsUpdateAddressChecked] = useState(false);
@@ -143,6 +139,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
     setShippingAddress(updatedAddress); // ✅ Update single source of truth
   };
 
+  /*
   const addFutureShipDateToCart = async (futureShipDate: string): Promise<PhysicalItem | null> => {
 
     console.log('addFutureShipDateToCart: ');
@@ -161,7 +158,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
 
     lineItems.push(lineItem);
 
-    const endpoint = checkoutId ? `/api/storefront/cart/${checkoutId}/items` : `/api/storefront/cart`;
+    const endpoint = `/api/storefront/cart/${checkoutId}/items`;
 
     const payload = { lineItems };
 
@@ -198,6 +195,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
       return lastItem;
     }
   }
+  */
 
   const updateConsignments = async () => {
 
@@ -223,6 +221,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
         });
 
         // Add new product: SH-DATE
+        /*
         const shipDateItem = await addFutureShipDateToCart(futureShipDate);
 
         console.log('shipDateItem: ');
@@ -231,6 +230,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
         if (shipDateItem) {
           lineItems.push({ itemId: shipDateItem.id, quantity: 1 });
         }
+        */
       }
       
 

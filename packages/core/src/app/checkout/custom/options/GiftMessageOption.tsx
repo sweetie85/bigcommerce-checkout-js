@@ -1,6 +1,6 @@
 import { Consignment } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react"
-import { useCheckout } from "../CheckoutContext";
+import { useCheckout } from "../context/CheckoutContext";
 
 interface GIftProduct {
   bigcommerce_product_id: string, 
