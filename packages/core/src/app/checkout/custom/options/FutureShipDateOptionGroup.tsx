@@ -14,6 +14,7 @@ const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedC
   const [shouldSelectShipDate, setShouldSelectShipDate] = useState(false);
   const [shipDate, setShipDate] = useState<Date | null>(null);
   const [selectedFutureShipDate, setSelectedFutureShipDate] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
 
@@ -63,12 +64,19 @@ const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedC
   return <div className="future-ship-date-wrapper">
     <DatePicker 
       selected={shipDate} 
-      onChange={(date) => setShipDate(date)} 
+      onChange={(date) => {
+        setShipDate(date);
+        setIsOpen(false); // close after select
+      }} 
       filterDate={isWeekday} 
       placeholderText="Future Ship Date"
-      customInput={<input className="input-text" type="text" />}
+      minDate={new Date()}
+      open={isOpen}
+      onInputClick={() => setIsOpen(true) }
+      onClickOutside={() => setIsOpen(false)}
+      customInput={<input readOnly className="input-text" type="text" />}
       />
-      <svg style={{ position: 'absolute', right: '10px', top: '16px' }} width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg onClick={() => setIsOpen((prev) => !prev)} style={{ position: 'absolute', right: '10px', top: '20px', cursor: 'pointer' }} width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M14 2.14483L7.02143 9L-9.37535e-08 2.14483L2.21585 -5.15101e-07L6.97857 4.70206L11.7841 -9.6858e-08L14 2.14483Z" fill="#315B42"/>
       </svg>
   </div>

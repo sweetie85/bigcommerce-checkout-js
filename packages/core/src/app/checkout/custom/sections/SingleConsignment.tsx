@@ -12,9 +12,10 @@ interface SingleConsignmentProps {
   giftProducts: { bigcommerce_product_id: string, frontend_title: string }[];
   setIsInProgress: (inProgress: boolean) => void;
   gotoNextStep: () => void;
+  setEnabledNextStep: (e: boolean) => void;
 }
 
-const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }: SingleConsignmentProps) => {
+const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabledNextStep }: SingleConsignmentProps) => {
 
   const [isUpdateAddressChecked, setIsUpdateAddressChecked] = useState(false);
   const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
@@ -196,7 +197,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
       }
     }
 
-    // setEnabledNextStep(true);
+    setEnabledNextStep(true);
 
     setIsInProgress(false);
   }

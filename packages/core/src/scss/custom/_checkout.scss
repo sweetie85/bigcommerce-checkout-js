@@ -508,6 +508,24 @@
     margin-top: space(10);
   }
 
+  .future-ship-date-wrapper {
+    position: relative; 
+    width: 95%;
+    
+    @include breakpoint('medium') {
+      width: 300px;
+    }
+
+    .input-text {
+      width: 100%;
+      cursor: pointer;
+
+      @include breakpoint('medium') {
+        width: 300px;
+      }
+    }
+  }
+
   .shipping-options-wrapper {
     display: flex; 
     gap: space(5);
