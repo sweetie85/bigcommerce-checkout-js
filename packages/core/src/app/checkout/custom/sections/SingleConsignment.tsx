@@ -88,7 +88,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
       }
 
       const updatedAddress = shippingAddress;
-      if (updatedAddress && futureShipDate) {
+      if (updatedAddress && futureShipDate && updatedAddress.customFields) {
         updatedAddress.customFields.push({
           fieldId: 'field_26',
           fieldValue: futureShipDate,

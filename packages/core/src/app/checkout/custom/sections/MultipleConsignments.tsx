@@ -214,7 +214,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
         return null;
       }
 
-      if (updatedAddress && futureShipDate) {
+      if (updatedAddress && futureShipDate && updatedAddress.customFields) {
         updatedAddress.customFields.push({
           fieldId: 'field_26',
           fieldValue: futureShipDate,
