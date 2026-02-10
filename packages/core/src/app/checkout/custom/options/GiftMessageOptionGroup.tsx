@@ -113,7 +113,7 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
       const cartItems = physicalItems.filter(i => !i.parentId);
       const lastItem = cartItems[cartItems.length - 1];
 
-      const giftItem = { itemId: lastItem.id, quantity: lastItem.quantity };
+      const giftItem = { itemId: lastItem.id, quantity: 1 };
 
       if (selectedConsignment) {
         // selectedConsignment.lineItemIds.push(giftItem);

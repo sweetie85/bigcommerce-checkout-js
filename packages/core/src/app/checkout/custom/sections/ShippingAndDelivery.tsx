@@ -64,6 +64,12 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
         setEnabledNextStep(true);
       }
     }
+
+    console.log('Cart Data: ');
+    console.log(checkoutState.data.getCart());
+
+    console.log('Consignment Data: ');
+    console.log(checkoutState.data.getConsignments());
   }, []);
 
   const saveGuestEmail = async () => {

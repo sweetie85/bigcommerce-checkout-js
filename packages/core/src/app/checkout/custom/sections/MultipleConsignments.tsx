@@ -260,6 +260,83 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
     }
   }
 
+  async function updateFutureShipDate(consignment: Consignment, dateString: string) {
+    if (!consignment || !cart || !dateString || dateString == '') {
+      return null;
+    }
+    const existingAddress = consignment.shippingAddress;
+
+    if (!existingAddress) {
+      throw new Error('Consignment has no shipping address');
+    }
+
+    // Merge custom fields (overwrite by fieldId)
+    const mergedCustomFieldsMap = new Map();
+
+    (existingAddress.customFields || []).forEach(f =>
+      mergedCustomFieldsMap.set(f.fieldId, f.fieldValue)
+    );
+
+    const newCustomFields = [{
+      fieldId: 'field_26',
+      fieldValue: dateString
+    }];
+
+    newCustomFields.forEach(f =>
+      mergedCustomFieldsMap.set(f.fieldId, f.fieldValue)
+    );
+
+    const mergedCustomFields = Array.from(
+      mergedCustomFieldsMap,
+      ([fieldId, fieldValue]) => ({ fieldId, fieldValue })
+    );
+
+    console.log('mergedCustomFields: ');
+    console.log(mergedCustomFields);
+
+    // Build FULL shipping address payload
+    const updatedShippingAddress = {
+      ...existingAddress,
+      customFields: mergedCustomFields
+    };
+
+    const requestBody = {
+        shippingAddress: updatedShippingAddress,
+        lineItems: cart.lineItems.physicalItems
+          .filter(i => !i.parentId && consignment.lineItemIds.includes(i.id as string))
+          .map(item => ({
+            itemId: item.id,
+            quantity: item.quantity
+          }))
+      }
+
+    // PUT updated address back
+    const updateRes = await fetch(
+      `/api/storefront/checkouts/${checkoutId}/consignments/${consignment.id}`,
+      {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      }
+    );
+
+    // const updateRes = await checkoutService.assignItemsToAddress(requestBody);
+
+    if (!updateRes.ok) {
+      const err = await updateRes.text();
+      throw new Error(`Failed to update consignment: ${err}`);
+    }
+
+    const updateResponse = await updateRes.json();
+    console.log(updateResponse);
+
+    // Force SDK to refresh its internal state
+    await checkoutService.loadCheckout(checkoutId);
+  }
+
   const saveChanges = async () => {
     setIsInProgress(true);
     await updateConsignments();
@@ -369,7 +446,15 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
                   />
                 </div>
                 <div className="item-options__ship_date">
-                  <input className="future-ship-date-value" placeholder="Future Ship Date" readOnly value={c.address.customFields.find(c => c.fieldId == 'field_26')?.fieldValue} style={{ padding: '10px', fontSize: '14px' }} type="text" />
+                  {/* <input className="future-ship-date-value" placeholder="Future Ship Date" readOnly value={c.address.customFields.find(c => c.fieldId == 'field_26')?.fieldValue} style={{ padding: '10px', fontSize: '14px' }} type="text" /> */}
+                  <FutureShipDateOptionGroup 
+                    futureShipDate={''} 
+                    handleChangeDate={(value) => {
+                      console.log('Save date and update: '+value);
+                      updateFutureShipDate(c, value as string);
+                    }} 
+                    selectedConsignment={selectedConsignment} 
+                    />
                 </div>
               </div>
               <div className="item-options__gift-message flex-align-center">
