@@ -246,6 +246,7 @@
   
   .back-to-cart {
     color: #F6A601;
+    position: absolute;
 
     @include breakpoint('medium') {
       margin-right: auto;

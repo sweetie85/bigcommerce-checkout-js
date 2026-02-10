@@ -1,6 +1,7 @@
 import { Consignment, ConsignmentAssignmentRequestBody, PhysicalItem } from "@bigcommerce/checkout-sdk";
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { useCheckout } from "../context/CheckoutContext";
+import { useOutsideClick } from "../hools/useOutsideClick";
 
 interface GIftProduct {
   bigcommerce_product_id: string, 
@@ -26,8 +27,12 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
   const [gitProductId, setGiftProductId] = useState<string | null>(null);
   const [giftMessage, setGiftMessage] = useState<string | null>(null);
 
+  const popupRef = useRef<HTMLDivElement | null>(null);
+
   const { checkoutState, checkoutService } = useCheckout();
   
+  useOutsideClick(popupRef, () => { setIsEnabled(false) }, isEnabled);
+
   useEffect(() => {
     if (selectedConsignment) {
 
@@ -153,7 +158,7 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
     </div>
 
 
-    {isEnabled && <div className="add-gift-popup-wrapper">
+    {isEnabled && <div ref={popupRef} className="add-gift-popup-wrapper">
     { hasMultipleGiftMessage && <p style={{ color: 'red' }}>NOTE: You are supposed to add only one gift message per consignment</p> }
     { giftItemError && <p style={{ color: 'red' }}>Error: {giftItemError}</p> }
     <div>
