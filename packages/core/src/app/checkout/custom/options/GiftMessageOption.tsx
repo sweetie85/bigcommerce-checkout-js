@@ -29,21 +29,21 @@ const GiftMessageOption = ({ giftProducts, selectedConsignment, setGiftProductId
       const cart = checkoutState.data.getCart();
       if (cart) {
         const selectedConsignmentItems = cart.lineItems.physicalItems.filter(i => selectedConsignment.lineItemIds.includes(i.id as string));
-        console.log(selectedConsignmentItems);
+        // console.log(selectedConsignmentItems);
 
         const giftItems = selectedConsignmentItems.filter(i => i.sku.startsWith('CARD-'));
 
         if (giftItems.length >= 1) {
-          console.log('setHasMultipleGiftMessage true');
+          // console.log('setHasMultipleGiftMessage true');
           setHasMultipleGiftMessage(true);
         } else {
-          console.log('setHasMultipleGiftMessage false');
+          // console.log('setHasMultipleGiftMessage false');
           setHasMultipleGiftMessage(false);
         }
       }
     } else {
       setHasMultipleGiftMessage(false);
-      console.log('setHasMultipleGiftMessage false');
+      // console.log('setHasMultipleGiftMessage false');
     }
 
   }, [selectedConsignment]);

@@ -36,28 +36,28 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
       const cart = checkoutState.data.getCart();
       if (cart) {
         const selectedConsignmentItems = cart.lineItems.physicalItems.filter(i => !i.parentId && selectedConsignment.lineItemIds.includes(i.id as string));
-        console.log(selectedConsignmentItems);
+        // console.log(selectedConsignmentItems);
 
         const giftItems = selectedConsignmentItems.filter(i => i.sku.startsWith('CARD-'));
 
         if (giftItems.length >= 1) {
-          console.log('setHasMultipleGiftMessage true');
+          // console.log('setHasMultipleGiftMessage true');
           setHasMultipleGiftMessage(true);
         } else {
-          console.log('setHasMultipleGiftMessage false');
+          // console.log('setHasMultipleGiftMessage false');
           setHasMultipleGiftMessage(false);
         }
       }
     } else {
       setHasMultipleGiftMessage(false);
-      console.log('setHasMultipleGiftMessage false');
+      // console.log('setHasMultipleGiftMessage false');
     }
 
   }, [selectedConsignment]);
 
   const addItemToCart = async () => {
 
-    console.log('addItemsToCart: ');
+    // console.log('addItemsToCart: ');
 
     if (!gitProductId || !giftMessage) {
       return null;
@@ -102,9 +102,9 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
       return null;
     } else {
 
-      console.log('Item added successfully.');
+      // console.log('Item added successfully.');
       // window.location.reload();
-      console.log(res);
+      // console.log(res);
 
       const response = await res.json();
       const physicalItems = response.lineItems.physicalItems as PhysicalItem[];
@@ -127,8 +127,8 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
           lineItems: [giftItem],
         } as ConsignmentAssignmentRequestBody;
 
-        console.log('assignItemsToAddress: ');
-        console.log(requestBody);
+        // console.log('assignItemsToAddress: ');
+        // console.log(requestBody);
 
         await checkoutService.assignItemsToAddress(requestBody);
 

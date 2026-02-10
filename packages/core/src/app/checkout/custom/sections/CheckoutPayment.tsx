@@ -37,7 +37,7 @@ const CheckoutPayment = ({ checkoutId, paymentForm } :CheckoutPaymentProps) => {
       setIsInProgress(true);
       
       await checkoutService.updateBillingAddress(billingAddress);
-      console.log('Billing address updated.');
+      // console.log('Billing address updated.');
 
       setIsInProgress(false);
     }

@@ -16,7 +16,7 @@ interface SelectItemsProps {
   gotoNextStep: () => void;
 }
 
-const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }: SelectItemsProps) => {
+const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }: SelectItemsProps) => {
   const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
   const [selecedItemIds, setSelecedItemIds] = useState<string[]>([]);
   
@@ -47,7 +47,7 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
       // Detect if single consignments
       if (consignments.length == 1) {
         if (consignments[0].address.address1 != 'TO_BE_ASSIGNED') {
-          console.log('createHoldingConsignment: ');
+          // console.log('createHoldingConsignment: ');
           // Move all items to dummy consignments
           createHoldingConsignment();
         }
@@ -55,8 +55,8 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
 
       const holdingConsignment = consignments.find(c => c.address.address1 == 'TO_BE_ASSIGNED');
       if (holdingConsignment) {
-        console.log('holding consignment found.');
-        console.log(consignments[0].lineItemIds);
+        // console.log('holding consignment found.');
+        // console.log(consignments[0].lineItemIds);
 
         setHoldingConsignment(holdingConsignment);
         setUnassignedLineItems(mainItems.filter(i => holdingConsignment.lineItemIds.includes(i.id as string)));
@@ -135,14 +135,14 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
   }
 
   const handleAddressChange = (updatedAddress: AddressRequestBody) => {
-    console.log('setShippingAddress 2: ');
+    // console.log('setShippingAddress 2: ');
     setShippingAddress(updatedAddress); // ✅ Update single source of truth
   };
 
   /*
   const addFutureShipDateToCart = async (futureShipDate: string): Promise<PhysicalItem | null> => {
 
-    console.log('addFutureShipDateToCart: ');
+    // console.log('addFutureShipDateToCart: ');
 
     const [productId, optionId] = ['140', '148'];
 
@@ -181,9 +181,9 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
       return null;
     } else {
 
-      console.log('Item added successfully.');
+      // console.log('Item added successfully.');
       // window.location.reload();
-      console.log(res);
+      // console.log(res);
 
       const response = await res.json();
       const physicalItems = response.lineItems.physicalItems as PhysicalItem[];
@@ -224,8 +224,8 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
         /*
         const shipDateItem = await addFutureShipDateToCart(futureShipDate);
 
-        console.log('shipDateItem: ');
-        console.log(shipDateItem);
+        // console.log('shipDateItem: ');
+        // console.log(shipDateItem);
 
         if (shipDateItem) {
           lineItems.push({ itemId: shipDateItem.id, quantity: 1 });
@@ -491,4 +491,4 @@ const SelectItems = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }
   </div>
 }
 
-export default SelectItems;
+export default MultipleConsignments;

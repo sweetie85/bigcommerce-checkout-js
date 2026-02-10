@@ -95,7 +95,7 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
           </div>
           <div className="cart-amount-line">
             <span>Shipping</span>
-            <span>{ shippingTotal ? '$'+shippingTotal.toFixed(2) : 'TBD' }</span>
+            <span>{ shippingTotal || shippingTotal === 0 ? '$'+shippingTotal.toFixed(2) : 'TBD' }</span>
           </div>
           <div className="cart-amount-line">
             <span>Tax</span>

@@ -12,7 +12,7 @@ const BackButton = () => {
   return <div className='back-to-cart'>
     <a href='/cart.php' className='back-to-cart-wrapper'>
       <svg width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <g clip-path="url(#clip0_37_106)">
+        <g clipPath="url(#clip0_37_106)">
           <path d="M4.20376 7.75827H13.9239L14 7.67963V5.32037L13.9239 5.24173H4.20376L7.1944 1.64309L5.44732 0L0 6.51783L5.44732 13L7.1944 11.3569L4.20376 7.75827Z" fill="#F6A601"/>
         </g>
         <defs>

@@ -19,7 +19,7 @@ interface CheckoutContextValue {
   checkoutState: CheckoutSelectors;
   ready: boolean;
   hasShippingAddressEnabled: boolean;
-  hasShippingMethodEnabled: Boolean;
+  hasShippingMethodEnabled: boolean;
 }
 
 // Create context
@@ -70,8 +70,8 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         // await checkoutService.loadShippingOptions();
 
         if (mounted) {
-          console.log('Initial Checkout state getConsignments: ');
-          console.log(checkoutState.data.getConsignments());
+          // console.log('Initial Checkout state getConsignments: ');
+          // console.log(checkoutState.data.getConsignments());
 
           setCheckoutState(checkoutState);
           setReady(true);
@@ -84,8 +84,8 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
       // 3️⃣ Subscribe to updates
       const unsubscribe = checkoutService.subscribe(
         (newState) => {
-          console.log('newState.data: ');
-          console.log(newState);
+          // console.log('newState.data: ');
+          // console.log(newState);
           const billingAddress = newState.data.getBillingAddress();
           const consignments = newState.data.getConsignments();
 

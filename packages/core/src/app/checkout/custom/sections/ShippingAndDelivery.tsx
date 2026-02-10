@@ -55,8 +55,8 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     setGuestEmailId(billingAddress && billingAddress.email ? billingAddress.email : '');
 
     const consignments = checkoutState.data.getConsignments();
-    console.log('consignments: ');
-    console.log(consignments);
+    // console.log('consignments: ');
+    // console.log(consignments);
   
     if (consignments) {
       if (consignments.length > 1) {
@@ -80,7 +80,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
 
     setIsInProgress(true);
 
-    console.log('continueAsGuest: ');
+    // console.log('continueAsGuest: ');
     // checkoutService.continueAsGuest()
     const res = await checkoutService.continueAsGuest({
       email: guestEmalId,
@@ -88,7 +88,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     
     setIsInProgress(false);
 
-    console.log(res);
+    // console.log(res);
   }
 
   

@@ -41,10 +41,10 @@ const AddressOptionGroup = ({
   }, [selectedConsignment])
 
   useEffect(() => {
-    console.log('AddressOption shippingAddress: ');
-    console.log(shippingAddress);
+    // console.log('AddressOption shippingAddress: ');
+    // console.log(shippingAddress);
 
-    console.log(shippingAddress?.countryCode);
+    // console.log(shippingAddress?.countryCode);
 
     if (shippingAddress?.countryCode) {
       const selectedCountry = countries.find(c => c.code == shippingAddress.countryCode);
@@ -55,12 +55,12 @@ const AddressOptionGroup = ({
   }, [shippingAddress]);
 
   const handleChange = (e: any) => {
-    console.log('e.target.value: '+e.target.value);
+    // console.log('e.target.value: '+e.target.value);
     setIsNewAddress(e.target.value == '1');
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
-    console.log({ [e.target.name]: e.target.value })
+    // console.log({ [e.target.name]: e.target.value })
 
     const updatedShippingAddress = {
       ...shippingAddress,

@@ -48,7 +48,7 @@ const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedC
   }, [shipDate]);
 
   const handleChange = (e: any) => {
-    console.log('e.target.value: '+e.target.value);
+    // console.log('e.target.value: '+e.target.value);
     if (e.target.value == '1') {
       setShouldSelectShipDate(true);
     } else {

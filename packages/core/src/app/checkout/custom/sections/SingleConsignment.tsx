@@ -38,7 +38,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
   useEffect(() => {
     const customerShippingAddress = checkoutState.data.getShippingAddress();
     if (customerShippingAddress) {
-      console.log('isSingleAddress setShippingAddress 1: ');
+      // console.log('isSingleAddress setShippingAddress 1: ');
       setShippingAddress(customerShippingAddress);
     }
       
@@ -49,8 +49,8 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
     }
   
     const consignments = checkoutState.data.getConsignments();
-    console.log('consignments: ');
-    console.log(consignments);
+    // console.log('consignments: ');
+    // console.log(consignments);
   
     if (consignments) {
       if (consignments.length == 1) {
@@ -63,7 +63,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
   }, []);
 
   const handleAddressChange = (updatedAddress: AddressRequestBody) => {
-    console.log('setShippingAddress 2: ');
+    // console.log('setShippingAddress 2: ');
     setShippingAddress(updatedAddress); // ✅ Update single source of truth
   };
 
@@ -72,7 +72,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
     const cart = checkoutState.data.getCart();
 
     if (!shippingAddress) {
-      console.log('Please select shippingAddress');
+      // console.log('Please select shippingAddress');
       return null;
     }
 
@@ -80,8 +80,8 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
       const lineItems = cart.lineItems.physicalItems.filter(i => !i.parentId)
         .map(i => ({itemId: i.id, quantity: i.quantity})) as ConsignmentLineItem[];
 
-      console.log('Gift Item:');
-      console.log(giftItem);
+      // console.log('Gift Item:');
+      // console.log(giftItem);
 
       if (giftItem) {
         lineItems.push(giftItem);
@@ -95,8 +95,8 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
         });
       }
 
-      console.log('updatedAddress:');
-      console.log(updatedAddress);
+      // console.log('updatedAddress:');
+      // console.log(updatedAddress);
 
       const requestBody = {
           address: updatedAddress,
@@ -119,7 +119,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
 
   const addItemsToCart = async (gitProductId: string | null, giftMessage: string | null) => {
   
-    console.log('addItemsToCart: ');
+    // console.log('addItemsToCart: ');
 
     if (!gitProductId || !giftMessage) {
       return null;
@@ -139,8 +139,8 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
 
     lineItems.push(lineItem);
 
-    console.log('lineItems: ');
-    console.log(lineItems);
+    // console.log('lineItems: ');
+    // console.log(lineItems);
 
     const endpoint = `/api/storefront/cart/${checkoutId}/items`;
 
@@ -163,9 +163,9 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
       return null;
     } else {
 
-      console.log('Item added successfully.');
+      // console.log('Item added successfully.');
       // window.location.reload();
-      console.log(res);
+      // console.log(res);
       const response = await res.json();
       const physicalItems = response.lineItems.physicalItems as PhysicalItem[];
       
@@ -179,13 +179,13 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
   const saveChanges = async () => {
     setIsInProgress(true);
 
-    console.log('saveChanges: ');
+    // console.log('saveChanges: ');
     const giftItem = await addItemsToCart(gitProductId, giftMessage);
 
     const selectedConsignment = await updateConsignments(giftItem);
 
     if (futureShipDate) {
-      console.log('Saving future save date: ');
+      // console.log('Saving future save date: ');
       checkoutService.updateCheckout({ customerMessage: futureShipDate });
     }
     
@@ -224,7 +224,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
       <div className="shipping-options">
         <ShippingMethodOption 
           handleChange={(id) => {
-            console.log('ShippingMethodOption id: '+id);
+            // console.log('ShippingMethodOption id: '+id);
             setSelectedShippingOptionId(id);
           }} 
           updatedShippingOptionId={selectedShippingOptionId} 
