@@ -238,10 +238,15 @@
 
     .future-ship-date-value {
       width: 100%;
+      padding: space(2);
       @include breakpoint('medium') {
         height: 42px;
         width: 250px;
       }
+    }
+
+    .future-ship-date-wrapper {
+      position: relative;
     }
     
     .item-options__ship_date {

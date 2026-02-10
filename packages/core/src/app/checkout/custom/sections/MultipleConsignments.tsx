@@ -404,6 +404,11 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
 
     setIsInProgress(false);
   }
+  
+
+  const getFutureShipDate = (consignment: Consignment): string  => {
+    return consignment.address.customFields.find(c => c.fieldId == 'field_26')?.fieldValue as string;
+  }
 
   return <div className="consignments-wrapper">
     <div className="step-2-title step-title">
@@ -448,10 +453,12 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
                 <div className="item-options__ship_date">
                   {/* <input className="future-ship-date-value" placeholder="Future Ship Date" readOnly value={c.address.customFields.find(c => c.fieldId == 'field_26')?.fieldValue} style={{ padding: '10px', fontSize: '14px' }} type="text" /> */}
                   <FutureShipDateOptionGroup 
-                    futureShipDate={''} 
+                    futureShipDate={getFutureShipDate(c)} 
                     handleChangeDate={(value) => {
-                      console.log('Save date and update: '+value);
-                      updateFutureShipDate(c, value as string);
+                      // Check if address is changed
+                      if (getFutureShipDate(c) != value) {
+                        updateFutureShipDate(c, value as string);
+                      }
                     }} 
                     selectedConsignment={selectedConsignment} 
                     />
