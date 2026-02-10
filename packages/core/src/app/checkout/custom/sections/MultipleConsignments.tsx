@@ -14,9 +14,10 @@ interface SelectItemsProps {
   giftProducts: { bigcommerce_product_id: string, frontend_title: string }[];
   setIsInProgress: (inProgress: boolean) => void;
   gotoNextStep: () => void;
+  setIsSingleAddress: (isSet: boolean) => void
 }
 
-const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }: SelectItemsProps) => {
+const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep, setIsSingleAddress }: SelectItemsProps) => {
   const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
   const [selecedItemIds, setSelecedItemIds] = useState<string[]>([]);
   
@@ -44,13 +45,22 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
       const mainItems = cart.lineItems.physicalItems.filter(c => !c.parentId);
       setMainCartItems(mainItems);
 
+      const isConsignmentAssignedManually = window.sessionStorage.getItem('CCC-PARAM--consignment-is-assigned-manually');
+      console.log('isConsignmentAssignedManually: ');
+      console.log(isConsignmentAssignedManually);
+
       // Detect if single consignments
-      if (consignments.length == 1) {
+      if (!isConsignmentAssignedManually && consignments.length == 1) {
         if (consignments[0].address.address1 != 'TO_BE_ASSIGNED') {
           // console.log('createHoldingConsignment: ');
           // Move all items to dummy consignments
           createHoldingConsignment();
         }
+      }
+
+      if (isConsignmentAssignedManually && consignments.length == 1) {
+        // Moved to single address
+        setIsSingleAddress(true);
       }
 
       const holdingConsignment = consignments.find(c => c.address.address1 == 'TO_BE_ASSIGNED');
@@ -339,6 +349,10 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
 
   const saveChanges = async () => {
     setIsInProgress(true);
+
+    // Mark this as multiple-consignment is manually assigned
+    window.sessionStorage.setItem('CCC-PARAM--consignment-is-assigned-manually', '1');
+    
     await updateConsignments();
     setIsInProgress(false);
   }

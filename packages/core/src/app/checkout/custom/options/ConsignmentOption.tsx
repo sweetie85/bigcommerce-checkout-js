@@ -9,7 +9,11 @@ interface ConsignmentOptionProps {
 const ConsignmentOption = ({ isSingleAddress, setIsSingleAddress }: ConsignmentOptionProps) => {
 
   const handleChange = (e: any) => {
-    setIsSingleAddress(e.target.value == 'SINGLE');
+    const isSingleAddress = e.target.value == 'SINGLE';
+    if (!isSingleAddress) {
+      window.sessionStorage.removeItem('CCC-PARAM--consignment-is-assigned-manually');
+    }
+    setIsSingleAddress(isSingleAddress);
   }
 
   return <div className="choose-consignment-type">

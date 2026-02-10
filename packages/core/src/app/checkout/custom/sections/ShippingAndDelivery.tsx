@@ -152,6 +152,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
               giftProducts={giftProducts}
               setIsInProgress={setIsInProgress}
               gotoNextStep={gotoNextStep}
+              setIsSingleAddress={setIsSingleAddress}
             />
           </div>
           }

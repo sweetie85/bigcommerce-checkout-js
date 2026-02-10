@@ -40,7 +40,7 @@ const ConsignmentItemCard = ({ i, unassignItem }: ConsignmentItemCardProps) => {
       </div>
     </div>
     <div className="product-price">
-      <div>${i.salePrice}</div>
+      <div>${i.salePrice * i.quantity}</div>
     </div>
   </div>
 }

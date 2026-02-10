@@ -50,7 +50,7 @@ const CartSummary = () => {
             <div className="product-title" style={{ fontSize: '14px' }}>{i.quantity} x {i.name}</div>
             {i.options?.map(o => <div key={o.nameId} style={{ fontSize: '14px' }} className="product-option">{o.name} {o.value}</div>)}
           </div>
-          <div style={{ width: '20%', fontSize: '14px' }} className="product-price">${i.salePrice}</div>
+          <div style={{ width: '20%', fontSize: '14px' }} className="product-price">${i.salePrice * i.quantity}</div>
         </div>))
         : <></>
         }

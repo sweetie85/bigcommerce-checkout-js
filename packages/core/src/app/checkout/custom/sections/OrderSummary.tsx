@@ -75,7 +75,7 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
               </div>}
             </div>
 
-            <div style={{ width: '10%' }} className="product-price">${i.salePrice}</div>
+            <div style={{ width: '10%' }} className="product-price">${i.salePrice * i.quantity}</div>
           </div>
         </div>)}
       </div>
