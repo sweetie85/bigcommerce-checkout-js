@@ -236,11 +236,19 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
         return null;
       }
 
-      if (updatedAddress && futureShipDate && updatedAddress.customFields) {
-        updatedAddress.customFields.push({
+      if (updatedAddress && futureShipDate) {
+
+        const futureDateCustomData = {
           fieldId: 'field_26',
           fieldValue: futureShipDate,
-        });
+        };
+
+        if (updatedAddress.customFields) {
+          updatedAddress.customFields.push(futureDateCustomData);
+        } else {
+          updatedAddress.customFields = [futureDateCustomData];
+        }
+
 
         // Add new product: SH-DATE
         /*
