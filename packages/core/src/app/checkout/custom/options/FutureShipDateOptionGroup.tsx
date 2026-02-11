@@ -13,8 +13,41 @@ interface FutureShipDateOptionProps {
 const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedConsignment }: FutureShipDateOptionProps) => {
   const [shouldSelectShipDate, setShouldSelectShipDate] = useState(false);
   const [shipDate, setShipDate] = useState<Date | null>(null);
-  const [selectedFutureShipDate, setSelectedFutureShipDate] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+
+  const parseDateString = (value: string): Date | null => {
+    const parts = value.split('/').map(Number);
+
+    if (parts.length !== 3 || parts.some(Number.isNaN)) {
+      return null;
+    }
+
+    let [month, day, year] = parts;
+
+    // Backend values may contain 2-digit years (e.g. 34). Treat as 20xx for future ship dates.
+    if (year < 100) {
+      year += 2000;
+    }
+
+    const parsed = new Date(year, month - 1, day);
+
+    if (
+      parsed.getFullYear() !== year ||
+      parsed.getMonth() !== month - 1 ||
+      parsed.getDate() !== day
+    ) {
+      return null;
+    }
+
+    return parsed;
+  };
+
+  const formatDateString = (date: Date) => {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${month}/${day}/${date.getFullYear()}`;
+  };
 
   useEffect(() => {
 
@@ -28,11 +61,14 @@ const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedC
     }
 
     if (currentFutureShipDate) {
-      const [month, day, year] = currentFutureShipDate.split("/").map(Number);
+      const selectedShipDate = parseDateString(currentFutureShipDate);
 
-      // Date.UTC() creates a timestamp at midnight UTC, so no timezone shift happens.
-      const selectedShipDate = new Date(Date.UTC(year, month - 1, day));
-      setShipDate(selectedShipDate);
+      if (selectedShipDate) {
+        setShipDate(selectedShipDate);
+      } else {
+        setShipDate(null);
+      }
+
       setShouldSelectShipDate(true);
     }
 
@@ -40,12 +76,17 @@ const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedC
 
    useEffect(() => {
     if (shipDate) {
-      const dateString = `${shipDate.getMonth() + 1}/${shipDate.getDate()}/${shipDate.getFullYear()}`;
-      handleChangeDate(dateString);
+      const dateString = formatDateString(shipDate);
+
+      if (dateString !== futureShipDate) {
+        handleChangeDate(dateString);
+      }
     } else {
-      handleChangeDate('');
+      if (futureShipDate) {
+        handleChangeDate('');
+      }
     }
-  }, [shipDate]);
+  }, [shipDate, futureShipDate]);
 
   const handleChange = (e: any) => {
     // console.log('e.target.value: '+e.target.value);
@@ -74,7 +115,7 @@ const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedC
       open={isOpen}
       onInputClick={() => setIsOpen(true) }
       onClickOutside={() => setIsOpen(false)}
-      customInput={<input readOnly value={futureShipDate as string} className="input-text future-ship-date-value" type="text" />}
+      customInput={<input readOnly className="input-text future-ship-date-value" type="text" />}
       />
       <svg onClick={() => setIsOpen((prev) => !prev)} style={{ position: 'absolute', right: '10px', top: '20px', cursor: 'pointer' }} width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M14 2.14483L7.02143 9L-9.37535e-08 2.14483L2.21585 -5.15101e-07L6.97857 4.70206L11.7841 -9.6858e-08L14 2.14483Z" fill="#315B42"/>

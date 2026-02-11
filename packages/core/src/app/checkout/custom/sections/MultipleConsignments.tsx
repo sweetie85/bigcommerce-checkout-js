@@ -8,6 +8,7 @@ import FutureShipDateOptionGroup from "../options/FutureShipDateOptionGroup";
 import GiftMessageOptionGroup from "../options/GiftMessageOptionGroup";
 import AddressOptionGroup from "../options/AddressOptionGroup";
 import ConsignmentItemCard from "../components/ConsignmentItemCard";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 interface SelectItemsProps {
   checkoutId: string;
@@ -33,6 +34,7 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
   const [selectedShippingOptionIds, setSelectedShippingOptionIds] = useState<Record<string, string>>({});
   const [futureShipDate, setFutureShipDate] = useState<string | null>(null);
   const [giftItemError, setGiftItemError] = useState<string | null>(null);
+  const [isShowSingleAddressConfirmation, setIsShowSingleAddressConfirmation] = useState(false);
 
   const { checkoutState, checkoutService } = useCheckout();
 
@@ -50,18 +52,17 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
       console.log(isConsignmentAssignedManually);
 
       // Detect if single consignments
-      if (!isConsignmentAssignedManually && consignments.length == 1) {
-        if (consignments[0].address.address1 != 'TO_BE_ASSIGNED') {
+      if (!isConsignmentAssignedManually && consignments.length <= 1) {
+        if (consignments.length == 0 || consignments[0].address.address1 != 'TO_BE_ASSIGNED') {
           // console.log('createHoldingConsignment: ');
           // Move all items to dummy consignments
           createHoldingConsignment();
         }
       }
 
-      if (isConsignmentAssignedManually && consignments.length == 1) {
-        // Moved to single address
-        setIsSingleAddress(true);
-      }
+      // if (isConsignmentAssignedManually && consignments.length == 1) {
+      //   setIsShowSingleAddressConfirmation(true);
+      // }
 
       const holdingConsignment = consignments.find(c => c.address.address1 == 'TO_BE_ASSIGNED');
       if (holdingConsignment) {
@@ -116,12 +117,16 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
         items = cart.lineItems.physicalItems.filter(c => !c.parentId);
       }
 
+      setIsInProgress(true);
+
       checkoutService.createConsignments([{
         address: PLACEHOLDER_ADDRESS,
         lineItems: items.map(i => {
           return { itemId: i.id, quantity: i.quantity };
         }),
       }]);
+
+      setIsInProgress(false);
     }
   }
 
@@ -212,6 +217,13 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
     const cart = checkoutState.data.getCart();
 
     if (cart) {
+      // Check if all items are assigned to single address
+      const cartItems = cart.lineItems.physicalItems.filter(i => !i.parentId);
+      if (selecedItemIds.length == cartItems.length) {
+        setIsShowSingleAddressConfirmation(true);
+        return;
+      }
+
       const lineItems = cart.lineItems.physicalItems
         .filter(i => selecedItemIds.length == 0 || selecedItemIds.includes(i.id as string))
         .map(i => {
@@ -351,7 +363,7 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
     setIsInProgress(true);
 
     // Mark this as multiple-consignment is manually assigned
-    window.sessionStorage.setItem('CCC-PARAM--consignment-is-assigned-manually', '1');
+    // window.sessionStorage.setItem('CCC-PARAM--consignment-is-assigned-manually', '1');
     
     await updateConsignments();
     setIsInProgress(false);
@@ -522,11 +534,11 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
 
             {shippingAddressError && <p style={{ color: 'red', fontWeight: 'bold' }}>{shippingAddressError}</p>}
 
-            {(!customer || customer.isGuest) &&
+            {/* {(!customer || customer.isGuest) &&
               <div style={{ marginTop: '30px' }}>
                 <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>CONTINUE</button>
               </div>
-            }
+            } */}
           </div>}
         </div>
       }
@@ -594,6 +606,13 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
       }
 
     </div>
+
+    <ConfirmDialog 
+      isOpen={isShowSingleAddressConfirmation} 
+      message="You have selected Multiple Address option, but are trying to group all items into a single address. Do you want to send items to a single address?" 
+      onConfirm={() => { setIsSingleAddress(true); }}
+      onCancel={() => { setIsShowSingleAddressConfirmation(false); }}
+      />
   </div>
 }
 

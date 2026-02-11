@@ -114,27 +114,26 @@ const AddressOptionGroup = ({
   }
 
   return <div style={{ marginLeft: '20px' }}>
-    {(customer && customer.id) ? <>
-      
-      <div className="step-title address-update-arrow-wrapper" onClick={() => handleAddressChangeOption()}>
-        {/* <input id="is_shipping_address_update" type="checkbox" checked={isUpdateAddressChecked} onChange={handleAddressChangeOption}></input>         */}
-        <label className="is-shipping-address-update" htmlFor="is_shipping_address_update">Add delivery address</label>
-        <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M2.14483 0L9 6.97857L2.14483 14L0 11.7841L4.70206 7.02143L0 2.21585L2.14483 0Z" fill="#315B42"/>
-        </svg>
+    <div className="step-title address-update-arrow-wrapper" onClick={() => handleAddressChangeOption()}>
+      {/* <input id="is_shipping_address_update" type="checkbox" checked={isUpdateAddressChecked} onChange={handleAddressChangeOption}></input>         */}
+      <label className="is-shipping-address-update" htmlFor="is_shipping_address_update">Add delivery address</label>
+      <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2.14483 0L9 6.97857L2.14483 14L0 11.7841L4.70206 7.02143L0 2.21585L2.14483 0Z" fill="#315B42"/>
+      </svg>
 
+    </div>
+
+    {isUpdateAddressChecked &&
+    <div className="address-card-wrapper">
+
+      <div className="address-card__close-icon" onClick={() => setIsUpdateAddressChecked(false)}>
+        <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="14.5" cy="14.5" r="14" fill="#D9D9D9" stroke="#D9D9D9"/>
+          <path d="M12.7715 9.785L15.2615 13.55H14.7515L17.2265 9.785H19.8665L16.1765 15.185L16.0865 14.48L19.8965 20H17.1965L14.5865 16.1H15.3215L12.7415 20H10.0415L13.8065 14.48L13.8215 15.185L10.1465 9.785H12.7715Z" fill="#315B42"/>
+        </svg>
       </div>
 
-      {isUpdateAddressChecked &&
-      <div className="address-card-wrapper">
-
-        <div className="address-card__close-icon" onClick={() => setIsUpdateAddressChecked(false)}>
-          <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="14.5" cy="14.5" r="14" fill="#D9D9D9" stroke="#D9D9D9"/>
-            <path d="M12.7715 9.785L15.2615 13.55H14.7515L17.2265 9.785H19.8665L16.1765 15.185L16.0865 14.48L19.8965 20H17.1965L14.5865 16.1H15.3215L12.7415 20H10.0415L13.8065 14.48L13.8215 15.185L10.1465 9.785H12.7715Z" fill="#315B42"/>
-          </svg>
-        </div>
-
+      {(customer && !customer.isGuest) && <>
         <div className="step-title step-title-radio flex-align-center">
           <input checked={!isNewAddress} onChange={handleChange} value={0} name="address_option_saved" id="choose_saved_address" type="radio" ></input>        
           <label className={!isNewAddress ? 'selected' : ''} htmlFor="choose_saved_address" >Choose a saved address:</label>
@@ -150,60 +149,55 @@ const AddressOptionGroup = ({
           <input onChange={handleChange} value={1} name="address_option_saved" id="choose_new_address" type="radio" ></input>
           <label className={isNewAddress ? 'selected' : ''} htmlFor="choose_new_address">Enter a new adddress:</label>
         </div>
-
-        {(!customer || customer.isGuest || isNewAddress) && <div>
-          <div className="form-field-row">
-            <input className="custom-form-input text" type="text" placeholder="First Name" name="firstName" value={shippingAddress?.firstName} onChange={handleInputChange} />
-            <input className="custom-form-input text" type="text" placeholder="Last Name" name="lastName" value={shippingAddress?.lastName} onChange={handleInputChange} />
-          </div>
-          <div className="form-field-row">
-            <input className="custom-form-input text" type="text" placeholder="Company Name" name="company" value={shippingAddress?.company} onChange={handleInputChange} />
-            <input className="custom-form-input text" type="text" placeholder="Phone Number" name="phone" value={shippingAddress?.phone} onChange={handleInputChange} />
-          </div>
-          <div className="form-field-row">
-            <input className="custom-form-input text" type="text" placeholder="Address" name="address1" value={shippingAddress?.address1} onChange={handleInputChange} />
-            <input className="custom-form-input text" type="text" placeholder="Address/Suite/Building" name="address2" value={shippingAddress?.address2} onChange={handleInputChange} />
-          </div>
-          <div className="form-field-row">
-            <input className="custom-form-input text" type="text" placeholder="City" name="city" value={shippingAddress?.city} onChange={handleInputChange} />
-            {/* <input className="custom-form-input text" type="text" placeholder="Country" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange} /> */}
-            <select className="custom-form-input select" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange}>
-              <option value="">-- Select a Country --</option>
-              {countries.map(c => <option value={c.code}>{c.name}</option>)}
+      </>}
+      
+      {(!customer || customer.isGuest || isNewAddress) && <div>
+        <div className="form-field-row">
+          <input className="custom-form-input text" type="text" placeholder="First Name" name="firstName" value={shippingAddress?.firstName} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="Last Name" name="lastName" value={shippingAddress?.lastName} onChange={handleInputChange} />
+        </div>
+        <div className="form-field-row">
+          <input className="custom-form-input text" type="text" placeholder="Company Name" name="company" value={shippingAddress?.company} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="Phone Number" name="phone" value={shippingAddress?.phone} onChange={handleInputChange} />
+        </div>
+        <div className="form-field-row">
+          <input className="custom-form-input text" type="text" placeholder="Address" name="address1" value={shippingAddress?.address1} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="Address/Suite/Building" name="address2" value={shippingAddress?.address2} onChange={handleInputChange} />
+        </div>
+        <div className="form-field-row">
+          <input className="custom-form-input text" type="text" placeholder="City" name="city" value={shippingAddress?.city} onChange={handleInputChange} />
+          {/* <input className="custom-form-input text" type="text" placeholder="Country" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange} /> */}
+          <select className="custom-form-input select" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange}>
+            <option value="">-- Select a Country --</option>
+            {countries.map(c => <option value={c.code}>{c.name}</option>)}
+          </select>
+        </div>
+        <div className="form-field-row">
+          {provinces.length == 0 ?
+            <input className="custom-form-input text" type="text" placeholder="State/Province" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange} />
+          : 
+            <select className="custom-form-input select" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange}>
+              <option value="">-- Select a State --</option>
+              {provinces.map(c => <option value={c.code}>{c.name}</option>)}
             </select>
-          </div>
-          <div className="form-field-row">
-            {provinces.length == 0 ?
-              <input className="custom-form-input text" type="text" placeholder="State/Province" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange} />
-            : 
-              <select className="custom-form-input select" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange}>
-                <option value="">-- Select a State --</option>
-                {provinces.map(c => <option value={c.code}>{c.name}</option>)}
-              </select>
-            }
-            <input className="custom-form-input text" type="text" placeholder="Postal Code" name="postalCode" value={shippingAddress?.postalCode} onChange={handleInputChange} />
-          </div>
-        </div>}
-
-        <div className="step-title" style={{ marginTop: '40px'}}>
-          <label style={{ marginBottom: '10px' }}>Future Ship Date:</label>
-          <FutureShipDateOptionGroup 
-            futureShipDate={futureShipDate} 
-            handleChangeDate={(date) => setFutureShipDate(date)}
-            selectedConsignment={null}
-            />
+          }
+          <input className="custom-form-input text" type="text" placeholder="Postal Code" name="postalCode" value={shippingAddress?.postalCode} onChange={handleInputChange} />
         </div>
+      </div>}
 
-        <div style={{ marginTop: '20px' }}>
-          <button className="save-changes-button" onClick={() => saveChanges()}>SAVE CHANGES</button>
-        </div>
+      <div className="step-title" style={{ marginTop: '40px'}}>
+        <label style={{ marginBottom: '10px' }}>Future Ship Date:</label>
+        <FutureShipDateOptionGroup 
+          futureShipDate={futureShipDate} 
+          handleChangeDate={(date) => setFutureShipDate(date)}
+          selectedConsignment={null}
+          />
       </div>
-      }
-      </>
-      :
-      <div className="step-title">
-        <label>2. Shipping Address</label>
+
+      <div style={{ marginTop: '20px' }}>
+        <button className="save-changes-button" onClick={() => saveChanges()}>SAVE CHANGES</button>
       </div>
+    </div>
     }
  </div>
 }
