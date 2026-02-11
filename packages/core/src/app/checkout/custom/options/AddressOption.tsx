@@ -149,7 +149,7 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
           {/* <input className="custom-form-input text" type="text" placeholder="Country" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange} /> */}
           <select className="custom-form-input select" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange}>
             <option value="">-- Select a Country --</option>
-            {countries.map(c => <option value={c.code}>{c.name}</option>)}
+            {countries.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
           </select>
         </div>
         <div className="form-field-row">
@@ -158,7 +158,7 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
           : 
             <select className="custom-form-input select" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange}>
               <option value="">-- Select a State --</option>
-              {provinces.map(c => <option value={c.code}>{c.name}</option>)}
+              {provinces.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
             </select>
           }
           <input className="custom-form-input text" type="text" placeholder="Postal Code" name="postalCode" value={shippingAddress?.postalCode} onChange={handleInputChange} />

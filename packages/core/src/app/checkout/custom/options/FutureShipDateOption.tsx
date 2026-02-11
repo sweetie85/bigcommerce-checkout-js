@@ -15,6 +15,40 @@ const FutureShipDateOption = ({ futureShipDate, handleChangeDate, selectedConsig
   const [shipDate, setShipDate] = useState<Date | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
+  const formatDateString = (date: Date) => {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${month}/${day}/${date.getFullYear()}`;
+  };
+
+  const parseDateString = (value: string): Date | null => {
+    const parts = value.split('/').map(Number);
+
+    if (parts.length !== 3 || parts.some(Number.isNaN)) {
+      return null;
+    }
+
+    let [month, day, year] = parts;
+
+    // Backend values may contain 2-digit years (e.g. 34). Treat as 20xx for future ship dates.
+    if (year < 100) {
+      year += 2000;
+    }
+
+    const parsed = new Date(year, month - 1, day);
+
+    if (
+      parsed.getFullYear() !== year ||
+      parsed.getMonth() !== month - 1 ||
+      parsed.getDate() !== day
+    ) {
+      return null;
+    }
+
+    return parsed;
+  };
+
   useEffect(() => {
 
     let currentFutureShipDate = futureShipDate;
@@ -26,11 +60,19 @@ const FutureShipDateOption = ({ futureShipDate, handleChangeDate, selectedConsig
     }
 
     if (currentFutureShipDate) {
-      const [month, day, year] = currentFutureShipDate.split("/").map(Number);
+      // const [month, day, year] = currentFutureShipDate.split("/").map(Number);
 
-      // Date.UTC() creates a timestamp at midnight UTC, so no timezone shift happens.
-      const selectedShipDate = new Date(Date.UTC(year, month - 1, day));
-      setShipDate(selectedShipDate);
+      // // Date.UTC() creates a timestamp at midnight UTC, so no timezone shift happens.
+      // const selectedShipDate = new Date(Date.UTC(year, month - 1, day));
+
+      const selectedShipDate = parseDateString(currentFutureShipDate);
+      
+      if (selectedShipDate) {
+        setShipDate(selectedShipDate);
+      } else {
+        setShipDate(null);
+      }
+
       setShouldSelectShipDate(true);
     }
 
@@ -38,12 +80,17 @@ const FutureShipDateOption = ({ futureShipDate, handleChangeDate, selectedConsig
 
    useEffect(() => {
     if (shipDate) {
-      const dateString = `${shipDate.getMonth() + 1}/${shipDate.getDate()}/${shipDate.getFullYear()}`;
-      handleChangeDate(dateString);
+      const dateString = formatDateString(shipDate);
+
+      if (dateString !== futureShipDate) {
+        handleChangeDate(dateString);
+      }
     } else {
-      handleChangeDate('');
+      if (futureShipDate) {
+        handleChangeDate('');
+      }
     }
-  }, [shipDate]);
+  }, [shipDate, futureShipDate]);
 
   const handleChange = (e: any) => {
     // console.log('e.target.value: '+e.target.value);

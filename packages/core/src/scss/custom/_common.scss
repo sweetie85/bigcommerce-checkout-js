@@ -25,8 +25,23 @@
   to { transform: rotate(360deg); }
 }
 
-.react-datepicker__day--selected {
+.react-datepicker__day--keyboard-selected, 
+.react-datepicker__day--keyboard-selected:hover, 
+.react-datepicker__day--selected, 
+.react-datepicker__day--selected:hover {
   background-color: #315B42;
+  color: #fff;
+}
+
+.react-datepicker__month-container .react-datepicker__header .react-datepicker__current-month {
+  margin-bottom: space(2);
+  font-weight: bold;
+}
+
+.react-datepicker-popper {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
 }
 
 /*********** STATRT Confirm Dailog ************/

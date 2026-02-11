@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCheckout } from '../context/CheckoutContext';
 import { CheckoutStep } from '../types';
 
@@ -36,18 +36,48 @@ const Logo = () => {
 
 const CheckoutHeader = ({activeStep = CheckoutStep.Consignment, onChangeStep} : CheckoutHeaderProps) => {
 
+  const [hasOrderSummaryEnabled, setHasOrderSummaryEnabled] = useState(false);
+
   const { checkoutState } = useCheckout();
   const consignments = checkoutState.data.getConsignments() ?? [];
-  const hasConsignments = consignments && consignments.length > 0;
+  const cart = checkoutState.data.getCart();
 
   const verifyAndGotoStep = (step: CheckoutStep) =>  {
-    if (hasConsignments) {
+    if (hasOrderSummaryEnabled) {
       onChangeStep(step)
     }
   }
 
+  useEffect(() => {
+
+    if (cart) {
+      
+      // Check if all item as having consignment
+      const userConsignments = consignments.filter(c => c.address.address1 != 'TO_BE_ASSIGNED')
+
+      // Ensure all line items are included
+      const totalItems = cart.lineItems.physicalItems.filter(i => !i.parentId).length
+      const itemsInConsignments = userConsignments.reduce(
+        (sum, c) => sum + c.lineItemIds.length,
+        0
+      )
+
+      const allConsignmentsHaveShipping = userConsignments.every(
+        c => !!c.selectedShippingOption
+      );
+
+      if (totalItems === itemsInConsignments && allConsignmentsHaveShipping) {
+        setHasOrderSummaryEnabled(true);
+      } else {
+        setHasOrderSummaryEnabled(false);
+      }
+
+    }
+  }, [cart, consignments]);
+
+
   const nextTabStyles = (): React.CSSProperties => {
-    if (hasConsignments) {
+    if (hasOrderSummaryEnabled) {
       return { color: '#333', cursor: 'pointer' }
     } else {
       return { color: '#aaa', cursor: 'default' }
@@ -82,13 +112,13 @@ const CheckoutHeader = ({activeStep = CheckoutStep.Consignment, onChangeStep} : 
         </div>
         <div className='step-title'>Delivery & Shipping</div>
       </div>
-      <div onClick={() => verifyAndGotoStep(CheckoutStep.OrderSummary)} style={{ borderRight: '1px solid #969696' }} className={`header-tab ${activeStep == CheckoutStep.OrderSummary ? 'active' : ''} ${!hasConsignments ? 'disabled' : '' }`}>
+      <div onClick={() => verifyAndGotoStep(CheckoutStep.OrderSummary)} style={{ borderRight: '1px solid #969696' }} className={`header-tab ${activeStep == CheckoutStep.OrderSummary ? 'active' : ''} ${!hasOrderSummaryEnabled ? 'disabled' : '' }`}>
         <div>
           <div className='step-number'>2</div>
         </div>
         <div className='step-title'>Order Summary</div>
       </div>
-      <div onClick={() => verifyAndGotoStep(CheckoutStep.Payment)} className={`header-tab ${activeStep == CheckoutStep.Payment ? 'active' : ''} ${!hasConsignments ? 'disabled' : '' }`}>
+      <div onClick={() => verifyAndGotoStep(CheckoutStep.Payment)} className={`header-tab ${activeStep == CheckoutStep.Payment ? 'active' : ''} ${!hasOrderSummaryEnabled ? 'disabled' : '' }`}>
         <div>
           <div className='step-number'>3</div>
         </div>
