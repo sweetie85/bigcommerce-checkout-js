@@ -132,9 +132,16 @@ const FutureShipDateOption = ({ futureShipDate, handleChangeDate, selectedConsig
             placeholderText="Future Ship Date"
             minDate={new Date()}
             open={isOpen}
+            readOnly={true}
             onInputClick={() => setIsOpen(true) }
             onClickOutside={() => setIsOpen(false)}
-            customInput={<input readOnly className="input-text" type="text" />}
+            onKeyDown={(e) => e.preventDefault()}
+            onChangeRaw={(e) => {
+              if (e) {
+                e.preventDefault();
+              }
+            }}
+            customInput={<input readOnly={true} onKeyDown={(e) => e.preventDefault()} className="input-text" type="text" />}
             />
             <svg onClick={() => setIsOpen((prev) => !prev)} style={{ position: 'absolute', right: '10px', top: '12px', cursor: 'pointer' }} width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M14 2.14483L7.02143 9L-9.37535e-08 2.14483L2.21585 -5.15101e-07L6.97857 4.70206L11.7841 -9.6858e-08L14 2.14483Z" fill="#315B42"/>
