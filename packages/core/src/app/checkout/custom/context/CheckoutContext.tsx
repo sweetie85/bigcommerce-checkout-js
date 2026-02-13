@@ -93,7 +93,10 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
             setHasShippingAddressEnabled(true);
           }
 
-          if (consignments && consignments.length > 0) {
+          if (consignments && consignments.length > 0 
+            && consignments[0].address.address1 != 'TO_BE_ASSIGNED' 
+            && !!consignments[0].address.postalCode) {
+              
             setHasShippingMethodEnabled(true);
           }
           setCheckoutState(newState)

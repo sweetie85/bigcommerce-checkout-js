@@ -31,15 +31,22 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
   // Future ship date
   const [futureShipDate, setFutureShipDate] = useState<string | null>(null);
 
-  const { checkoutState, checkoutService, hasShippingAddressEnabled, hasShippingMethodEnabled } = useCheckout();
+  const { checkoutState, checkoutService, hasShippingMethodEnabled } = useCheckout();
   const customer = checkoutState.data.getCustomer();
-
+  const customerShippingAddress = checkoutState.data.getShippingAddress();
 
   useEffect(() => {
-    const customerShippingAddress = checkoutState.data.getShippingAddress();
     if (customerShippingAddress) {
-      // console.log('isSingleAddress setShippingAddress 1: ');
-      setShippingAddress(customerShippingAddress);
+      if (customerShippingAddress.address1 !== 'TO_BE_ASSIGNED') {
+        console.log('setShippingAddress TO_BE_ASSIGNED');
+        setShippingAddress(customerShippingAddress);
+      } else {
+        console.log('setShippingAddress');
+        setShippingAddress(null);
+      }
+
+      console.log('customerShippingAddress: ');
+      console.log(customerShippingAddress);
     }
       
   
@@ -209,6 +216,10 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
     setIsInProgress(false);
   }
 
+  const shouldShowContinueButton = () => {
+    return (!customer || customer.isGuest) && (!customerShippingAddress?.postalCode || customerShippingAddress.address1 == 'TO_BE_ASSIGNED');
+  }
+
   return <div className="single-consignment-wrapper">
     <AddressOption 
       isUpdateAddressChecked={isUpdateAddressChecked}
@@ -218,13 +229,12 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
       selectedConsignment={selectedConsignment}
     />
 
-    {(!customer || customer.isGuest) &&
+    {shouldShowContinueButton() ?
       <div style={{ marginTop: '30px' }}>
         <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>CONTINUE</button>
       </div>
-    }
-
-    {hasShippingMethodEnabled && <>
+    :
+    <>
     <hr style={{ margin: '30px 0'}} />
 
     <div className="shipping-options-wrapper">

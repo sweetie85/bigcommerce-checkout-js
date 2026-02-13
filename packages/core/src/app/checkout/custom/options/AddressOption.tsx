@@ -22,7 +22,7 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
   const customerAddresses = customer?.addresses ?? [];
 
   useEffect(() => {
-    if (selectedConsignment) {
+    if (selectedConsignment && selectedConsignment.address.address1 != 'TO_BE_ASSIGNED') {
       setShippingAddress(selectedConsignment.address);
     }
   }, [selectedConsignment])
