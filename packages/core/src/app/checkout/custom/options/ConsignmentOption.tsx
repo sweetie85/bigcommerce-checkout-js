@@ -4,9 +4,10 @@ import React from "react";
 interface ConsignmentOptionProps {
   isSingleAddress: boolean;
   setIsSingleAddress: (isSingle: boolean) => void;
+  stepNumber: number;
 }
 
-const ConsignmentOption = ({ isSingleAddress, setIsSingleAddress }: ConsignmentOptionProps) => {
+const ConsignmentOption = ({ isSingleAddress, setIsSingleAddress, stepNumber }: ConsignmentOptionProps) => {
 
   const handleChange = (e: any) => {
     const isSingleAddress = e.target.value == 'SINGLE';
@@ -17,7 +18,7 @@ const ConsignmentOption = ({ isSingleAddress, setIsSingleAddress }: ConsignmentO
   }
 
   return <div className="choose-consignment-type">
-    <p className="step-title">1. Choose delivery and gift message options:</p>
+    <p className="step-title">{stepNumber}. Choose delivery and gift message options:</p>
     <div style={{ marginLeft: '16px' }}>
       <div className="step-title-radio flex-align-center">
         <input onChange={handleChange} checked={isSingleAddress} value={'SINGLE'} name="address_option" id="ship_to_single" type="radio" ></input>

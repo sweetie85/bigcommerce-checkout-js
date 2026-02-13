@@ -55,7 +55,7 @@ const GiftMessageOption = ({ giftProducts, selectedConsignment, setGiftProductId
     </div>
 
     {isEnabled && <>
-    { hasMultipleGiftMessage && <p style={{ color: 'red' }}>NOTE: You are supposed to add only one gift message per consignment</p> }
+    { hasMultipleGiftMessage && <p style={{ color: 'red' }}>NOTE: You may only apply one gift message to each consignment.</p> }
     <div>
       <select onChange={(e) => setGiftProductId(e.target.value) }>
         <option value="">Select Gift</option>

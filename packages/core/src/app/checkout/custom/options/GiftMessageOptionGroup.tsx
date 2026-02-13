@@ -159,7 +159,7 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
 
 
     {isEnabled && <div ref={popupRef} className="add-gift-popup-wrapper">
-    { hasMultipleGiftMessage && <p style={{ color: 'red' }}>NOTE: You are supposed to add only one gift message per consignment</p> }
+    { hasMultipleGiftMessage && <p style={{ color: 'red' }}>NOTE: You may only apply one gift message to each consignment.</p> }
     { giftItemError && <p style={{ color: 'red' }}>Error: {giftItemError}</p> }
     <div>
       <select onChange={(e) => setGiftProductId(e.target.value) }>

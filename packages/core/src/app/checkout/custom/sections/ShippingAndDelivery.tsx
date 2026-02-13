@@ -116,9 +116,9 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     {isInProgress && <FullPageLoader /> }
 
     {(!customer || customer.isGuest) &&
-      <div className="step-title">
+      <div className="step-title choose-consignment-type">
         <label style={{}}>1. Enter the email address:</label>
-        <div className="form-field-row" style={{ justifyContent: 'left', gap: '20px' }}>
+        <div className="form-field-row" style={{ marginLeft: '16px', justifyContent: 'left', gap: '20px' }}>
           <input className="custom-form-input text" type="text" placeholder="Email Id" onChange={handleGuestEmailChange} value={guestEmalId} />
           <button className="button-continue" onClick={saveGuestEmail}>Continue</button>
         </div>
@@ -135,7 +135,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
           </div>
           </>
         : 
-          <div style={{ marginTop: '20px', marginBottom: '20px' }}>
+          <div style={{ marginLeft: '16px', marginTop: '20px', marginBottom: '20px' }}>
             Already have an account? <a onClick={() => window.location.href = "/login.php"} style={{ cursor: 'pointer', textDecoration: 'underline' }}>Sign in now</a>
           </div>
         }
@@ -145,7 +145,12 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     { hasShippingAddressEnabled &&
       <div>
         <>
-          <ConsignmentOption isSingleAddress={isSingleAddress} setIsSingleAddress={setIsSingleAddress} />
+          <ConsignmentOption
+            isSingleAddress={isSingleAddress} 
+            setIsSingleAddress={setIsSingleAddress} 
+            stepNumber={!customer || customer.isGuest ? 2 : 1}
+            />
+
           {!isSingleAddress && <div>
             <MultipleConsignments 
               checkoutId={checkoutId}
@@ -153,6 +158,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
               setIsInProgress={setIsInProgress}
               gotoNextStep={gotoNextStep}
               setIsSingleAddress={setIsSingleAddress}
+              stepNumber={!customer || customer.isGuest ? 3 : 2}
             />
           </div>
           }

@@ -15,6 +15,7 @@ interface SelectItemsProps {
   setIsInProgress: (inProgress: boolean) => void;
   gotoNextStep: () => void;
   setIsSingleAddress: (isSet: boolean) => void
+  stepNumber: number;
 }
 
 interface CustomItem {
@@ -22,7 +23,7 @@ interface CustomItem {
   item: PhysicalItem;
 }
 
-const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep, setIsSingleAddress }: SelectItemsProps) => {
+const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep, setIsSingleAddress, stepNumber }: SelectItemsProps) => {
   const [mainCartItems, setMainCartItems] = useState<CustomItem[]>([]);
   const [selecedItemIds, setSelecedItemIds] = useState<number[]>([]);
   
@@ -468,8 +469,8 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
 
   return <div className="consignments-wrapper">
     <div className="step-2-title step-title">
-      <span>2. </span>
-      <span>Select an item to add a delivery address; select & group items going to the same address.</span>
+      <span>{stepNumber}. </span>
+      <span>Select an item to add a delivery address, select & group items going to the same address.</span>
     </div>
 
     <div className="assignment-categories">
