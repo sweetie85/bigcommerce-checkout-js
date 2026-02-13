@@ -25,7 +25,7 @@ const ConsignmentItemCard = ({ i, unassignItem }: ConsignmentItemCardProps) => {
       <img className="item-card__image" src={i.imageUrl} />
     
       <div style={{ marginLeft: '10px' }}>
-        <div className="product-title">{i.quantity} x {i.name}</div>
+        <div className="product-title">1 x {i.name}</div>
 
         {(i.options && i.options.length > 0) ?
           (isShowDetails ?
@@ -40,7 +40,7 @@ const ConsignmentItemCard = ({ i, unassignItem }: ConsignmentItemCardProps) => {
       </div>
     </div>
     <div className="product-price">
-      <div>${i.salePrice * i.quantity}</div>
+      <div>${(i.salePrice).toFixed(2)}</div>
     </div>
   </div>
 }

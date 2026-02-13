@@ -2,7 +2,6 @@ import { AddressRequestBody, Cart, Consignment, ConsignmentAssignmentRequestBody
 import React, { useEffect, useState } from "react";
 import { formatAddress } from "../../custom-utility";
 import { useCheckout } from "../context/CheckoutContext";
-import AddressOption from "../options/AddressOption";
 import ShippingMethodOptionGroup from "../options/ShippingMethodOptionGroup";
 import FutureShipDateOptionGroup from "../options/FutureShipDateOptionGroup";
 import GiftMessageOptionGroup from "../options/GiftMessageOptionGroup";
@@ -18,16 +17,21 @@ interface SelectItemsProps {
   setIsSingleAddress: (isSet: boolean) => void
 }
 
+interface CustomItem {
+  itemIndex: number;
+  item: PhysicalItem;
+}
+
 const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep, setIsSingleAddress }: SelectItemsProps) => {
-  const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
-  const [selecedItemIds, setSelecedItemIds] = useState<string[]>([]);
+  const [mainCartItems, setMainCartItems] = useState<CustomItem[]>([]);
+  const [selecedItemIds, setSelecedItemIds] = useState<number[]>([]);
   
   const [isUpdateAddressChecked, setIsUpdateAddressChecked] = useState(false);
   const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
   const [shippingAddressError, setShippingAddressError] = useState<string | null>(null);
   const [selectedConsignment, setSelectedConsignment] = useState<Consignment | null>(null);
   const [holdingConsignment, setHoldingConsignment] = useState<Consignment | null>(null);
-  const [unassignedLineItems, setUnassignedLineItems] = useState<PhysicalItem[]>([]);
+  const [unassignedLineItems, setUnassignedLineItems] = useState<CustomItem[]>([]);
   const [isNextStep, setIsNextStep] = useState<boolean>(false);
   const [isGoTOOrderSummary, setIsGoTOOrderSummary] = useState<boolean>(false);
 
@@ -40,11 +44,21 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
 
   const cart: Cart | undefined = checkoutState.data.getCart();
   const consignments: Consignment[] | undefined = checkoutState.data.getConsignments() ?? [];
-  const customer = checkoutState.data.getCustomer();
 
   useEffect(() => {
     if (cart) {
-      const mainItems = cart.lineItems.physicalItems.filter(c => !c.parentId);
+      const physicalItems = cart.lineItems.physicalItems.filter(c => !c.parentId);
+      const mainItems = [] as CustomItem[];
+
+      // SPLIT THE QUANTITY INTO SEPERATE LINE ITEMS.
+      let itemIndex = 0;
+      physicalItems.forEach((item) => {
+        for(let i = 0; i < item.quantity; i++) {
+          mainItems.push({ itemIndex, item });
+          itemIndex++;
+        }
+      });
+
       setMainCartItems(mainItems);
 
       const isConsignmentAssignedManually = window.sessionStorage.getItem('CCC-PARAM--consignment-is-assigned-manually');
@@ -71,7 +85,7 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
         // console.log(consignments[0].lineItemIds);
 
         setHoldingConsignment(holdingConsignment);
-        setUnassignedLineItems(mainItems.filter(i => holdingConsignment.lineItemIds.includes(i.id as string)));
+        setUnassignedLineItems(mainItems.filter(i => holdingConsignment.lineItemIds.includes(i.item.id as string)));
 
         setIsNextStep(false);
         setIsGoTOOrderSummary(false);
@@ -131,11 +145,11 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
     }
   }
 
-  const handleChange = (selectedId: string) => {
-    toggleSelectedItemId(selectedId);
-  }
+  // const handleChange = (selectedId: string) => {
+  //   toggleSelectedItemId(selectedId);
+  // }
 
-  const toggleSelectedItemId = (id: string) => {
+  const toggleSelectedItemId = (id: number) => {
     const index = selecedItemIds.indexOf(id);
     const newSelecedItemIds = [...selecedItemIds];
     
@@ -225,10 +239,9 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
       //   return;
       // }
 
-      const lineItems = cart.lineItems.physicalItems
-        .filter(i => selecedItemIds.length == 0 || selecedItemIds.includes(i.id as string))
+      const lineItems = mainCartItems.filter(i => selecedItemIds.length == 0 || selecedItemIds.includes(i.itemIndex))
         .map(i => {
-          return { itemId: i.id, quantity: i.quantity };
+          return { itemId: i.item.id, quantity: 1 };
         }) as ConsignmentLineItem[];
 
       const updatedAddress = shippingAddress;
@@ -421,8 +434,8 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
 
     setIsInProgress(true);
 
-    const items = mainCartItems.filter(i => consignment.lineItemIds.includes(i.id as string));
-    const consignmentItems = items.map(i => ({ itemId: i.id, quantity: i.quantity }));
+    const items = mainCartItems.filter(i => consignment.lineItemIds.includes(i.item.id as string));
+    const consignmentItems = items.map(i => ({ itemId: i.item.id, quantity: 1 }));
 
     // Move item to holding consignment
     if (holdingConsignment) {
@@ -434,7 +447,7 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
 
       await checkoutService.assignItemsToAddress(requestBody);
     } else {
-      createHoldingConsignment(items);
+      createHoldingConsignment(items.map(i => i.item));
     }
 
     setIsInProgress(false);
@@ -449,7 +462,7 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
     createHoldingConsignment();
     setIsShowSingleAddressConfirmation(false);
 
-    const allItemsIds = mainCartItems.map(i => i.id as string);
+    const allItemsIds = mainCartItems.map(i => i.itemIndex);
     setSelecedItemIds(allItemsIds);
   }
 
@@ -467,9 +480,9 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
       
       {/* Iterate through every consignmets and filter items */}
       { consignments.filter(c => c.address.address1 !== 'TO_BE_ASSIGNED').map(c => <div key={c.id} style={{ margin: '0 10px', backgroundColor: '#c7cfc5', boxShadow: '0px 4px 4px 0px #00000026', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
-          .map(i => <div key={i.id} className="item-card-wrapper">
-            <ConsignmentItemCard i={i} unassignItem={(i) => unassignItem(i)} />
+        {mainCartItems.filter(i => c.lineItemIds.includes(i.item.id as string))
+          .map(i => <div key={i.item.id} className="item-card-wrapper">
+            <ConsignmentItemCard i={i.item} unassignItem={(i) => unassignItem(i)} />
           </div>
         )}
           <div className="item-options-wrapper">
@@ -528,12 +541,12 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
       {/* Iterate through every consignmets and filter items */}
       { selecedItemIds.length > 0 &&
         <div className="assignment-category-wrapper selected-items">
-          {unassignedLineItems.filter(i => selecedItemIds.includes(i.id as string)).map(i => <div className="item-card-wrapper" key={i.id}>
+          {unassignedLineItems.filter(i => selecedItemIds.includes(i.itemIndex)).map(i => <div className="item-card-wrapper" key={i.itemIndex}>
               
-            <input type="checkbox" onChange={() => handleChange(i.id as string)} value={i.id} checked={selecedItemIds.includes(i.id as string)} />
+            <input type="checkbox" onChange={() => toggleSelectedItemId(i.itemIndex)} value={i.itemIndex} checked={selecedItemIds.includes(i.itemIndex)} />
             
             <div className="item-card">
-              <ConsignmentItemCard i={i} />
+              <ConsignmentItemCard i={i.item} />
             </div>
           </div> )}
 
@@ -563,12 +576,12 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
       {/* <p>UnSeletected Items: </p> */}
       {/* Iterate through every consignmets and filter items */}
       <div className="assignment-category-wrapper un-selected-items">
-        {unassignedLineItems.filter(i => !selecedItemIds.includes(i.id as string)).map(i => <div key={i.id} className="item-card-wrapper">
+        {unassignedLineItems.filter(i => !selecedItemIds.includes(i.itemIndex)).map(i => <div key={i.itemIndex} className="item-card-wrapper">
             
-          <input type="checkbox" onChange={() => handleChange(i.id as string)} value={i.id} checked={selecedItemIds.includes(i.id as string)} />
+          <input type="checkbox" onChange={() => toggleSelectedItemId(i.itemIndex)} value={i.itemIndex} checked={selecedItemIds.includes(i.itemIndex)} />
           
           <div className="item-card">
-            <ConsignmentItemCard i={i} />
+            <ConsignmentItemCard i={i.item} />
           </div>
         </div> )}
       </div>
