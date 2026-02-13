@@ -135,35 +135,35 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
 
       {(!customer || customer.isGuest || isNewAddress) && <div>
         <div className="form-field-row">
-          <input className="custom-form-input text" type="text" placeholder="First Name" name="firstName" value={shippingAddress?.firstName} onChange={handleInputChange} />
-          <input className="custom-form-input text" type="text" placeholder="Last Name" name="lastName" value={shippingAddress?.lastName} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="*First Name" name="firstName" value={shippingAddress?.firstName} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="*Last Name" name="lastName" value={shippingAddress?.lastName} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
           <input className="custom-form-input text" type="text" placeholder="Company Name" name="company" value={shippingAddress?.company} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="Phone Number" name="phone" value={shippingAddress?.phone} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
-          <input className="custom-form-input text" type="text" placeholder="Address" name="address1" value={shippingAddress?.address1} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="*Address" name="address1" value={shippingAddress?.address1} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="Address/Suite/Building" name="address2" value={shippingAddress?.address2} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
-          <input className="custom-form-input text" type="text" placeholder="City" name="city" value={shippingAddress?.city} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="*City" name="city" value={shippingAddress?.city} onChange={handleInputChange} />
           {/* <input className="custom-form-input text" type="text" placeholder="Country" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange} /> */}
           <select className="custom-form-input select" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange}>
-            <option value="">-- Select a Country --</option>
+            <option value="">-- *Select a Country --</option>
             {countries.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
           </select>
         </div>
         <div className="form-field-row">
           {provinces.length == 0 ?
-            <input className="custom-form-input text" type="text" placeholder="State/Province" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange} />
+            <input className="custom-form-input text" type="text" placeholder="*State/Province" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange} />
           : 
             <select className="custom-form-input select" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange}>
-              <option value="">-- Select a State --</option>
+              <option value="">-- *Select a State --</option>
               {provinces.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
             </select>
           }
-          <input className="custom-form-input text" type="text" placeholder="Postal Code" name="postalCode" value={shippingAddress?.postalCode} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="*Postal Code" name="postalCode" value={shippingAddress?.postalCode} onChange={handleInputChange} />
         </div>
       </div>}
  </div>

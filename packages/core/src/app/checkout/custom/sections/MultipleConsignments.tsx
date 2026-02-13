@@ -487,11 +487,23 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
           </div>
         )}
           <div className="item-options-wrapper">
-            <div className="item-options__unassign-consignment">
+            <div className="item-options__unassign-consignment" style={{ alignItems: 'center' }}>
               <div className="assigned-address-line">
                 <div className="line-1">All items in this group ship to: </div>
                 <div className="line-2" style={{ color: '#fff' }}>{formatAddress(c.address)}</div>
               </div>
+
+              <FutureShipDateOptionGroup 
+                futureShipDate={getFutureShipDate(c)} 
+                handleChangeDate={(value) => {
+                  // Check if address is changed
+                  if (getFutureShipDate(c) != value) {
+                    updateFutureShipDate(c, value as string);
+                  }
+                }} 
+                selectedConsignment={selectedConsignment} 
+                />
+
               <div>
                 <a onClick={() => unassignConsignment(c)} style={{ textDecoration: 'underline', color: '#000' }}>Ungroup Items</a>
               </div>
@@ -507,8 +519,8 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
                     selectedConsignment={c}
                   />
                 </div>
-                <div className="item-options__ship_date">
-                  {/* <input className="future-ship-date-value" placeholder="Future Ship Date" readOnly value={c.address.customFields.find(c => c.fieldId == 'field_26')?.fieldValue} style={{ padding: '10px', fontSize: '14px' }} type="text" /> */}
+                {/* <div className="item-options__ship_date">
+                  {/* <input className="future-ship-date-value" placeholder="Future Ship Date" readOnly value={c.address.customFields.find(c => c.fieldId == 'field_26')?.fieldValue} style={{ padding: '10px', fontSize: '14px' }} type="text" />
                   <FutureShipDateOptionGroup 
                     futureShipDate={getFutureShipDate(c)} 
                     handleChangeDate={(value) => {
@@ -519,7 +531,7 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
                     }} 
                     selectedConsignment={selectedConsignment} 
                     />
-                </div>
+                </div> */}
               </div>
               <div className="item-options__gift-message flex-align-center">
                 <GiftMessageOptionGroup 
@@ -615,7 +627,7 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
             }
             { isNextStep && !isGoTOOrderSummary ?
               <>
-                <div className="desktop-only" style={{ color: '#EB2F2F', fontSize: '16px', maxWidth: '400px' }}>**Choose shipping method and date for all groups before continuing.</div>
+                <div className="desktop-only" style={{ color: '#EB2F2F', fontSize: '16px', maxWidth: '400px' }}>** Choose Shipping Method before continuing.</div>
                 <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
               </>
             :
@@ -640,7 +652,7 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
 
     <ConfirmDialog 
       isOpen={isShowSingleAddressConfirmation} 
-      message="You have selected Multiple Address option, but are trying to group all items into a single address. Do you want to send items to a single address?" 
+      message="You have selected Ship to Multiple Addresses, but have grouped all items into a single address.  Do you want to send to a single address?  If no, then choose Ship to Multiple Addresses." 
       onConfirm={() => { setIsSingleAddress(true); }}
       onCancel={cancelSingleAddress}
       />

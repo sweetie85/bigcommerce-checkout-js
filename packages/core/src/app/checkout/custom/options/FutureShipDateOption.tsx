@@ -129,7 +129,7 @@ const FutureShipDateOption = ({ futureShipDate, handleChangeDate, selectedConsig
               setIsOpen(false); // close after select
             }} 
             filterDate={isWeekday} 
-            placeholderText="Future Ship Date"
+            placeholderText="Future Ship Date (Optional)"
             minDate={new Date()}
             open={isOpen}
             readOnly={true}
