@@ -6,10 +6,11 @@ import ShippingMethodOption from "../options/ShippingMethodOption";
 import GiftMessageOption from "../options/GiftMessageOption";
 import { AddressRequestBody, Consignment, ConsignmentAssignmentRequestBody, ConsignmentLineItem, PhysicalItem } from "@bigcommerce/checkout-sdk";
 import { useCheckout } from "../context/CheckoutContext";
+import { GiftProduct } from "../types";
 
 interface SingleConsignmentProps {
   checkoutId: string;
-  giftProducts: { bigcommerce_product_id: string, frontend_title: string }[];
+  giftProducts: GiftProduct[];
   setIsInProgress: (inProgress: boolean) => void;
   gotoNextStep: () => void;
   setEnabledNextStep: (e: boolean) => void;

@@ -10,7 +10,7 @@ import { useCheckout } from "./context/CheckoutContext";
 
 import { CheckoutPageSkeleton } from "@bigcommerce/checkout/ui";
 import CheckoutFooter from "./sections/CheckoutFooter";
-import { CheckoutStep } from './types';
+import { CheckoutStep, GiftProduct } from './types';
 
 interface CustomCheckoutPageProps {
   data: CheckoutStoreSelector;
@@ -22,7 +22,7 @@ interface CustomCheckoutPageProps {
 const CheckoutPage = ({ checkoutId, paymentForm  }: CustomCheckoutPageProps) => {
 
   const [activeTabIndex, setActiveTabIndex] = useState<CheckoutStep>(CheckoutStep.Consignment);
-  const [giftProducts, setGiftProduct] = useState<{ bigcommerce_product_id: string, frontend_title: string }[]>([]);
+  const [giftProducts, setGiftProduct] = useState<GiftProduct[]>([]);
   const { ready, checkoutState } = useCheckout();
 
   // Initialize data to avoid re-fetch on every component load

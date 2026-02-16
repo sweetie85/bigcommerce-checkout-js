@@ -519,7 +519,7 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
             </div>
             { isNextStep &&
             <div className="item-options item-options__shipping-option-wrapper">
-              <div style={{ display: 'flex', gap: '24px' }}>
+              <div className="bottom-options">
                 <div className="item-options__shipping-option">
                   <ShippingMethodOptionGroup 
                     handleChange={(id) => {

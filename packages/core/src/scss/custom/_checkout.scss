@@ -206,13 +206,59 @@
     border-bottom-left-radius: 20px;
     padding: 20px;
     background-color: #8da292;
+
+    .future-ship-date-wrapper {
+      position: relative;
+
+      svg {
+        top: 12px!important;
+      }
+
+      .future-ship-date-value {
+        @include breakpoint('medium') {
+          width: 250px;
+        }
+      }
+    }
+  }
+
+  .item-options-wrapper {
+    .assigned-address-line {
+      @include breakpoint('medium') {
+        width: 50%;
+      }
+    }
+
+    .future-ship-date-wrapper {
+      position: relative;
+
+      @include breakpoint-max('small') {
+        width: 100%;
+      }
+
+      .react-datepicker-wrapper {
+        @include breakpoint-max('small') {
+          width: 100%;
+        }
+
+        .input-text {
+          @include breakpoint-max('small') {
+            width: 100%;
+          }
+        }
+      }
+    }
   }
 
   .item-options {
     &__unassign-consignment {
-      // font-weight: bold;
       display: flex;
       justify-content: space-between;
+
+      @include breakpoint-max('small') {
+        flex-direction: column;
+        gap: space(2);
+      }
     }
 
     &__shipping-option-wrapper {
@@ -222,10 +268,16 @@
       flex-wrap: wrap;
     }
 
-    .item-options__shipping-option {
+    .bottom-options {
       @include breakpoint-max('small') {
-        width: 45%;
+        width: 100%;
       }
+    }
+
+    .item-options__shipping-option {
+      // @include breakpoint-max('small') {
+      //   width: 45%;
+      // }
 
       select {
         @include breakpoint('medium') {

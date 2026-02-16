@@ -8,8 +8,6 @@ import { GiftProduct } from "../types";
 interface GiftMessageOptionProps {
   giftItem: CustomItem;
   giftProducts: GiftProduct[];
-  // setGiftProductId: (id: string) => void;
-  // setGiftMessage: (message: string) => void;
   selectedConsignment: Consignment | null;
   checkoutId: string;
   setIsInProgress: (inProgress: boolean) => void;
@@ -24,8 +22,6 @@ const GiftMessageOptionGroupEdit = ({ checkoutId, giftItem, giftProducts, select
   // Custom message
   const [gitProductId, setGiftProductId] = useState<string | null>(null);
   const [giftMessage, setGiftMessage] = useState<string | null>(null);
-
-  const [giftMessageValue, setGiftMessageValue] = useState<string | null>(null);
 
   const popupRef = useRef<HTMLDivElement | null>(null);
 
@@ -55,7 +51,14 @@ const GiftMessageOptionGroupEdit = ({ checkoutId, giftItem, giftProducts, select
       }
 
       if (giftItem && giftItem.item.options)  {
-        setGiftMessageValue(giftItem.item.options[0].value ?? null);
+        const giftMessage = giftItem.item.options[0].value ?? null;
+        setGiftMessage(giftMessage);
+
+        const giftProduct = giftProducts.find(p => p.product_sku == giftItem.item.sku);
+
+        if (giftProduct) {
+          setGiftProductId(giftProduct.bigcommerce_product_id);
+        }
       }
       
     } else {
@@ -63,7 +66,7 @@ const GiftMessageOptionGroupEdit = ({ checkoutId, giftItem, giftProducts, select
       // console.log('setHasMultipleGiftMessage false');
     }
 
-  }, [selectedConsignment]);
+  }, [giftItem, selectedConsignment]);
 
   const updateItemToCart = async (itemId: string) => {
 
@@ -76,6 +79,7 @@ const GiftMessageOptionGroupEdit = ({ checkoutId, giftItem, giftProducts, select
     })
     .then(res => res.json())
     .then(data => {
+
       // Add mew gift item
       addItemToCart();
     });
@@ -83,9 +87,8 @@ const GiftMessageOptionGroupEdit = ({ checkoutId, giftItem, giftProducts, select
 
   const addItemToCart = async () => {
 
-    // console.log('addItemsToCart: ');
-
     if (!gitProductId || !giftMessage) {
+      setIsInProgress(false);
       return null;
     }
 
@@ -197,7 +200,7 @@ const GiftMessageOptionGroupEdit = ({ checkoutId, giftItem, giftProducts, select
       </div>
 
       <div>
-        <textarea onChange={(e) => setGiftMessage(e.target.value)} placeholder="Type your message here">{giftMessageValue}</textarea>
+        <textarea onChange={(e) => setGiftMessage(e.target.value)} placeholder="Type your message here">{giftMessage}</textarea>
       </div>
       {/* <p style={{ marginLeft: '20px', marginTop: '5px', color: '#ccc'}}>150 characters remaining of 150</p> */}
 

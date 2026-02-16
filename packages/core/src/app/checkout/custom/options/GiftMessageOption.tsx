@@ -1,14 +1,11 @@
 import { Consignment } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react"
 import { useCheckout } from "../context/CheckoutContext";
+import { GiftProduct } from "../types";
 
-interface GIftProduct {
-  bigcommerce_product_id: string, 
-  frontend_title: string 
-}
 
 interface GiftMessageOptionProps {
-  giftProducts: GIftProduct[];
+  giftProducts: GiftProduct[];
   setGiftProductId: (id: string) => void;
   setGiftMessage: (message: string) => void;
   selectedConsignment: Consignment | null;

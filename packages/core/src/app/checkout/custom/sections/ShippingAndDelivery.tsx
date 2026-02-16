@@ -12,11 +12,12 @@ import MultipleConsignments from "./MultipleConsignments";
 import { trim } from "lodash";
 import FullPageLoader from "../FullPageLoader";
 import SingleConsignment from "./SingleConsignment";
+import { GiftProduct } from "../types";
 
 
 interface ShippingAndDeliveryProps {
   checkoutId: string;
-  giftProducts: { bigcommerce_product_id: string, frontend_title: string }[];
+  giftProducts: GiftProduct[];
   gotoNextStep: () => void
 }
 
