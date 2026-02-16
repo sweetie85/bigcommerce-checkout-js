@@ -8,19 +8,16 @@ import GiftMessageOptionGroup from "../options/GiftMessageOptionGroup";
 import AddressOptionGroup from "../options/AddressOptionGroup";
 import ConsignmentItemCard from "../components/ConsignmentItemCard";
 import ConfirmDialog from "../components/ConfirmDialog";
+import { GiftProduct, CustomItem } from "../types";
+import GiftMessageOptionGroupEdit from "../options/GiftMessageOptionGroupEdit";
 
 interface SelectItemsProps {
   checkoutId: string;
-  giftProducts: { bigcommerce_product_id: string, frontend_title: string }[];
+  giftProducts: GiftProduct[];
   setIsInProgress: (inProgress: boolean) => void;
   gotoNextStep: () => void;
   setIsSingleAddress: (isSet: boolean) => void
   stepNumber: number;
-}
-
-interface CustomItem {
-  itemIndex: number;
-  item: PhysicalItem;
 }
 
 const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep, setIsSingleAddress, stepNumber }: SelectItemsProps) => {
@@ -467,6 +464,18 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
     setSelecedItemIds(allItemsIds);
   }
 
+  const isGiftItem = (item: PhysicalItem) => {
+    return !!giftProducts.find(p => p.product_sku == item.sku);
+  }
+
+  const hasGiftItem = (consignment: Consignment) => {
+    return !!mainCartItems.find(i => consignment.lineItemIds.includes(i.item.id as string) && isGiftItem(i.item));
+  }
+
+  const getGiftItem = (consignment: Consignment): CustomItem | undefined => {
+    return mainCartItems.find(i => consignment.lineItemIds.includes(i.item.id as string) && isGiftItem(i.item));
+  }
+
   return <div className="consignments-wrapper">
     <div className="step-2-title step-title">
       <span>{stepNumber}. </span>
@@ -481,7 +490,7 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
       
       {/* Iterate through every consignmets and filter items */}
       { consignments.filter(c => c.address.address1 !== 'TO_BE_ASSIGNED').map(c => <div key={c.id} style={{ margin: '0 10px', backgroundColor: '#c7cfc5', boxShadow: '0px 4px 4px 0px #00000026', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {mainCartItems.filter(i => c.lineItemIds.includes(i.item.id as string))
+        {mainCartItems.filter(i => !isGiftItem(i.item) && c.lineItemIds.includes(i.item.id as string))
           .map(i => <div key={i.item.id} className="item-card-wrapper">
             <ConsignmentItemCard i={i.item} unassignItem={(i) => unassignItem(i)} />
           </div>
@@ -534,13 +543,24 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
                 </div> */}
               </div>
               <div className="item-options__gift-message flex-align-center">
+                {hasGiftItem(c) ?
+                  <GiftMessageOptionGroupEdit
+                    giftItem={getGiftItem(c) as CustomItem}
+                    giftProducts={giftProducts}
+                    selectedConsignment={c}
+                    checkoutId={checkoutId}
+                    setIsInProgress={setIsInProgress}
+                    giftItemError={giftItemError}
+                  />
+                : 
                 <GiftMessageOptionGroup 
-                  giftProducts={giftProducts}
-                  selectedConsignment={c}
-                  checkoutId={checkoutId}
-                  setIsInProgress={setIsInProgress}
-                  giftItemError={giftItemError}
-                />
+                    giftProducts={giftProducts}
+                    selectedConsignment={c}
+                    checkoutId={checkoutId}
+                    setIsInProgress={setIsInProgress}
+                    giftItemError={giftItemError}
+                  />
+                }
               </div>
             </div>
             }
@@ -615,10 +635,10 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
         <div></div>
       }
 
-      <div style={{ margin: '20px 0', display: 'flex', justifyContent: 'right', alignItems: 'center', gap: '20px' }}>
+      <div style={{ margin: '20px 0', display: 'flex', flexDirection: 'column', justifyContent: 'right', alignItems: 'end', gap: '20px' }}>
         {unassignedLineItems.length > 0 ? <>
-          <div className="desktop-only" style={{ color: '#EB2F2F', fontSize: '14px', maxWidth: '400px' }}>*Assign delivery address to all items before continuing.</div>
           <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
+          <div className="desktop-only" style={{ color: '#EB2F2F', fontSize: '14px', maxWidth: '400px' }}>*Assign delivery address to all items before continuing.</div>
         </>
         :
           <>
@@ -627,8 +647,8 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
             }
             { isNextStep && !isGoTOOrderSummary ?
               <>
-                <div className="desktop-only" style={{ color: '#EB2F2F', fontSize: '16px', maxWidth: '400px' }}>** Choose Shipping Method before continuing.</div>
                 <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
+                <div className="desktop-only" style={{ color: '#EB2F2F', fontSize: '16px', maxWidth: '400px' }}>** Choose Shipping Method before continuing.</div>
               </>
             :
               isNextStep && <button onClick={() => saveShippingMethods()} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
