@@ -339,7 +339,7 @@
     align-items: left;
     padding: 0.6rem;
     background: #fff; 
-    font-size: fs('xs');
+    // font-size: fs('xs');
     display: flex;
 
     @include breakpoint('medium') { 

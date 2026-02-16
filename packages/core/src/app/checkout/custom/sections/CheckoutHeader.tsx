@@ -51,6 +51,8 @@ const CheckoutHeader = ({activeStep = CheckoutStep.Consignment, onChangeStep} : 
   useEffect(() => {
 
     if (cart) {
+
+      debugger;
       
       // Check if all item as having consignment
       const userConsignments = consignments.filter(c => c.address.address1 != 'TO_BE_ASSIGNED')
@@ -58,7 +60,7 @@ const CheckoutHeader = ({activeStep = CheckoutStep.Consignment, onChangeStep} : 
       // Ensure all line items are included
       const totalItems = cart.lineItems.physicalItems.filter(i => !i.parentId).length
       const itemsInConsignments = userConsignments.reduce(
-        (sum, c) => sum + c.lineItemIds.length,
+        (sum, c) => sum + c.lineItemIds.filter(i => cart.lineItems.physicalItems.find(p => p.id == i && !p.parentId)).length,
         0
       )
 
