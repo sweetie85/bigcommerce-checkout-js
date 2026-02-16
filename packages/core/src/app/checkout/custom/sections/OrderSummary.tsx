@@ -49,7 +49,7 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
       <div style={{ width: '100px' }}>Item</div>
       <div style={{ width: '30%' }}></div>
       <div style={{ width: '30%' }}>Delivery Address</div>
-      <div style={{ width: '20%' }}>Ship Date</div>
+      <div style={{ width: '20%' }}>Ship Method and Date</div>
       <div style={{ width: '10%' }}>Price</div>
     </div>
 
@@ -70,12 +70,15 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
 
             <div style={{ width: '20%' }}>
               {index == 0 && <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div>{c.address.customFields[0] && c.address.customFields[0].fieldId == 'field_26' ? formatedDate(c.address.customFields[0].fieldValue as string) : ''}</div>
+                <div style={{ minHeight: '50px' }}>{c.address.customFields[0] && c.address.customFields[0].fieldId == 'field_26' ? formatedDate(c.address.customFields[0].fieldValue as string) : ''}</div>
                 <div>{c.selectedShippingOption?.description}</div>
               </div>}
             </div>
 
-            <div style={{ width: '10%' }} className="product-price">${(i.salePrice * i.quantity).toFixed(2)}</div>
+            <div style={{ width: '10%', display: 'flex', flexDirection: 'column', gap: '20px' }} className="product-price">
+              <div style={{ minHeight: '50px' }}>${(i.salePrice * i.quantity).toFixed(2)}</div>
+              {index == 0 && <div>${c.selectedShippingOption?.cost}</div>}
+            </div>
           </div>
         </div>)}
       </div>
@@ -85,7 +88,6 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
 
       <div className="order-summary__footer">
         <p style={{ width: '40%', fontWeight: 'bold' }}>
-          *Please review your order carefully-due to our baking schedule, changes cannot be made once orders are submitted. Thank you for understanding!
         </p>
 
         <div className="cart-summary" style={{ padding: 0 }}>
@@ -111,8 +113,9 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
         </div>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'right' }}>
+      <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', justifyContent: 'right', alignItems: 'end' }}>
         <button onClick={() => { onChangeTab(CheckoutStep.Payment) }} style={{ backgroundColor: '#F6A601', padding: '12px 50px', marginTop: '30px', borderRadius: '8px' }}>GO TO PAYMENT</button>
+        <p style={{ width: '40%', marginTop: '20px' }}>*Please review your order carefully-due to our baking schedule, changes cannot be made once orders are submitted. Thank you for understanding!</p>
       </div>
     </div>
   </section>

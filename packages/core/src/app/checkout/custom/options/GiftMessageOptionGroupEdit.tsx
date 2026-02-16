@@ -67,14 +67,16 @@ const GiftMessageOptionGroupEdit = ({ checkoutId, giftItem, giftProducts, select
 
   const updateItemToCart = async (itemId: string) => {
 
+    setIsInProgress(true);
+
     // Delete the item first
     fetch(`/api/storefront/carts/${checkoutId}/items/${itemId}`, {
-        method: 'DELETE',
-        credentials: 'same-origin'
+      method: 'DELETE',
+      credentials: 'same-origin'
     })
     .then(res => res.json())
     .then(data => {
-      console.log(data);
+      // Add mew gift item
       addItemToCart();
     });
   }
@@ -168,12 +170,18 @@ const GiftMessageOptionGroupEdit = ({ checkoutId, giftItem, giftProducts, select
     setIsInProgress(false);
   }
 
+  const getGiftItemName = () => {
+    const giftProduct = giftProducts.find(p => p.product_sku == giftItem.item.sku);
+    return giftProduct?.frontend_title;
+  }
+
   return <div style={{ position: 'relative', width: '100%' }}>
-    <div style={{ position: 'relative' }}>
-      <button className="button-add-gift-message" onClick={() => setIsEnabled(!isEnabled)}>{giftItem.item.name}</button>
-      <svg style={{ position: 'absolute', right: '10px', top: '16px' }} width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div style={{ position: 'relative', display: 'flex', gap: '20px' }}>
+      <button className="button-add-gift-message">{ getGiftItemName() }</button>
+      {/* <svg style={{ position: 'absolute', right: '10px', top: '16px' }} width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M14 2.14483L7.02143 9L-9.37535e-08 2.14483L2.21585 -5.15101e-07L6.97857 4.70206L11.7841 -9.6858e-08L14 2.14483Z" fill="#315B42"/>
-      </svg>
+      </svg> */}
+      <button onClick={() => setIsEnabled(!isEnabled)} style={{ width: '150px', textAlign: 'center', backgroundColor: 'rgb(49, 91, 66)', color: '#fff', borderRadius: '10px', padding: '10px' }}>View Details</button>
     </div>
 
 
@@ -182,7 +190,6 @@ const GiftMessageOptionGroupEdit = ({ checkoutId, giftItem, giftProducts, select
     { giftItemError && <p style={{ color: 'red' }}>Error: {giftItemError}</p> }
     <div>
       <select onChange={(e) => setGiftProductId(e.target.value) }>
-        <option value="">Select Gift</option>
         { giftProducts.map((p) => 
           <option selected={giftItem.item.sku == p.product_sku} key={p.bigcommerce_product_id} value={p.bigcommerce_product_id}>{p.frontend_title}</option>
         ) }
