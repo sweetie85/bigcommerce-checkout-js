@@ -115,7 +115,7 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
 
       <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', justifyContent: 'right', alignItems: 'end' }}>
         <button onClick={() => { onChangeTab(CheckoutStep.Payment) }} style={{ backgroundColor: '#F6A601', padding: '12px 50px', marginTop: '30px', borderRadius: '8px' }}>GO TO PAYMENT</button>
-        <p style={{ width: '40%', marginTop: '20px' }}>*Please review your order carefully-due to our baking schedule, changes cannot be made once orders are submitted. Thank you for understanding!</p>
+        <p style={{ width: '40%', marginTop: '20px', textAlign: 'left' }}>*Please review your order carefully-due to our baking schedule, changes cannot be made once orders are submitted. Thank you for understanding!</p>
       </div>
     </div>
   </section>
