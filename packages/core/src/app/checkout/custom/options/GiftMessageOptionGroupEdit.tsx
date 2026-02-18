@@ -4,6 +4,7 @@ import { useCheckout } from "../context/CheckoutContext";
 import { useOutsideClick } from "../hools/useOutsideClick";
 import { CustomItem } from "../types";
 import { GiftProduct } from "../types";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 interface GiftMessageOptionProps {
   giftItem: CustomItem;
@@ -18,6 +19,7 @@ const GiftMessageOptionGroupEdit = ({ checkoutId, giftItem, giftProducts, select
 
   const [isEnabled, setIsEnabled] = useState(false);
   const [hasMultipleGiftMessage, setHasMultipleGiftMessage] = useState(false);
+  const [isShowDeleteConfirmation, setIsShowDeleteConfirmation] = useState(false);
 
   // Custom message
   const [gitProductId, setGiftProductId] = useState<string | null>(null);
@@ -67,6 +69,23 @@ const GiftMessageOptionGroupEdit = ({ checkoutId, giftItem, giftProducts, select
     }
 
   }, [giftItem, selectedConsignment]);
+
+  const deleteItem = async (itemId: string) => {
+
+    setIsShowDeleteConfirmation(false);
+    setIsInProgress(true);
+
+    // Delete the item first
+    await fetch(`/api/storefront/carts/${checkoutId}/items/${itemId}`, {
+      method: 'DELETE',
+      credentials: 'same-origin'
+    })
+   
+    // Force SDK to refresh its internal state
+    await checkoutService.loadCheckout(checkoutId);
+
+    setIsInProgress(false);
+  } 
 
   const updateItemToCart = async (itemId: string) => {
 
@@ -180,10 +199,17 @@ const GiftMessageOptionGroupEdit = ({ checkoutId, giftItem, giftProducts, select
 
   return <div style={{ position: 'relative', width: '100%' }}>
     <div style={{ position: 'relative', display: 'flex', gap: '20px' }}>
-      <button className="button-add-gift-message">{ getGiftItemName() }</button>
+      <div className="button-add-gift-message" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span>{ getGiftItemName() }</span>
+        <svg onClick={() => { setIsShowDeleteConfirmation(true) }} style={{ cursor: 'pointer' }} width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="14.5" cy="14.5" r="14" fill="#D9D9D9" stroke="#315B42"></circle>
+          <path d="M12.7715 9.785L15.2615 13.55H14.7515L17.2265 9.785H19.8665L16.1765 15.185L16.0865 14.48L19.8965 20H17.1965L14.5865 16.1H15.3215L12.7415 20H10.0415L13.8065 14.48L13.8215 15.185L10.1465 9.785H12.7715Z" fill="#315B42"></path>
+        </svg>
+      </div>
       {/* <svg style={{ position: 'absolute', right: '10px', top: '16px' }} width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M14 2.14483L7.02143 9L-9.37535e-08 2.14483L2.21585 -5.15101e-07L6.97857 4.70206L11.7841 -9.6858e-08L14 2.14483Z" fill="#315B42"/>
       </svg> */}
+
       <button onClick={() => setIsEnabled(!isEnabled)} style={{ width: '150px', textAlign: 'center', backgroundColor: 'rgb(49, 91, 66)', color: '#fff', borderRadius: '10px', padding: '10px' }}>View Details</button>
     </div>
 
@@ -205,10 +231,20 @@ const GiftMessageOptionGroupEdit = ({ checkoutId, giftItem, giftProducts, select
       {/* <p style={{ marginLeft: '20px', marginTop: '5px', color: '#ccc'}}>150 characters remaining of 150</p> */}
 
       <div className="save-button-wrapper">
+        <button onClick={() => { setIsShowDeleteConfirmation(true) }}  style={{ marginRight: '20px' }}>Remove</button>
         <button className="save-button" onClick={() => updateItemToCart(giftItem.item.id as string)}>Update</button>
       </div>
     </div>
     }
+
+    <ConfirmDialog 
+      isOpen={isShowDeleteConfirmation} 
+      message="Are you sure you want to remove the associated custom gift message?" 
+      onConfirm={() => { 
+        deleteItem(giftItem.item.id as string);
+      }}
+      onCancel={() => setIsShowDeleteConfirmation(false)}
+      />
   </div>
   
 }

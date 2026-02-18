@@ -52,7 +52,7 @@ const CheckoutHeader = ({activeStep = CheckoutStep.Consignment, onChangeStep} : 
 
     if (cart) {
 
-      debugger;
+      // debugger;
       
       // Check if all item as having consignment
       const userConsignments = consignments.filter(c => c.address.address1 != 'TO_BE_ASSIGNED')
