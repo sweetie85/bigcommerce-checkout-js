@@ -111,6 +111,8 @@ const AddressOptionGroup = ({
         setShippingAddress(selectedConsignment.address);
       }
     }
+
+    setFutureShipDate(null);
   }
 
   return <div style={{ marginLeft: '20px' }}>

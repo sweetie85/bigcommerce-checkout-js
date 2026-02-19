@@ -212,11 +212,16 @@
 
       svg {
         top: 12px!important;
+
+        @include breakpoint('medium') {
+          top: 18px!important;
+        }
       }
 
       .future-ship-date-value {
         @include breakpoint('medium') {
           width: 250px;
+          padding: 12px;
         }
       }
     }
@@ -344,7 +349,7 @@
 
     @include breakpoint('medium') { 
       width: 250px;
-      font-size: fs('sm');
+      // font-size: fs('sm');
     }
   }
 

@@ -201,7 +201,7 @@ const GiftMessageOptionGroupEdit = ({ checkoutId, giftItem, giftProducts, select
     <div style={{ position: 'relative', display: 'flex', gap: '20px' }}>
       <div className="button-add-gift-message" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span>{ getGiftItemName() }</span>
-        <svg onClick={() => { setIsShowDeleteConfirmation(true) }} style={{ cursor: 'pointer' }} width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg onClick={() => { setIsShowDeleteConfirmation(true) }} style={{ cursor: 'pointer', width: '22px', height: '22px' }} width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="14.5" cy="14.5" r="14" fill="#D9D9D9" stroke="#315B42"></circle>
           <path d="M12.7715 9.785L15.2615 13.55H14.7515L17.2265 9.785H19.8665L16.1765 15.185L16.0865 14.48L19.8965 20H17.1965L14.5865 16.1H15.3215L12.7415 20H10.0415L13.8065 14.48L13.8215 15.185L10.1465 9.785H12.7715Z" fill="#315B42"></path>
         </svg>

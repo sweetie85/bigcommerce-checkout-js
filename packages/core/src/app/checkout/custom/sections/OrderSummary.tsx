@@ -49,7 +49,7 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
       <div style={{ width: '100px' }}>Item</div>
       <div style={{ width: '30%' }}></div>
       <div style={{ width: '30%' }}>Delivery Address</div>
-      <div style={{ width: '20%' }}>Ship Method and Date</div>
+      <div style={{ width: '20%' }}>Ship Date and Method</div>
       <div style={{ width: '10%' }}>Price</div>
     </div>
 
@@ -70,7 +70,9 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
 
             <div style={{ width: '20%' }}>
               {index == 0 && <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div style={{ minHeight: '50px' }}>{c.address.customFields[0] && c.address.customFields[0].fieldId == 'field_26' ? formatedDate(c.address.customFields[0].fieldValue as string) : ''}</div>
+                <div style={{ minHeight: '50px' }}>
+                  {c.address.customFields[0] && c.address.customFields[0].fieldId == 'field_26' ? formatedDate(c.address.customFields[0].fieldValue as string) : 'No Shipping date (standard)'}
+                </div>
                 <div>{c.selectedShippingOption?.description}</div>
               </div>}
             </div>

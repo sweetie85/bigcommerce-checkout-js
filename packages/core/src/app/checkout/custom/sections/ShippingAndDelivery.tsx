@@ -119,7 +119,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     {(!customer || customer.isGuest) &&
       <div className="step-title choose-consignment-type">
         <label style={{}}>1. Enter the email address:</label>
-        <div className="form-field-row" style={{ marginLeft: '16px', justifyContent: 'left', gap: '20px' }}>
+        <div className="form-field-row" style={{ marginLeft: '32px', justifyContent: 'left', gap: '20px' }}>
           <input className="custom-form-input text" type="text" placeholder="Email Id" onChange={handleGuestEmailChange} value={guestEmalId} />
           <button className="button-continue" onClick={saveGuestEmail}>Continue</button>
         </div>
@@ -136,7 +136,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
           </div>
           </>
         : 
-          <div style={{ marginLeft: '16px', marginTop: '20px', marginBottom: '20px' }}>
+          <div style={{ marginLeft: '32px', marginTop: '20px', marginBottom: '20px' }}>
             Already have an account? <a onClick={() => window.location.href = "/login.php"} style={{ cursor: 'pointer', textDecoration: 'underline' }}>Sign in now</a>
           </div>
         }

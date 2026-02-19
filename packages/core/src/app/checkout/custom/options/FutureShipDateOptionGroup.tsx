@@ -97,6 +97,10 @@ const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedC
     }
   };
 
+  // Get tomorrow's date
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
   const isWeekday = (date: Date) => {
     const day = date.getDay();
     return day !== 0 && day !== 6; // 0 = Sunday, 6 = Saturday
@@ -111,7 +115,7 @@ const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedC
       }} 
       filterDate={isWeekday} 
       placeholderText="Future Ship Date (Optional)"
-      minDate={new Date()}
+      minDate={tomorrow}
       open={isOpen}
       readOnly={true}
       onInputClick={() => setIsOpen(true) }
@@ -127,6 +131,11 @@ const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedC
       <svg onClick={() => setIsOpen((prev) => !prev)} style={{ position: 'absolute', right: '10px', top: '20px', cursor: 'pointer' }} width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M14 2.14483L7.02143 9L-9.37535e-08 2.14483L2.21585 -5.15101e-07L6.97857 4.70206L11.7841 -9.6858e-08L14 2.14483Z" fill="#315B42"/>
       </svg>
+
+      {/* <svg onClick={() => {}} width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg" 
+        style={{ position: 'absolute', right: '-24px', top: '2px!important', cursor: 'pointer' }}>
+        <path d="M12.7715 9.785L15.2615 13.55H14.7515L17.2265 9.785H19.8665L16.1765 15.185L16.0865 14.48L19.8965 20H17.1965L14.5865 16.1H15.3215L12.7415 20H10.0415L13.8065 14.48L13.8215 15.185L10.1465 9.785H12.7715Z" fill="#315B42"></path>
+      </svg> */}
   </div>
 }
 

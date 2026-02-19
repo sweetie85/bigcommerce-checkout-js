@@ -106,6 +106,10 @@ const FutureShipDateOption = ({ futureShipDate, handleChangeDate, selectedConsig
     return day !== 0 && day !== 6; // 0 = Sunday, 6 = Saturday
   };
 
+  // Get tomorrow's date
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
   return <div>
     <div className="step-title">
       <label style={{ marginLeft: '10px' }}>4. Choose a future ship date:</label>
@@ -130,7 +134,7 @@ const FutureShipDateOption = ({ futureShipDate, handleChangeDate, selectedConsig
             }} 
             filterDate={isWeekday} 
             placeholderText="Future Ship Date (Optional)"
-            minDate={new Date()}
+            minDate={tomorrow}
             open={isOpen}
             readOnly={true}
             onInputClick={() => setIsOpen(true) }
