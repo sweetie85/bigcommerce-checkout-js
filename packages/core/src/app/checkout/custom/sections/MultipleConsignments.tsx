@@ -433,7 +433,20 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
     setIsInProgress(true);
 
     const items = mainCartItems.filter(i => consignment.lineItemIds.includes(i.item.id as string));
-    const consignmentItems = items.map(i => ({ itemId: i.item.id, quantity: 1 }));
+    
+    // Delete gift product if any
+    const giftItems = items.filter(i => isGiftItem(i.item));
+    for(let i = 0; i < giftItems.length; i++) {
+      
+      console.log(`Deleting gift item: ${giftItems[i].item.id}`);
+
+      await fetch(`/api/storefront/carts/${checkoutId}/items/${giftItems[i].item.id}`, {
+        method: 'DELETE',
+        credentials: 'same-origin'
+      });
+    }
+
+    const consignmentItems = items.filter(i => !isGiftItem(i.item)).map(i => ({ itemId: i.item.id, quantity: 1 }));
 
     // Move item to holding consignment
     if (holdingConsignment) {
