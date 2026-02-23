@@ -82,8 +82,23 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
         // console.log('holding consignment found.');
         // console.log(consignments[0].lineItemIds);
 
+        const holdingGiftItems = mainItems.filter(i => isGiftItem(i.item) && holdingConsignment.lineItemIds.includes(i.item.id as string))
+        console.log('holdingGiftItems: ');
+        console.log(holdingGiftItems);
+
+        // Delete gift items
+        for(let i = 0; i < holdingGiftItems.length; i++) {
+      
+          console.log(`Deleting gift item: ${holdingGiftItems[i].item.id}`);
+
+          fetch(`/api/storefront/carts/${checkoutId}/items/${holdingGiftItems[i].item.id}`, {
+            method: 'DELETE',
+            credentials: 'same-origin'
+          });
+        }
+
         setHoldingConsignment(holdingConsignment);
-        setUnassignedLineItems(mainItems.filter(i => holdingConsignment.lineItemIds.includes(i.item.id as string)));
+        setUnassignedLineItems(mainItems.filter(i => !isGiftItem(i.item) && holdingConsignment.lineItemIds.includes(i.item.id as string)));
 
         setIsNextStep(false);
         setIsGoTOOrderSummary(false);
