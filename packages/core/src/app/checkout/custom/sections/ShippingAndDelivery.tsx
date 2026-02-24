@@ -170,16 +170,16 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
           giftProducts={giftProducts}
           setIsInProgress={setIsInProgress}
           gotoNextStep={gotoNextStep}
-          setEnabledNextStep={setEnabledNextStep}
+          // setEnabledNextStep={setEnabledNextStep}
           />}
       </div>
     }
 
-    {isSingleAddress &&
+    {/* {isSingleAddress &&
     <div style={{ textAlign: 'right', margin: '20px 0' }}>
       <button onClick={gotoNextStep} disabled={!enabledNextStep} style={{ opacity: enabledNextStep ? '1' : '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
     </div>
-    }
+    } */}
 
   </div>
 }

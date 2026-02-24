@@ -8,9 +8,10 @@ interface AddressOptionProps {
   selectedConsignment: Consignment | null;
   isUpdateAddressChecked: boolean;
   setIsUpdateAddressChecked: (isUpdate: boolean) => void
+  errorMessage: string | null;
 }
 
-const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignment, isUpdateAddressChecked, setIsUpdateAddressChecked }: AddressOptionProps) => {
+const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignment, isUpdateAddressChecked, errorMessage, setIsUpdateAddressChecked }: AddressOptionProps) => {
 
   const [isNewAddress, setIsNewAddress] = useState(false);
   const [provinces, setProvinces] = useState<Region[]>([]);
@@ -129,7 +130,7 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
       </>
       :
       <div className="step-title">
-        <label>{!customer || customer.isGuest ? '3' : '2'}. Shipping Address</label>
+        <label>{!customer || customer.isGuest ? '3' : '2'}. Shipping Address <span style={{ color: 'red' }}>{errorMessage}</span></label>
       </div>
     }
 

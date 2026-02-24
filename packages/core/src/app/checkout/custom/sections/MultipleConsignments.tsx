@@ -10,6 +10,7 @@ import ConsignmentItemCard from "../components/ConsignmentItemCard";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { GiftProduct, CustomItem } from "../types";
 import GiftMessageOptionGroupEdit from "../options/GiftMessageOptionGroupEdit";
+import { handleCheckoutError, validateAddress } from "../utility";
 
 interface SelectItemsProps {
   checkoutId: string;
@@ -37,6 +38,8 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
   const [futureShipDate, setFutureShipDate] = useState<string | null>(null);
   const [giftItemError, setGiftItemError] = useState<string | null>(null);
   const [isShowSingleAddressConfirmation, setIsShowSingleAddressConfirmation] = useState(false);
+
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const { checkoutState, checkoutService } = useCheckout();
 
@@ -244,13 +247,25 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
 
     const cart = checkoutState.data.getCart();
 
-    if (cart) {
+    if (!shippingAddress) {
+      setErrorMessage('Please enter shipping address!');
+      return null;
+    }
+
+    if (cart && shippingAddress) {
       // Check if all items are assigned to single address
       // const cartItems = cart.lineItems.physicalItems.filter(i => !i.parentId);
       // if (selecedItemIds.length == cartItems.length) {
       //   setIsShowSingleAddressConfirmation(true);
       //   return;
       // }
+
+      // Validate address
+      if (!validateAddress(shippingAddress, setErrorMessage)) {
+        return null;
+      } else {
+        setErrorMessage(null);
+      }
 
       const lineItems = mainCartItems.filter(i => selecedItemIds.length == 0 || selecedItemIds.includes(i.itemIndex))
         .map(i => {
@@ -300,11 +315,11 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
       try {
         await checkoutService.assignItemsToAddress(requestBody);
       } catch(e: unknown) {
-        if (e instanceof Error) {
-          setGiftItemError(e.message);
-        } else {
-          console.log('Unexpected Error:');
-          console.log(e);
+        const messages = handleCheckoutError(e);
+        // messages.forEach(msg => alert(msg));
+        if (messages.length > 0) {
+          setErrorMessage(messages[0]);
+          return null;
         }
       }
 
@@ -621,6 +636,7 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
               futureShipDate={futureShipDate}
               setFutureShipDate={(date) => setFutureShipDate(date)}
               saveChanges={saveChanges}
+              errorMessage={errorMessage}
             />
 
             {shippingAddressError && <p style={{ color: 'red', fontWeight: 'bold' }}>{shippingAddressError}</p>}

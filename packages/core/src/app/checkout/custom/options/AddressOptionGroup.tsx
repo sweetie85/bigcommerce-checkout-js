@@ -12,6 +12,7 @@ interface AddressOptionProps {
   futureShipDate: string | null;
   setFutureShipDate: (date: string | null) => void
   saveChanges: () => {}
+  errorMessage: string | null;
 }
 
 const AddressOptionGroup = ({ 
@@ -22,7 +23,8 @@ const AddressOptionGroup = ({
   setIsUpdateAddressChecked,
   futureShipDate,
   setFutureShipDate,
-  saveChanges
+  saveChanges,
+  errorMessage
 }: AddressOptionProps) => {
 
   const [isNewAddress, setIsNewAddress] = useState(false);
@@ -154,6 +156,8 @@ const AddressOptionGroup = ({
       </>}
       
       {(!customer || customer.isGuest || isNewAddress) && <div>
+        <div style={{ color: 'red', marginBottom: '20px' }}>{errorMessage}</div>
+
         <div className="form-field-row">
           <input className="custom-form-input text" type="text" placeholder="*First Name" name="firstName" value={shippingAddress?.firstName} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="*Last Name" name="lastName" value={shippingAddress?.lastName} onChange={handleInputChange} />

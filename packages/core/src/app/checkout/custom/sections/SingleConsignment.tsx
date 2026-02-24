@@ -7,20 +7,23 @@ import GiftMessageOption from "../options/GiftMessageOption";
 import { AddressRequestBody, Consignment, ConsignmentAssignmentRequestBody, ConsignmentLineItem, PhysicalItem } from "@bigcommerce/checkout-sdk";
 import { useCheckout } from "../context/CheckoutContext";
 import { GiftProduct } from "../types";
+import { handleCheckoutError, validateAddress } from "../utility";
 
 interface SingleConsignmentProps {
   checkoutId: string;
   giftProducts: GiftProduct[];
   setIsInProgress: (inProgress: boolean) => void;
   gotoNextStep: () => void;
-  setEnabledNextStep: (e: boolean) => void;
+  // setEnabledNextStep: (e: boolean) => void;
 }
 
-const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabledNextStep }: SingleConsignmentProps) => {
+const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }: SingleConsignmentProps) => {
 
   const [isUpdateAddressChecked, setIsUpdateAddressChecked] = useState(false);
   const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
   const [selectedConsignment, setSelectedConsignment] = useState<Consignment | null>(null);
+  const [enabledNextStep, setEnabledNextStep] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Shipping options
   const [selectedShippingOptionId, setSelectedShippingOptionId] = useState<string | null>(null);
@@ -35,6 +38,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
   const { checkoutState, checkoutService, hasShippingMethodEnabled } = useCheckout();
   const customer = checkoutState.data.getCustomer();
   const customerShippingAddress = checkoutState.data.getShippingAddress();
+  const shippingOptions = checkoutState.data.getShippingOptions() ?? [];
 
   useEffect(() => {
     if (customerShippingAddress) {
@@ -80,11 +84,19 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
     const cart = checkoutState.data.getCart();
 
     if (!shippingAddress) {
-      // console.log('Please select shippingAddress');
+      setErrorMessage('Please enter shipping address!');
       return null;
     }
 
     if (cart) {
+
+      // Validate address
+      if (!validateAddress(shippingAddress, setErrorMessage)) {
+        return null;
+      } else {
+        setErrorMessage(null);
+      }
+
       const lineItems = cart.lineItems.physicalItems.filter(i => !i.parentId)
         .map(i => ({itemId: i.id, quantity: i.quantity})) as ConsignmentLineItem[];
 
@@ -110,23 +122,30 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
 
       }
 
-      // console.log('updatedAddress:');
-      // console.log(updatedAddress);
-
       const requestBody = {
           address: updatedAddress,
           shippingAddress: updatedAddress,
           lineItems: lineItems,
         } as ConsignmentAssignmentRequestBody;
 
-      const res = await checkoutService.assignItemsToAddress(requestBody);
-      const updatedConsignments = res.data.getConsignments();
+      try {
 
-      // Reset future ship date after saving
-      setFutureShipDate(null);
-      setIsUpdateAddressChecked(false);
+        const res = await checkoutService.assignItemsToAddress(requestBody);
+        const updatedConsignments = res.data.getConsignments();
 
-      return updatedConsignments ? updatedConsignments[0] : null;
+        // Reset future ship date after saving
+        setFutureShipDate(null);
+        setIsUpdateAddressChecked(false);
+
+        return updatedConsignments ? updatedConsignments[0] : null;
+      } catch (error) {
+        const messages = handleCheckoutError(error);
+        // messages.forEach(msg => alert(msg));
+        if (messages.length > 0) {
+          setErrorMessage(messages[0]);
+          return null;
+        }
+      }
     }
 
     return null;
@@ -191,13 +210,16 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
     }
   }
 
-  const saveChanges = async () => {
+  const saveChanges = async (moveNextStep = true) => {
+
     setIsInProgress(true);
 
     // console.log('saveChanges: ');
     const giftItem = await addItemsToCart(gitProductId, giftMessage);
 
     const selectedConsignment = await updateConsignments(giftItem);
+
+    // debugger;
 
     if (futureShipDate) {
       // console.log('Saving future save date: ');
@@ -213,29 +235,46 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
     }
 
     setEnabledNextStep(true);
-
     setIsInProgress(false);
+
+    if (selectedConsignment && moveNextStep) {
+      gotoNextStep();
+    }
   }
+
+  useEffect(() => {
+    if (shippingOptions.length > 0 && selectedShippingOptionId) {
+      setEnabledNextStep(true);
+    } else {
+      setEnabledNextStep(false);
+    }
+  }, [shippingOptions, selectedShippingOptionId]);
 
   const shouldShowContinueButton = () => {
     return (!customer || customer.isGuest) && (!customerShippingAddress?.postalCode || customerShippingAddress.address1 == 'TO_BE_ASSIGNED');
   }
 
-  return <div className="single-consignment-wrapper">
+  return <>
+  <div className="single-consignment-wrapper">
     <AddressOption 
       isUpdateAddressChecked={isUpdateAddressChecked}
       setIsUpdateAddressChecked={setIsUpdateAddressChecked}
       updatedShippingAddress={shippingAddress} 
       onInputChange={handleAddressChange}
       selectedConsignment={selectedConsignment}
+      errorMessage={errorMessage}
     />
 
     {shouldShowContinueButton() ?
       <div style={{ marginTop: '30px' }}>
-        <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>CONTINUE</button>
+        <button onClick={() => saveChanges(false)} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>CONTINUE</button>
       </div>
     :
     <>
+    {shippingOptions.length == 0 && <div style={{ marginTop: '30px' }}>
+      <button onClick={() => saveChanges(false)} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>Save Changes</button>
+    </div>
+    }
     <hr style={{ margin: '30px 0'}} />
 
     <div className="shipping-options-wrapper">
@@ -265,11 +304,16 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, setEnabl
       selectedConsignment={selectedConsignment}
       />
 
-    <div style={{ textAlign: 'right', marginTop: '20px' }}>
+    {/* <div style={{ textAlign: 'right', marginTop: '20px' }}>
       <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>SAVE CHANGES</button>
-    </div>
+    </div> */}
     </>}
   </div>
+  <div style={{ textAlign: 'right', margin: '20px 0' }}>
+    {/* <button onClick={saveChanges}  style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button> */}
+    <button onClick={() => saveChanges(true)} disabled={!enabledNextStep} style={{ opacity: enabledNextStep ? '1' : '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
+  </div>
+</>
 }
 
 export default SingleConsignment;
