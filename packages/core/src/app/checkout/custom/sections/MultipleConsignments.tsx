@@ -561,51 +561,54 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
               </div>
             </div>
             { isNextStep &&
-            <div className="item-options item-options__shipping-option-wrapper">
-              <div className="bottom-options">
-                <div className="item-options__shipping-option">
-                  <ShippingMethodOptionGroup 
-                    handleChange={(id) => {
-                      setSelectedShippingOptionIds({ ...selectedShippingOptionIds, [c.id]: id });
-                    }}
-                    selectedConsignment={c}
-                  />
-                </div>
-                {/* <div className="item-options__ship_date">
-                  {/* <input className="future-ship-date-value" placeholder="Future Ship Date" readOnly value={c.address.customFields.find(c => c.fieldId == 'field_26')?.fieldValue} style={{ padding: '10px', fontSize: '14px' }} type="text" />
-                  <FutureShipDateOptionGroup 
-                    futureShipDate={getFutureShipDate(c)} 
-                    handleChangeDate={(value) => {
-                      // Check if address is changed
-                      if (getFutureShipDate(c) != value) {
-                        updateFutureShipDate(c, value as string);
-                      }
-                    }} 
-                    selectedConsignment={selectedConsignment} 
+            <>
+              <div className="item-options item-options__shipping-option-wrapper">
+                <div className="bottom-options">
+                  <div className="item-options__shipping-option">
+                    <ShippingMethodOptionGroup 
+                      handleChange={(id) => {
+                        setSelectedShippingOptionIds({ ...selectedShippingOptionIds, [c.id]: id });
+                      }}
+                      selectedConsignment={c}
                     />
-                </div> */}
+                  </div>
+                  {/* <div className="item-options__ship_date">
+                    {/* <input className="future-ship-date-value" placeholder="Future Ship Date" readOnly value={c.address.customFields.find(c => c.fieldId == 'field_26')?.fieldValue} style={{ padding: '10px', fontSize: '14px' }} type="text" />
+                    <FutureShipDateOptionGroup 
+                      futureShipDate={getFutureShipDate(c)} 
+                      handleChangeDate={(value) => {
+                        // Check if address is changed
+                        if (getFutureShipDate(c) != value) {
+                          updateFutureShipDate(c, value as string);
+                        }
+                      }} 
+                      selectedConsignment={selectedConsignment} 
+                      />
+                  </div> */}
+                </div>
+                <div className="item-options__gift-message flex-align-center">
+                  {hasGiftItem(c) ?
+                    <GiftMessageOptionGroupEdit
+                      giftItem={getGiftItem(c) as CustomItem}
+                      giftProducts={giftProducts}
+                      selectedConsignment={c}
+                      checkoutId={checkoutId}
+                      setIsInProgress={setIsInProgress}
+                      giftItemError={giftItemError}
+                    />
+                  : 
+                  <GiftMessageOptionGroup 
+                      giftProducts={giftProducts}
+                      selectedConsignment={c}
+                      checkoutId={checkoutId}
+                      setIsInProgress={setIsInProgress}
+                      giftItemError={giftItemError}
+                    />
+                  }
+                </div>
               </div>
-              <div className="item-options__gift-message flex-align-center">
-                {hasGiftItem(c) ?
-                  <GiftMessageOptionGroupEdit
-                    giftItem={getGiftItem(c) as CustomItem}
-                    giftProducts={giftProducts}
-                    selectedConsignment={c}
-                    checkoutId={checkoutId}
-                    setIsInProgress={setIsInProgress}
-                    giftItemError={giftItemError}
-                  />
-                : 
-                <GiftMessageOptionGroup 
-                    giftProducts={giftProducts}
-                    selectedConsignment={c}
-                    checkoutId={checkoutId}
-                    setIsInProgress={setIsInProgress}
-                    giftItemError={giftItemError}
-                  />
-                }
-              </div>
-            </div>
+              {!c.availableShippingOptions || c.availableShippingOptions.length == 0 && <div style={{ color: '#900000', marginTop: '10px' }}>Please check your shipping address, the current address does not have validated shipping methods.</div>}
+            </>
             }
           </div>
 

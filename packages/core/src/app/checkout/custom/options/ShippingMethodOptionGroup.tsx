@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { Consignment, ShippingOption } from '@bigcommerce/checkout-sdk';
-import { useCheckout } from "../context/CheckoutContext";
+// import { useCheckout } from "../context/CheckoutContext";
 
 interface ShippingMethodOptionProps {
   handleChange: (id: string) => void,
@@ -10,8 +10,8 @@ interface ShippingMethodOptionProps {
 
 const ShippingMethodOptionGroup = ({ handleChange, selectedConsignment }: ShippingMethodOptionProps) => {
 
-  const { checkoutState } = useCheckout();
-  const shippingOptions = checkoutState.data.getShippingOptions() ?? [];
+  // const { checkoutState } = useCheckout();
+  const shippingOptions = selectedConsignment && selectedConsignment.availableShippingOptions ? selectedConsignment.availableShippingOptions : [];
 
   return <div>
     <select className="shipping-option-selector" style={{ padding: '10px' }} onChange={(e) => handleChange(e.target.value)}>
