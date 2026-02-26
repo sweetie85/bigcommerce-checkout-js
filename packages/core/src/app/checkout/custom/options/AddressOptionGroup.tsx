@@ -175,7 +175,7 @@ const AddressOptionGroup = ({
           {/* <input className="custom-form-input text" type="text" placeholder="Country" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange} /> */}
           <select className="custom-form-input select" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange}>
             <option value="">-- *Select a Country --</option>
-            {countries.map(c => <option value={c.code}>{c.name}</option>)}
+            {countries.filter(c => c.code == 'US').map(c => <option value={c.code}>{c.name}</option>)}
           </select>
         </div>
         <div className="form-field-row">
