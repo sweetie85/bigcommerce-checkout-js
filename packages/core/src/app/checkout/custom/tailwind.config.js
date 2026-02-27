@@ -3,6 +3,9 @@ module.exports = {
   content: [
     "./**/*.{js,ts,jsx,tsx}"
   ],
+  corePlugins: {
+    preflight: false,
+  },
   theme: {
     extend: {
       boxShadow: {
@@ -18,8 +21,6 @@ module.exports = {
     }
   },
   plugins: [
-    require('@tailwindcss/forms'),
-//
   ],
 }
 

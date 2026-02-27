@@ -9,7 +9,7 @@ interface CheckoutHeaderProps {
 }
 
 const BackButton = () => {
-  return <div className='back-to-cart'>
+  return <div className='back-to-cart text-[#F6A601] md:mr-auto md:absolute'>
     <a href='/cart.php' className='back-to-cart-wrapper'>
       <svg width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g clipPath="url(#clip0_37_106)">

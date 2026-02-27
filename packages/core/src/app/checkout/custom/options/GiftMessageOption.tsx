@@ -54,14 +54,14 @@ const GiftMessageOption = ({ giftProducts, selectedConsignment, setGiftProductId
     {isEnabled && <>
     { hasMultipleGiftMessage && <p style={{ color: 'red' }}>NOTE: You may only apply one gift message to each consignment.</p> }
     <div>
-      <select onChange={(e) => setGiftProductId(e.target.value) }>
+      <select className="max-md:w-11/12!" onChange={(e) => setGiftProductId(e.target.value) }>
         <option value="">Select Gift</option>
         { giftProducts.map((p) => <option key={p.bigcommerce_product_id} value={p.bigcommerce_product_id}>{p.frontend_title}</option>) }
       </select>
       </div>
 
       <div>
-        <textarea onChange={(e) => setGiftMessage(e.target.value)} placeholder="Type your message here"></textarea>
+        <textarea className="p-2 max-md:w-11/12!" onChange={(e) => setGiftMessage(e.target.value)} placeholder="Type your message here"></textarea>
       </div>
       <p style={{ marginLeft: '20px', marginTop: '5px', color: '#ccc'}}>150 characters remaining of 150</p>
     </>

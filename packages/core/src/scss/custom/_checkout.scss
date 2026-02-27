@@ -413,6 +413,12 @@
   }
 }
 
+.react-datepicker-wrapper {
+  @include breakpoint-max('small') {
+    width: 100%;
+  }
+}
+
 .address-update-arrow-wrapper {
   cursor: pointer;
   display: flex;

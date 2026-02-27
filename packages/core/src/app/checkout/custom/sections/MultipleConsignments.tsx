@@ -556,7 +556,7 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
                 selectedConsignment={selectedConsignment} 
                 />
 
-              <div>
+              <div className="max-md:hidden">
                 <a onClick={() => unassignConsignment(c)} style={{ textDecoration: 'underline', color: '#000' }}>Ungroup Items</a>
               </div>
             </div>
@@ -610,6 +610,10 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
               {!c.availableShippingOptions || c.availableShippingOptions.length == 0 && <div style={{ color: '#900000', marginTop: '10px' }}>Please check your shipping address, the current address does not have validated shipping methods.</div>}
             </>
             }
+
+            <div className="md:hidden flex justify-end mt-3">
+              <a onClick={() => unassignConsignment(c)} style={{ textDecoration: 'underline', color: '#000' }}>Ungroup Items</a>
+            </div>
           </div>
 
         </div>
