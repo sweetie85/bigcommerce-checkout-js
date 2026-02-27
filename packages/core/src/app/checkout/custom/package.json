@@ -1,0 +1,17 @@
+{
+  "name": "custom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "npx tailwindcss -i ./tailwind.input.css -o ../../../scss/custom/tailwind.output.scss",
+    "watch:css": "npx tailwindcss -i ./tailwind.input.css -o ../../../scss/custom//tailwind.output.scss --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.2.1",
+    "tailwindcss": "^4.2.1"
+  }
+}
