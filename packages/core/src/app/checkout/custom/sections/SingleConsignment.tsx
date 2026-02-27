@@ -210,9 +210,30 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
     }
   }
 
+  const isGiftItem = (item: PhysicalItem) => {
+    return !!giftProducts.find(p => p.product_sku == item.sku);
+  }
+
   const saveChanges = async (moveNextStep = true) => {
 
     setIsInProgress(true);
+
+    // Check if Switching from multiple consignmet to single consignment
+    const cart = checkoutState.data.getCart();
+    const consignments = checkoutState.data.getConsignments();
+
+    if (cart && consignments && consignments.length > 1) {
+      // Delete gift products if any for multiple consignmet
+      const giftItems = cart.lineItems.physicalItems.filter(i => !i.parentId && isGiftItem(i))
+      // Delete gift items
+      for(let i = 0; i < giftItems.length; i++) {
+
+        await fetch(`/api/storefront/carts/${checkoutId}/items/${giftItems[i].id}`, {
+          method: 'DELETE',
+          credentials: 'same-origin'
+        });
+      }
+    }
 
     // console.log('saveChanges: ');
     const giftItem = await addItemsToCart(gitProductId, giftMessage);
