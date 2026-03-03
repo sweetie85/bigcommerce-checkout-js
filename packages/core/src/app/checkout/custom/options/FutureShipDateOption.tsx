@@ -6,12 +6,21 @@ import DatePicker from "react-datepicker";
 
 interface FutureShipDateOptionProps {
   futureShipDate: string | null;
+  futureShipDateError: string | null;
   handleChangeDate: (v: string | null) => void;
   selectedConsignment: Consignment | null;
+  shouldSelectShipDate: boolean;
+  setShouldSelectShipDate: (show: boolean) => void;
 }
 
-const FutureShipDateOption = ({ futureShipDate, handleChangeDate, selectedConsignment }: FutureShipDateOptionProps) => {
-  const [shouldSelectShipDate, setShouldSelectShipDate] = useState(false);
+const FutureShipDateOption = ({ 
+  futureShipDate, 
+  futureShipDateError, 
+  handleChangeDate, 
+  selectedConsignment,
+  shouldSelectShipDate,
+  setShouldSelectShipDate
+}: FutureShipDateOptionProps) => {
   const [shipDate, setShipDate] = useState<Date | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -98,6 +107,7 @@ const FutureShipDateOption = ({ futureShipDate, handleChangeDate, selectedConsig
       setShouldSelectShipDate(true);
     } else {
       setShouldSelectShipDate(false);
+      handleChangeDate('');
     }
   };
 
@@ -116,7 +126,7 @@ const FutureShipDateOption = ({ futureShipDate, handleChangeDate, selectedConsig
     </div>
     <div style={{ marginLeft: '30px' }}>
       <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
-        <input value="0" name="ship_date_option" onChange={handleChange} id={"future_ship_date_ship_all"} type="radio" ></input>
+        <input value="0" checked={!shouldSelectShipDate} name="ship_date_option" onChange={handleChange} id={"future_ship_date_ship_all"} type="radio" ></input>
         <label htmlFor={"future_ship_date_ship_all"}>Ship all items right away</label>
       </div>
       <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
@@ -124,7 +134,7 @@ const FutureShipDateOption = ({ futureShipDate, handleChangeDate, selectedConsig
         <label htmlFor={"future_ship_date_select_date"}>Choose a future ship date</label>
       </div>
 
-      {shouldSelectShipDate && 
+      {shouldSelectShipDate && <>
         <div className="future-ship-date-wrapper" style={{ marginTop: '10px' }}>
           <DatePicker 
             selected={shipDate} 
@@ -133,7 +143,7 @@ const FutureShipDateOption = ({ futureShipDate, handleChangeDate, selectedConsig
               setIsOpen(false); // close after select
             }} 
             filterDate={isWeekday} 
-            placeholderText="Future Ship Date (Optional)"
+            placeholderText="Future Ship Date"
             minDate={tomorrow}
             open={isOpen}
             readOnly={true}
@@ -151,6 +161,8 @@ const FutureShipDateOption = ({ futureShipDate, handleChangeDate, selectedConsig
               <path d="M14 2.14483L7.02143 9L-9.37535e-08 2.14483L2.21585 -5.15101e-07L6.97857 4.70206L11.7841 -9.6858e-08L14 2.14483Z" fill="#315B42"/>
             </svg>
         </div>
+          {futureShipDateError && <p className="text-red-600">{futureShipDateError}</p>}
+        </>
       }
     </div>
   </div>

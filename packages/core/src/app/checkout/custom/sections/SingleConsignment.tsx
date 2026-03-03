@@ -33,13 +33,15 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
   const [giftMessage, setGiftMessage] = useState<string | null>(null);
 
   // Future ship date
+  const [shouldSelectShipDate, setShouldSelectShipDate] = useState(false);
   const [futureShipDate, setFutureShipDate] = useState<string | null>(null);
+  const [futureShipDateError, setFutureShipDateError] = useState<string | null>(null);
 
   const { checkoutState, checkoutService, hasShippingMethodEnabled } = useCheckout();
   const customer = checkoutState.data.getCustomer();
   const customerShippingAddress = checkoutState.data.getShippingAddress();
   const shippingOptions = checkoutState.data.getShippingOptions() ?? [];
-
+  
   useEffect(() => {
     if (customerShippingAddress) {
       if (customerShippingAddress.address1 !== 'TO_BE_ASSIGNED') {
@@ -214,7 +216,25 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
     return !!giftProducts.find(p => p.product_sku == item.sku);
   }
 
+  function getTomorrowDate() {
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    const yyyy = date.getFullYear();
+
+    return `${mm}/${dd}/${yyyy}`;
+  }
+
   const saveChanges = async (moveNextStep = true) => {
+
+    if (shouldSelectShipDate && !futureShipDate) {
+      setFutureShipDateError('Please select future ship date!');
+      return;
+    } else {
+      setFutureShipDateError(null);
+    }
 
     setIsInProgress(true);
 
@@ -242,10 +262,8 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
 
     // debugger;
 
-    if (futureShipDate) {
-      // console.log('Saving future save date: ');
-      checkoutService.updateCheckout({ customerMessage: futureShipDate });
-    }
+    // console.log('Saving future save date: ');
+    checkoutService.updateCheckout({ customerMessage: futureShipDate ? futureShipDate : getTomorrowDate() });
     
     if (selectedShippingOptionId) {
       if (selectedConsignment) {
@@ -313,6 +331,9 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
           futureShipDate={futureShipDate} 
           handleChangeDate={setFutureShipDate}
           selectedConsignment={selectedConsignment}
+          futureShipDateError={futureShipDateError}
+          shouldSelectShipDate={shouldSelectShipDate}
+          setShouldSelectShipDate={setShouldSelectShipDate}
           />
       </div>
     </div>

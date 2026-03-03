@@ -11,7 +11,6 @@ interface FutureShipDateOptionProps {
 }
 
 const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedConsignment }: FutureShipDateOptionProps) => {
-  const [shouldSelectShipDate, setShouldSelectShipDate] = useState(false);
   const [shipDate, setShipDate] = useState<Date | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -69,7 +68,7 @@ const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedC
         setShipDate(null);
       }
 
-      setShouldSelectShipDate(true);
+      // setShouldSelectShipDate(true);
     }
 
   }, [futureShipDate, selectedConsignment]);
@@ -87,15 +86,6 @@ const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedC
       }
     }
   }, [shipDate, futureShipDate]);
-
-  const handleChange = (e: any) => {
-    // console.log('e.target.value: '+e.target.value);
-    if (e.target.value == '1') {
-      setShouldSelectShipDate(true);
-    } else {
-      setShouldSelectShipDate(false);
-    }
-  };
 
   // Get tomorrow's date
   const tomorrow = new Date();
