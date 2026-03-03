@@ -30,6 +30,7 @@ const AddressOptionGroup = ({
   const [isNewAddress, setIsNewAddress] = useState(false);
   const [provinces, setProvinces] = useState<Region[]>([]);
   const [shippingAddress, setShippingAddress] = useState(updatedShippingAddress);
+  const [futureShipDateError, setFutureShipDateError] = useState<string | null>(null);
 
   const { checkoutState } = useCheckout();
   const customer = checkoutState.data.getCustomer();
@@ -117,6 +118,15 @@ const AddressOptionGroup = ({
     setFutureShipDate(null);
   }
 
+  const validateAndSave = () => {
+    if (!futureShipDate) {
+      setFutureShipDateError('Please select future ship date!');
+    } else {
+      setFutureShipDateError(null);
+      saveChanges();
+    }
+  }
+
   return <div style={{ marginLeft: '20px' }}>
     <div className="step-title address-update-arrow-wrapper" onClick={() => handleAddressChangeOption()}>
       {/* <input id="is_shipping_address_update" type="checkbox" checked={isUpdateAddressChecked} onChange={handleAddressChangeOption}></input>         */}
@@ -192,16 +202,20 @@ const AddressOptionGroup = ({
       </div>}
 
       <div className="step-title" style={{ marginTop: '40px'}}>
-        <label style={{ marginBottom: '10px' }}>Future Ship Date (Optional):</label>
+        <label style={{ marginBottom: '10px' }}>*Future Ship Date:</label>
         <FutureShipDateOptionGroup 
           futureShipDate={futureShipDate} 
-          handleChangeDate={(date) => setFutureShipDate(date)}
+          handleChangeDate={(date) => { 
+            setFutureShipDate(date)
+            setFutureShipDateError(null)
+          }}
           selectedConsignment={null}
           />
+          {futureShipDateError && <p className="text-red-600">{futureShipDateError}</p>}
       </div>
 
       <div style={{ marginTop: '20px' }}>
-        <button className="save-changes-button" onClick={() => saveChanges()}>SAVE CHANGES</button>
+        <button className="save-changes-button" onClick={() => validateAndSave()}>SAVE CHANGES</button>
       </div>
     </div>
     }

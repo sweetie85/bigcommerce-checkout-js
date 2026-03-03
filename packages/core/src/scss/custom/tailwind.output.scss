@@ -1,6 +1,7 @@
 /*! tailwindcss v4.2.1 | MIT License | https://tailwindcss.com */
 @layer properties;
 :root, :host {
+  --color-red-600: oklch(57.7% 0.245 27.325deg);
   --spacing: 0.25rem;
 }
 .absolute {
@@ -37,10 +38,6 @@
   border-style: var(--tw-border-style);
   border-width: 1px;
 }
-.border-0\! {
-  border-style: var(--tw-border-style) !important;
-  border-width: 0px !important;
-}
 .p-2 {
   padding: calc(var(--spacing) * 2);
 }
@@ -55,6 +52,9 @@
 }
 .text-\[\#f6a601\] {
   color: #f6a601;
+}
+.text-red-600 {
+  color: var(--color-red-600);
 }
 .underline {
   text-decoration-line: underline;
