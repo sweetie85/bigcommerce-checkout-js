@@ -55,7 +55,7 @@ const GiftMessageOption = ({ giftProducts, selectedConsignment, setGiftProductId
     { hasMultipleGiftMessage && <p style={{ color: 'red' }}>NOTE: You may only apply one gift message to each consignment.</p> }
     <div>
       <select className="max-md:w-11/12!" onChange={(e) => setGiftProductId(e.target.value) }>
-        <option value="">Select Gift</option>
+        <option value="">None</option>
         { giftProducts.map((p) => <option key={p.bigcommerce_product_id} value={p.bigcommerce_product_id}>{p.frontend_title}</option>) }
       </select>
       </div>

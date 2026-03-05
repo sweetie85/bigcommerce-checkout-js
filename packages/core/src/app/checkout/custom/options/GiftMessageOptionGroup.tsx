@@ -160,7 +160,7 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
     { giftItemError && <p style={{ color: 'red' }}>Error: {giftItemError}</p> }
     <div>
       <select onChange={(e) => setGiftProductId(e.target.value) }>
-        <option value="">Select Gift</option>
+        <option value="">None</option>
         { giftProducts.map((p) => <option key={p.bigcommerce_product_id} value={p.bigcommerce_product_id}>{p.frontend_title}</option>) }
       </select>
       </div>
