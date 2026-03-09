@@ -32,7 +32,7 @@ const CheckoutPage = ({ checkoutId, paymentForm  }: CustomCheckoutPageProps) => 
       return;
     }
 
-    fetch('https://phpstack-1452029-5845393.cloudwaysapps.com/bigcommerce-toms/cardproducts/list')
+    fetch('https://custom-app.carolinacookie.com/bigcommerce-toms/cardproducts/list')
     .then(r => r.json())
     .then(r => {
       setGiftProduct(r.data);
