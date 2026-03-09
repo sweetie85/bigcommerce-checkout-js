@@ -20,6 +20,9 @@ interface CheckoutContextValue {
   ready: boolean;
   hasShippingAddressEnabled: boolean;
   hasShippingMethodEnabled: boolean;
+  storeConfig: {
+    futureShipDateFieldId: string;
+  }
 }
 
 // Create context
@@ -47,6 +50,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   // Active Steps
   const [hasShippingAddressEnabled, setHasShippingAddressEnabled] = useState(false);
   const [hasShippingMethodEnabled, setHasShippingMethodEnabled] = useState(false);
+  const [futureShipDateFieldId, setFutureShipDateFieldId] = useState('');
 
   useEffect(() => {
     let mounted = true;
@@ -74,6 +78,16 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
           // console.log(checkoutState.data.getConsignments());
 
           setCheckoutState(checkoutState);
+
+          const checkoutConfig = checkoutState.data.getConfig();
+          if(checkoutConfig) {
+            if(checkoutConfig.storeProfile.storeHash == '46licyettj') { // Staging
+              setFutureShipDateFieldId('field_26');
+            } else { // Production
+              setFutureShipDateFieldId('field_31');
+            }
+          }
+
           setReady(true);
         }
       } catch (error) {
@@ -128,7 +142,10 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     checkoutState, 
     ready, 
     hasShippingAddressEnabled,
-    hasShippingMethodEnabled
+    hasShippingMethodEnabled,
+    storeConfig: {
+      futureShipDateFieldId
+    }
   };
 
   return (

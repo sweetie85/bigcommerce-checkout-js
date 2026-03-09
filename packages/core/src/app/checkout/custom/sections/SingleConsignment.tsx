@@ -37,10 +37,12 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
   const [futureShipDate, setFutureShipDate] = useState<string | null>(null);
   const [futureShipDateError, setFutureShipDateError] = useState<string | null>(null);
 
-  const { checkoutState, checkoutService, hasShippingMethodEnabled } = useCheckout();
+  const { checkoutState, checkoutService, storeConfig } = useCheckout();
   const customer = checkoutState.data.getCustomer();
   const customerShippingAddress = checkoutState.data.getShippingAddress();
   const shippingOptions = checkoutState.data.getShippingOptions() ?? [];
+
+  const { futureShipDateFieldId: FUTURE_SHIP_DATE_FIELD_ID } = storeConfig;
   
   useEffect(() => {
     if (customerShippingAddress) {
@@ -112,7 +114,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
       const updatedAddress = shippingAddress;
       if (updatedAddress && futureShipDate) {
         const futureDateCustomData = {
-          fieldId: 'field_26',
+          fieldId: FUTURE_SHIP_DATE_FIELD_ID,
           fieldValue: futureShipDate,
         };
 

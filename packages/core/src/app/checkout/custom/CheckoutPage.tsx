@@ -40,7 +40,7 @@ const CheckoutPage = ({ checkoutId, paymentForm  }: CustomCheckoutPageProps) => 
 
   }, [ready]);
 
-   if (!ready || !checkoutState) {
+  if (!ready || !checkoutState) {
     return <CheckoutPageSkeleton />;
   }
 

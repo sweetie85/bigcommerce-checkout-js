@@ -1,4 +1,5 @@
 import { Consignment } from "@bigcommerce/checkout-sdk";
+import { useCheckout } from "../context/CheckoutContext";
 import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 
@@ -23,6 +24,9 @@ const FutureShipDateOption = ({
 }: FutureShipDateOptionProps) => {
   const [shipDate, setShipDate] = useState<Date | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+
+  const { storeConfig } = useCheckout();
+  const { futureShipDateFieldId: FUTURE_SHIP_DATE_FIELD_ID } = storeConfig;
 
   const formatDateString = (date: Date) => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -62,7 +66,7 @@ const FutureShipDateOption = ({
 
     let currentFutureShipDate = futureShipDate;
     if (!currentFutureShipDate && selectedConsignment) {
-      const customDateField = selectedConsignment.address.customFields.find(c => c.fieldId == 'field_26')
+      const customDateField = selectedConsignment.address.customFields.find(c => c.fieldId == FUTURE_SHIP_DATE_FIELD_ID)
       if (customDateField) {
         // currentFutureShipDate = customDateField.fieldValue as string;
       }

@@ -41,10 +41,11 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const { checkoutState, checkoutService } = useCheckout();
+  const { checkoutState, checkoutService, storeConfig } = useCheckout();
 
   const cart: Cart | undefined = checkoutState.data.getCart();
   const consignments: Consignment[] | undefined = checkoutState.data.getConsignments() ?? [];
+  const { futureShipDateFieldId: FUTURE_SHIP_DATE_FIELD_ID } = storeConfig;
 
   useEffect(() => {
     if (cart) {
@@ -281,7 +282,7 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
       if (updatedAddress && futureShipDate) {
 
         const futureDateCustomData = {
-          fieldId: 'field_26',
+          fieldId: FUTURE_SHIP_DATE_FIELD_ID,
           fieldValue: futureShipDate,
         };
 
@@ -350,7 +351,7 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
     );
 
     const newCustomFields = [{
-      fieldId: 'field_26',
+      fieldId: FUTURE_SHIP_DATE_FIELD_ID,
       fieldValue: dateString
     }];
 
@@ -496,7 +497,7 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
   
 
   const getFutureShipDate = (consignment: Consignment): string  => {
-    return consignment.address.customFields.find(c => c.fieldId == 'field_26')?.fieldValue as string;
+    return consignment.address.customFields.find(c => c.fieldId == FUTURE_SHIP_DATE_FIELD_ID)?.fieldValue as string;
   }
 
   const cancelSingleAddress = () => {
@@ -573,7 +574,7 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
                     />
                   </div>
                   {/* <div className="item-options__ship_date">
-                    {/* <input className="future-ship-date-value" placeholder="Future Ship Date" readOnly value={c.address.customFields.find(c => c.fieldId == 'field_26')?.fieldValue} style={{ padding: '10px', fontSize: '14px' }} type="text" />
+                    {/* <input className="future-ship-date-value" placeholder="Future Ship Date" readOnly value={c.address.customFields.find(c => c.fieldId == FUTURE_SHIP_DATE_FIELD_ID)?.fieldValue} style={{ padding: '10px', fontSize: '14px' }} type="text" />
                     <FutureShipDateOptionGroup 
                       futureShipDate={getFutureShipDate(c)} 
                       handleChangeDate={(value) => {
