@@ -23,7 +23,7 @@ const CheckoutPage = ({ checkoutId, paymentForm  }: CustomCheckoutPageProps) => 
 
   const [activeTabIndex, setActiveTabIndex] = useState<CheckoutStep>(CheckoutStep.Consignment);
   const [giftProducts, setGiftProduct] = useState<GiftProduct[]>([]);
-  const { ready, checkoutState } = useCheckout();
+  const { ready, checkoutState, storeConfig } = useCheckout();
 
   // Initialize data to avoid re-fetch on every component load
   useEffect(() => {
@@ -32,8 +32,9 @@ const CheckoutPage = ({ checkoutId, paymentForm  }: CustomCheckoutPageProps) => 
       return;
     }
 
-    fetch('https://custom-app.carolinacookie.com/bigcommerce-toms/cardproducts/list')
-    .then(r => r.json())
+    const API_BASE_URL = (storeConfig.environment == 'LIVE') ? 'https://custom-app.carolinacookie.com/bigcommerce-toms' : 'https://phpstack-1452029-5845393.cloudwaysapps.com/bigcommerce-toms';
+
+    fetch(`${API_BASE_URL}/cardproducts/list`).then(r => r.json())
     .then(r => {
       setGiftProduct(r.data);
     });
