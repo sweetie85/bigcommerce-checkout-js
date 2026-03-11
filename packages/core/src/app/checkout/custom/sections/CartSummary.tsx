@@ -82,6 +82,12 @@ const CartSummary = () => {
         <span>Shipping</span>
         <span>{ shippingTotal || shippingTotal === 0 ? '$'+shippingTotal.toFixed(2) : 'TBD' }</span>
       </div>
+      {appliedCoupons.length > 0 &&
+        <div className="cart-amount-line">
+          <span>Discount</span>
+          <span>${appliedCoupons[0].discountedAmount.toFixed(2)}</span>
+        </div>
+      }
       <div className="cart-amount-line">
         <span>Tax</span>
         <span>$0.00</span>
