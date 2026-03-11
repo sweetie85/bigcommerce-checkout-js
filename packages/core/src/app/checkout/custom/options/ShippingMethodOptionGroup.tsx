@@ -11,7 +11,8 @@ interface ShippingMethodOptionProps {
 const ShippingMethodOptionGroup = ({ handleChange, selectedConsignment }: ShippingMethodOptionProps) => {
 
   // const { checkoutState } = useCheckout();
-  const shippingOptions = selectedConsignment && selectedConsignment.availableShippingOptions ? selectedConsignment.availableShippingOptions : [];
+  const shippingOptionsAll = selectedConsignment && selectedConsignment.availableShippingOptions ? selectedConsignment.availableShippingOptions : [];
+  const shippingOptions = shippingOptionsAll.filter(so => so.description != 'Pick Up');
 
   return <div>
     <select className="shipping-option-selector" style={{ padding: '10px' }} onChange={(e) => handleChange(e.target.value)}>

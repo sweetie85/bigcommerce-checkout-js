@@ -78,12 +78,24 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
     }
   }, []);
 
+  useEffect(() => {
+    if (customerShippingAddress) {
+      const futureShipDateField = customerShippingAddress.customFields.find(c => c.fieldId == FUTURE_SHIP_DATE_FIELD_ID);
+      
+      if (futureShipDateField) {
+        setFutureShipDate(futureShipDateField.fieldValue as string)
+      } else {
+        setFutureShipDate(null);
+      }
+    }
+  }, [customerShippingAddress]);
+
   const handleAddressChange = (updatedAddress: AddressRequestBody) => {
     // console.log('setShippingAddress 2: ');
     setShippingAddress(updatedAddress); // ✅ Update single source of truth
   };
 
-  const updateConsignments = async (giftItem: ConsignmentLineItem | null) : Promise<Consignment | null> => {
+  const updateConsignments = async (giftItem: ConsignmentLineItem | null, removeFufureShipDate: boolean) : Promise<Consignment | null> => {
   
     const cart = checkoutState.data.getCart();
 
@@ -115,7 +127,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
       if (updatedAddress && futureShipDate) {
         const futureDateCustomData = {
           fieldId: FUTURE_SHIP_DATE_FIELD_ID,
-          fieldValue: futureShipDate,
+          fieldValue: removeFufureShipDate ? '' : futureShipDate,
         };
 
         if (updatedAddress.customFields) {
@@ -140,6 +152,14 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
         // Reset future ship date after saving
         setFutureShipDate(null);
         setIsUpdateAddressChecked(false);
+
+        if (removeFufureShipDate) {
+          setShouldSelectShipDate(false);
+        }
+
+        // if (removeFufureShipDate) {
+        //   checkoutService.loadCheckout();
+        // }
 
         return updatedConsignments ? updatedConsignments[0] : null;
       } catch (error) {
@@ -229,7 +249,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
     return `${mm}/${dd}/${yyyy}`;
   }
 
-  const saveChanges = async (moveNextStep = true) => {
+  const saveChanges = async (moveNextStep = true, removeFufureShipDate = false) => {
 
     if (shouldSelectShipDate && !futureShipDate) {
       setFutureShipDateError('Please select future ship date!');
@@ -260,7 +280,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
     // console.log('saveChanges: ');
     const giftItem = await addItemsToCart(gitProductId, giftMessage);
 
-    const selectedConsignment = await updateConsignments(giftItem);
+    const selectedConsignment = await updateConsignments(giftItem, removeFufureShipDate);
 
     // debugger;
 
@@ -336,6 +356,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
           futureShipDateError={futureShipDateError}
           shouldSelectShipDate={shouldSelectShipDate}
           setShouldSelectShipDate={setShouldSelectShipDate}
+          saveChanges={saveChanges}
           />
       </div>
     </div>

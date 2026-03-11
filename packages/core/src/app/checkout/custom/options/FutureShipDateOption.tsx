@@ -12,6 +12,7 @@ interface FutureShipDateOptionProps {
   selectedConsignment: Consignment | null;
   shouldSelectShipDate: boolean;
   setShouldSelectShipDate: (show: boolean) => void;
+  saveChanges: (moveNextStep: boolean, removeFufureShipDate: boolean) => void;
 }
 
 const FutureShipDateOption = ({ 
@@ -20,10 +21,12 @@ const FutureShipDateOption = ({
   handleChangeDate, 
   selectedConsignment,
   shouldSelectShipDate,
-  setShouldSelectShipDate
+  setShouldSelectShipDate,
+  saveChanges
 }: FutureShipDateOptionProps) => {
   const [shipDate, setShipDate] = useState<Date | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [shouldUserSelectShipDate, setShouldUserSelectShipDate] = useState(false);
 
   const { storeConfig } = useCheckout();
   const { futureShipDateFieldId: FUTURE_SHIP_DATE_FIELD_ID } = storeConfig;
@@ -109,9 +112,13 @@ const FutureShipDateOption = ({
     // console.log('e.target.value: '+e.target.value);
     if (e.target.value == '1') {
       setShouldSelectShipDate(true);
+      setShouldUserSelectShipDate(true);
     } else {
       setShouldSelectShipDate(false);
+      setShouldUserSelectShipDate(false);
       handleChangeDate('');
+
+      saveChanges(false, true);
     }
   };
 
@@ -131,11 +138,11 @@ const FutureShipDateOption = ({
     <div style={{ marginLeft: '30px' }}>
       <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
         <input value="0" checked={!shouldSelectShipDate} name="ship_date_option" onChange={handleChange} id={"future_ship_date_ship_all"} type="radio" ></input>
-        <label htmlFor={"future_ship_date_ship_all"}>Ship all items right away</label>
+        <label className="cursor-pointer" htmlFor={"future_ship_date_ship_all"}>Ship all items right away</label>
       </div>
       <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
-        <input value="1" name="ship_date_option" onChange={handleChange} id={"future_ship_date_select_date"} type="radio" ></input>
-        <label htmlFor={"future_ship_date_select_date"}>Choose a future ship date</label>
+        <input value="1" checked={shouldSelectShipDate} name="ship_date_option" onChange={handleChange} id={"future_ship_date_select_date"} type="radio" ></input>
+        <label className="cursor-pointer" htmlFor={"future_ship_date_select_date"}>Choose a future ship date</label>
       </div>
 
       {shouldSelectShipDate && <>

@@ -13,7 +13,8 @@ const ShippingMethodOption = ({ updatedShippingOptionId, handleChange, selectedC
 
   const [selectedShippingOptionId, setSelectedShippingOptionId] = useState(updatedShippingOptionId);
   const { checkoutState } = useCheckout();
-  const shippingOptions = checkoutState.data.getShippingOptions() ?? [];
+  const shippingOptionsAll = checkoutState.data.getShippingOptions() ?? [];
+  const shippingOptions = shippingOptionsAll.filter(so => so.description != 'Pick Up');
 
   useEffect(() => {
     if (selectedConsignment && selectedConsignment.selectedShippingOption) {
