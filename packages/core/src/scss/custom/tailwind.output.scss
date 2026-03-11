@@ -2,7 +2,14 @@
 @layer properties;
 :root, :host {
   --color-red-600: oklch(57.7% 0.245 27.325deg);
+  --color-gray-300: oklch(87.2% 0.01 258.338deg);
+  --color-white: #fff;
   --spacing: 0.25rem;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: calc(1.75 / 1.125);
+  --text-xl: 1.25rem;
+  --text-xl--line-height: calc(1.75 / 1.25);
+  --radius-lg: 0.5rem;
 }
 .absolute {
   position: absolute;
@@ -13,23 +20,53 @@
 .end {
   inset-inline-end: var(--spacing);
 }
+.mt-2 {
+  margin-top: calc(var(--spacing) * 2);
+}
 .mt-3 {
   margin-top: calc(var(--spacing) * 3);
 }
 .mt-5 {
   margin-top: calc(var(--spacing) * 5);
 }
+.mt-6 {
+  margin-top: calc(var(--spacing) * 6);
+}
 .flex {
   display: flex;
+}
+.inline-block {
+  display: inline-block;
 }
 .w-\[40\%\] {
   width: 40%;
 }
+.w-full {
+  width: 100%;
+}
 .transform {
   transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
 }
+.cursor-pointer {
+  cursor: pointer;
+}
+.items-center {
+  align-items: center;
+}
 .justify-end {
   justify-content: flex-end;
+}
+.gap-1 {
+  gap: calc(var(--spacing) * 1);
+}
+.gap-2 {
+  gap: calc(var(--spacing) * 2);
+}
+.rounded {
+  border-radius: 0.25rem;
+}
+.rounded-lg {
+  border-radius: var(--radius-lg);
 }
 .rounded-none\! {
   border-radius: 0 !important;
@@ -38,14 +75,46 @@
   border-style: var(--tw-border-style);
   border-width: 1px;
 }
+.bg-\[\#F6A601\] {
+  background-color: #F6A601;
+}
+.bg-gray-300 {
+  background-color: var(--color-gray-300);
+}
+.bg-white {
+  background-color: var(--color-white);
+}
+.p-1 {
+  padding: calc(var(--spacing) * 1);
+}
 .p-2 {
   padding: calc(var(--spacing) * 2);
 }
 .p-2\.5\! {
   padding: calc(var(--spacing) * 2.5) !important;
 }
+.p-4 {
+  padding: calc(var(--spacing) * 4);
+}
+.px-3 {
+  padding-inline: calc(var(--spacing) * 3);
+}
+.px-5 {
+  padding-inline: calc(var(--spacing) * 5);
+}
+.py-2 {
+  padding-block: calc(var(--spacing) * 2);
+}
 .text-left {
   text-align: left;
+}
+.text-lg {
+  font-size: var(--text-lg);
+  line-height: var(--tw-leading, var(--text-lg--line-height));
+}
+.text-xl {
+  font-size: var(--text-xl);
+  line-height: var(--tw-leading, var(--text-xl--line-height));
 }
 .text-\[\#F6A601\] {
   color: #F6A601;

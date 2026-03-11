@@ -19,6 +19,7 @@ const CheckoutPayment = ({ checkoutId, paymentForm } :CheckoutPaymentProps) => {
 
   const { checkoutService, checkoutState } = useCheckout();
   const savedBillingAddress = checkoutState.data.getBillingAddress();
+  const consignments = checkoutState.data.getConsignments() || [];
 
   const countries = checkoutState.data.getShippingCountries() ?? [];
 
@@ -62,10 +63,27 @@ const CheckoutPayment = ({ checkoutId, paymentForm } :CheckoutPaymentProps) => {
       }
       setIsInProgress(true);
       
-      await checkoutService.updateBillingAddress(billingAddress);
-      // console.log('Billing address updated.');
+      checkoutService.updateBillingAddress(billingAddress).then(async () => {
+        console.log('Billing address updated.');
+        console.log('Reloading checkout');
+        // checkoutService.loadCheckout(checkoutId);
 
-      setIsInProgress(false);
+        // Re-assign shipping options
+        for (let i = 0; i < consignments.length; i++) {
+          console.log('Re assigning consignments: '+i);
+
+          const thisConsignment = consignments[0];
+
+          console.log('thisConsignment.selectedShippingOption: ');
+          console.log(thisConsignment.selectedShippingOption);
+
+          if (thisConsignment.selectedShippingOption) {
+            await checkoutService.selectConsignmentShippingOption(thisConsignment.id, thisConsignment.selectedShippingOption.id);
+          }
+        }
+
+        setIsInProgress(false);
+      });
     }
   }
 
