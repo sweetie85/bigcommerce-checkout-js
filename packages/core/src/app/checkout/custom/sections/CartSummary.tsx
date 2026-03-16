@@ -85,7 +85,7 @@ const CartSummary = () => {
       {appliedCoupons.length > 0 &&
         <div className="cart-amount-line">
           <span>Discount</span>
-          <span>${appliedCoupons[0].discountedAmount.toFixed(2)}</span>
+          <span>-${appliedCoupons[0].discountedAmount.toFixed(2)}</span>
         </div>
       }
       <div className="cart-amount-line">

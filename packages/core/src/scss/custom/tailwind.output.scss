@@ -7,8 +7,6 @@
   --spacing: 0.25rem;
   --text-lg: 1.125rem;
   --text-lg--line-height: calc(1.75 / 1.125);
-  --text-xl: 1.25rem;
-  --text-xl--line-height: calc(1.75 / 1.25);
   --radius-lg: 0.5rem;
 }
 .absolute {
@@ -35,14 +33,8 @@
 .flex {
   display: flex;
 }
-.inline-block {
-  display: inline-block;
-}
 .w-\[40\%\] {
   width: 40%;
-}
-.w-full {
-  width: 100%;
 }
 .transform {
   transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
@@ -55,9 +47,6 @@
 }
 .justify-end {
   justify-content: flex-end;
-}
-.gap-1 {
-  gap: calc(var(--spacing) * 1);
 }
 .gap-2 {
   gap: calc(var(--spacing) * 2);
@@ -84,9 +73,6 @@
 .bg-white {
   background-color: var(--color-white);
 }
-.p-1 {
-  padding: calc(var(--spacing) * 1);
-}
 .p-2 {
   padding: calc(var(--spacing) * 2);
 }
@@ -95,9 +81,6 @@
 }
 .p-4 {
   padding: calc(var(--spacing) * 4);
-}
-.px-3 {
-  padding-inline: calc(var(--spacing) * 3);
 }
 .px-5 {
   padding-inline: calc(var(--spacing) * 5);
@@ -111,10 +94,6 @@
 .text-lg {
   font-size: var(--text-lg);
   line-height: var(--tw-leading, var(--text-lg--line-height));
-}
-.text-xl {
-  font-size: var(--text-xl);
-  line-height: var(--tw-leading, var(--text-xl--line-height));
 }
 .text-\[\#F6A601\] {
   color: #F6A601;

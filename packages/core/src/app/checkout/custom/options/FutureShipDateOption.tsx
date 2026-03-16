@@ -92,7 +92,7 @@ const FutureShipDateOption = ({
       setShouldSelectShipDate(true);
     }
 
-  }, [futureShipDate, selectedConsignment]);
+  }, [futureShipDate, shouldSelectShipDate, selectedConsignment]);
 
    useEffect(() => {
     if (shipDate) {
