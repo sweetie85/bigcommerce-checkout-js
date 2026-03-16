@@ -10,21 +10,21 @@ type ShippingDateOption = "ship_now" | "ship_date";
 
 interface FutureShipDateOptionProps {
   // futureShipDate: string | null;
-  // futureShipDateError: string | null;
+  futureShipDateError: string | null;
   handleChangeDate: (v: string | null) => void;
   // selectedConsignment: Consignment | null;
   // shouldSelectShipDate: boolean;
-  // setShouldSelectShipDate: (show: boolean) => void;
+  setShouldSelectShipDate: (show: boolean) => void;
   // saveChanges: (moveNextStep: boolean, removeFufureShipDate: boolean) => void;
 }
 
 const FutureShipDateOption = ({ 
   // futureShipDate, 
-  // futureShipDateError, 
+  futureShipDateError, 
   handleChangeDate, 
   // selectedConsignment,
   // shouldSelectShipDate,
-  // setShouldSelectShipDate,
+  setShouldSelectShipDate,
   // saveChanges
 }: FutureShipDateOptionProps) => {
   const [currentShipDate, setCurrentShipDate] = useState<Date | null>(null);
@@ -84,6 +84,7 @@ const FutureShipDateOption = ({
         setNewShipDate(currentFutureShipDateOb);
 
         setShippingDateOption('ship_date');
+        setShouldSelectShipDate(true);
       }
     }
 
@@ -96,6 +97,10 @@ const FutureShipDateOption = ({
     if (dateOption == 'ship_now') {
       setNewShipDate(null);
       handleChangeDate(null);
+      
+      setShouldSelectShipDate(false);
+    } else {
+      setShouldSelectShipDate(true);
     }
   };
 
@@ -227,7 +232,7 @@ const FutureShipDateOption = ({
               <path d="M14 2.14483L7.02143 9L-9.37535e-08 2.14483L2.21585 -5.15101e-07L6.97857 4.70206L11.7841 -9.6858e-08L14 2.14483Z" fill="#315B42"/>
             </svg>
         </div>
-          {/* {futureShipDateError && <p className="text-red-600">{futureShipDateError}</p>} */}
+          {futureShipDateError && <p className="text-red-600">{futureShipDateError}</p>}
         </>
       }
     </div>

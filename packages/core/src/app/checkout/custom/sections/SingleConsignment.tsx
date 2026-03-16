@@ -344,9 +344,8 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
           // futureShipDate={futureShipDate} 
           handleChangeDate={setFutureShipDate}
           // selectedConsignment={selectedConsignment}
-          // futureShipDateError={futureShipDateError}
-          // shouldSelectShipDate={shouldSelectShipDate}
-          // setShouldSelectShipDate={setShouldSelectShipDate}
+          futureShipDateError={futureShipDateError}
+          setShouldSelectShipDate={setShouldSelectShipDate}
           // saveChanges={saveChanges}
           />
       </div>
