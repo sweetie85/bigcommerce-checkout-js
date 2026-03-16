@@ -72,7 +72,7 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
             <div style={{ width: '20%' }}>
               {index == 0 && <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div style={{ minHeight: '50px' }}>
-                  {c.address.customFields[0] && c.address.customFields[0].fieldId == FUTURE_SHIP_DATE_FIELD_ID ? formatedDate(c.address.customFields[0].fieldValue as string) : 'No Shipping date (standard)'}
+                  {c.address.customFields[0] && c.address.customFields[0].fieldId == FUTURE_SHIP_DATE_FIELD_ID && c.address.customFields[0].fieldValue != '' ? formatedDate(c.address.customFields[0].fieldValue as string) : 'No Shipping date (standard)'}
                 </div>
                 <div>{c.selectedShippingOption?.description}</div>
               </div>}

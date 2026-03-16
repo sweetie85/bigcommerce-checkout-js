@@ -124,10 +124,10 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
       }
 
       const updatedAddress = shippingAddress;
-      if (updatedAddress && futureShipDate) {
+      if (updatedAddress) {
         const futureDateCustomData = {
           fieldId: FUTURE_SHIP_DATE_FIELD_ID,
-          fieldValue: removeFufureShipDate ? '' : futureShipDate,
+          fieldValue: futureShipDate ? futureShipDate : '',
         };
 
         if (updatedAddress.customFields) {
@@ -135,7 +135,6 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
         } else {
           updatedAddress.customFields = [futureDateCustomData];
         }
-
       }
 
       const requestBody = {
@@ -150,16 +149,8 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
         const updatedConsignments = res.data.getConsignments();
 
         // Reset future ship date after saving
-        setFutureShipDate(null);
+        // setFutureShipDate(null);
         setIsUpdateAddressChecked(false);
-
-        if (removeFufureShipDate) {
-          setShouldSelectShipDate(false);
-        }
-
-        // if (removeFufureShipDate) {
-        //   checkoutService.loadCheckout();
-        // }
 
         return updatedConsignments ? updatedConsignments[0] : null;
       } catch (error) {
@@ -350,13 +341,13 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
       </div>
       <div className="future-ship-date-option">
         <FutureShipDateOption 
-          futureShipDate={futureShipDate} 
+          // futureShipDate={futureShipDate} 
           handleChangeDate={setFutureShipDate}
-          selectedConsignment={selectedConsignment}
-          futureShipDateError={futureShipDateError}
-          shouldSelectShipDate={shouldSelectShipDate}
-          setShouldSelectShipDate={setShouldSelectShipDate}
-          saveChanges={saveChanges}
+          // selectedConsignment={selectedConsignment}
+          // futureShipDateError={futureShipDateError}
+          // shouldSelectShipDate={shouldSelectShipDate}
+          // setShouldSelectShipDate={setShouldSelectShipDate}
+          // saveChanges={saveChanges}
           />
       </div>
     </div>

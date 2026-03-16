@@ -5,31 +5,38 @@ import DatePicker from "react-datepicker";
 
 // import "react-datepicker/dist/react-datepicker.css";
 
+type ShippingDateOption = "ship_now" | "ship_date";
+
+
 interface FutureShipDateOptionProps {
-  futureShipDate: string | null;
-  futureShipDateError: string | null;
+  // futureShipDate: string | null;
+  // futureShipDateError: string | null;
   handleChangeDate: (v: string | null) => void;
-  selectedConsignment: Consignment | null;
-  shouldSelectShipDate: boolean;
-  setShouldSelectShipDate: (show: boolean) => void;
-  saveChanges: (moveNextStep: boolean, removeFufureShipDate: boolean) => void;
+  // selectedConsignment: Consignment | null;
+  // shouldSelectShipDate: boolean;
+  // setShouldSelectShipDate: (show: boolean) => void;
+  // saveChanges: (moveNextStep: boolean, removeFufureShipDate: boolean) => void;
 }
 
 const FutureShipDateOption = ({ 
-  futureShipDate, 
-  futureShipDateError, 
+  // futureShipDate, 
+  // futureShipDateError, 
   handleChangeDate, 
-  selectedConsignment,
-  shouldSelectShipDate,
-  setShouldSelectShipDate,
-  saveChanges
+  // selectedConsignment,
+  // shouldSelectShipDate,
+  // setShouldSelectShipDate,
+  // saveChanges
 }: FutureShipDateOptionProps) => {
-  const [shipDate, setShipDate] = useState<Date | null>(null);
+  const [currentShipDate, setCurrentShipDate] = useState<Date | null>(null);
+  const [newShipDate, setNewShipDate] = useState<Date | null>(null);
+  
   const [isOpen, setIsOpen] = useState(false);
-  const [shouldUserSelectShipDate, setShouldUserSelectShipDate] = useState(false);
+  // const [shouldUserSelectShipDate, setShouldUserSelectShipDate] = useState(false);
+  const [shippingDateOption, setShippingDateOption] = useState<ShippingDateOption>("ship_now");
 
-  const { storeConfig } = useCheckout();
+  const { checkoutState, storeConfig } = useCheckout();
   const { futureShipDateFieldId: FUTURE_SHIP_DATE_FIELD_ID } = storeConfig;
+  const consignments = checkoutState.data.getConsignments();
 
   const formatDateString = (date: Date) => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -66,6 +73,34 @@ const FutureShipDateOption = ({
   };
 
   useEffect(() => {
+    if (consignments) {
+      const selectedConsignment = consignments[0]
+      const customDateField = selectedConsignment.address.customFields.find(c => c.fieldId == FUTURE_SHIP_DATE_FIELD_ID)
+      if (customDateField && customDateField.fieldValue && customDateField.fieldValue != '') {
+        const currentFutureShipDate = customDateField.fieldValue as string;
+        const currentFutureShipDateOb = parseDateString(currentFutureShipDate);
+        
+        setCurrentShipDate(currentFutureShipDateOb);
+        setNewShipDate(currentFutureShipDateOb);
+
+        setShippingDateOption('ship_date');
+      }
+    }
+
+  }, consignments);
+
+  const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const dateOption = e.target.value as ShippingDateOption;
+    setShippingDateOption(dateOption);
+
+    if (dateOption == 'ship_now') {
+      setNewShipDate(null);
+      handleChangeDate(null);
+    }
+  };
+
+  /*
+  useEffect(() => {
 
     let currentFutureShipDate = futureShipDate;
     if (!currentFutureShipDate && selectedConsignment) {
@@ -76,11 +111,6 @@ const FutureShipDateOption = ({
     }
 
     if (currentFutureShipDate) {
-      // const [month, day, year] = currentFutureShipDate.split("/").map(Number);
-
-      // // Date.UTC() creates a timestamp at midnight UTC, so no timezone shift happens.
-      // const selectedShipDate = new Date(Date.UTC(year, month - 1, day));
-
       const selectedShipDate = parseDateString(currentFutureShipDate);
       
       if (selectedShipDate) {
@@ -90,6 +120,8 @@ const FutureShipDateOption = ({
       }
 
       setShouldSelectShipDate(true);
+    } else {
+      // setShipDate(null);
     }
 
   }, [futureShipDate, shouldSelectShipDate, selectedConsignment]);
@@ -121,6 +153,19 @@ const FutureShipDateOption = ({
       saveChanges(false, true);
     }
   };
+  */
+
+  const handleDateChange = (newDate: Date | null) => {
+    if (newDate) {
+      setNewShipDate(newDate);
+      setIsOpen(false);
+
+      const dateString = formatDateString(newDate);
+      handleChangeDate(dateString);
+    } else {
+      handleChangeDate(null);
+    }
+  }
 
   const isWeekday = (date: Date) => {
     const day = date.getDay();
@@ -137,22 +182,32 @@ const FutureShipDateOption = ({
     </div>
     <div style={{ marginLeft: '30px' }}>
       <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
-        <input value="0" checked={!shouldSelectShipDate} name="ship_date_option" onChange={handleChange} id={"future_ship_date_ship_all"} type="radio" ></input>
+        <input 
+          value="ship_now" 
+          checked={shippingDateOption === "ship_now"} 
+          name="ship_date_option" 
+          onChange={handleOptionChange} 
+          id={"future_ship_date_ship_all"} type="radio" >
+        </input>
         <label className="cursor-pointer" htmlFor={"future_ship_date_ship_all"}>Ship all items right away</label>
       </div>
       <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
-        <input value="1" checked={shouldSelectShipDate} name="ship_date_option" onChange={handleChange} id={"future_ship_date_select_date"} type="radio" ></input>
+        {/* <input value="1" checked={shouldSelectShipDate} name="ship_date_option" onChange={handleChange} id={"future_ship_date_select_date"} type="radio" ></input> */}
+        <input 
+          value="ship_date" 
+          checked={shippingDateOption === "ship_date"} 
+          name="ship_date_option" 
+          onChange={handleOptionChange} 
+          id={"future_ship_date_select_date"} type="radio" >
+        </input>
         <label className="cursor-pointer" htmlFor={"future_ship_date_select_date"}>Choose a future ship date</label>
       </div>
 
-      {shouldSelectShipDate && <>
+      {shippingDateOption === "ship_date" && <>
         <div className="future-ship-date-wrapper" style={{ marginTop: '10px' }}>
           <DatePicker 
-            selected={shipDate} 
-            onChange={(date) => {
-              setShipDate(date);
-              setIsOpen(false); // close after select
-            }} 
+            selected={newShipDate} 
+            onChange={handleDateChange} 
             filterDate={isWeekday} 
             placeholderText="Future Ship Date"
             minDate={tomorrow}
@@ -172,7 +227,7 @@ const FutureShipDateOption = ({
               <path d="M14 2.14483L7.02143 9L-9.37535e-08 2.14483L2.21585 -5.15101e-07L6.97857 4.70206L11.7841 -9.6858e-08L14 2.14483Z" fill="#315B42"/>
             </svg>
         </div>
-          {futureShipDateError && <p className="text-red-600">{futureShipDateError}</p>}
+          {/* {futureShipDateError && <p className="text-red-600">{futureShipDateError}</p>} */}
         </>
       }
     </div>
