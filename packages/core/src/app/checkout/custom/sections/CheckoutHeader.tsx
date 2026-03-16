@@ -74,6 +74,18 @@ const CheckoutHeader = ({activeStep = CheckoutStep.Consignment, onChangeStep} : 
         setHasOrderSummaryEnabled(false);
       }
 
+      // Check if tab parameter is passed
+      const params = new URLSearchParams(window.location.search);
+
+      if (params.has('tab')) {
+        console.log('tab parameter exists');
+
+        const tab = params.get('tab');
+        if (tab == 'payment') {
+          onChangeStep(CheckoutStep.Payment);
+        }
+      }
+
     }
   }, [cart, consignments]);
 

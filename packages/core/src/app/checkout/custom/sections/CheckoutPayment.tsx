@@ -25,7 +25,17 @@ const CheckoutPayment = ({ checkoutId, paymentForm } :CheckoutPaymentProps) => {
 
   useEffect(() => {
     if (savedBillingAddress) {
-      setBillingAddress(savedBillingAddress);
+      setTimeout(() => {
+        setBillingAddress(savedBillingAddress);
+
+        const checkout = checkoutService.getState().data.getCheckout();
+        if (checkout) {
+          console.log('Billing Consignments:', checkout.consignments)
+          console.log('Billing Address:', checkout.billingAddress);
+          console.log('Customer Info:', checkout.customer);
+        }
+
+      }, 2000); // Let's billing address saved completely
     } else {
       setBillingAddress(null);
     }
@@ -63,27 +73,33 @@ const CheckoutPayment = ({ checkoutId, paymentForm } :CheckoutPaymentProps) => {
       }
       setIsInProgress(true);
       
-      checkoutService.updateBillingAddress(billingAddress).then(async () => {
-        console.log('Billing address updated.');
-        console.log('Reloading checkout');
-        // checkoutService.loadCheckout(checkoutId);
+      await checkoutService.updateBillingAddress(billingAddress);
+      
+      console.log('Billing address updated.');
+      console.log('Reloading checkout');
 
-        // Re-assign shipping options
-        for (let i = 0; i < consignments.length; i++) {
-          console.log('Re assigning consignments: '+i);
+      window.location.href = window.location.origin+window.location.pathname+'?tab=payment';
 
-          const thisConsignment = consignments[0];
+      // checkoutService.loadCheckout(checkoutId);
 
-          console.log('thisConsignment.selectedShippingOption: ');
-          console.log(thisConsignment.selectedShippingOption);
+      /*
+      // Re-assign shipping options
+      for (let i = 0; i < consignments.length; i++) {
+        console.log('Re assigning consignments: '+i);
 
-          if (thisConsignment.selectedShippingOption) {
-            await checkoutService.selectConsignmentShippingOption(thisConsignment.id, thisConsignment.selectedShippingOption.id);
-          }
+        const thisConsignment = consignments[0];
+
+        console.log('thisConsignment.selectedShippingOption: ');
+        console.log(thisConsignment.selectedShippingOption);
+
+        if (thisConsignment.selectedShippingOption) {
+          await checkoutService.selectConsignmentShippingOption(thisConsignment.id, thisConsignment.selectedShippingOption.id);
         }
+      }
+      
+      setIsInProgress(false);
+      */
 
-        setIsInProgress(false);
-      });
     }
   }
 
