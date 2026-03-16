@@ -1,6 +1,7 @@
 /*! tailwindcss v4.2.1 | MIT License | https://tailwindcss.com */
 @layer properties;
 :root, :host {
+  --color-red-500: oklch(63.7% 0.237 25.331deg);
   --color-red-600: oklch(57.7% 0.245 27.325deg);
   --color-gray-300: oklch(87.2% 0.01 258.338deg);
   --color-white: #fff;
@@ -30,11 +31,23 @@
 .mt-6 {
   margin-top: calc(var(--spacing) * 6);
 }
+.ml-5 {
+  margin-left: calc(var(--spacing) * 5);
+}
 .flex {
   display: flex;
 }
+.w-1\/2 {
+  width: calc(1 / 2 * 100%);
+}
 .w-\[40\%\] {
   width: 40%;
+}
+.w-auto {
+  width: auto;
+}
+.w-auto\! {
+  width: auto !important;
 }
 .transform {
   transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
@@ -100,6 +113,9 @@
 }
 .text-\[\#f6a601\] {
   color: #f6a601;
+}
+.text-red-500 {
+  color: var(--color-red-500);
 }
 .text-red-600 {
   color: var(--color-red-600);

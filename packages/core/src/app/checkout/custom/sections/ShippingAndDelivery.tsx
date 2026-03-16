@@ -117,7 +117,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
 
     {isInProgress && <FullPageLoader /> }
 
-    {(!customer || customer.isGuest) &&
+    {((!customer || customer.isGuest) && showTopSteps) &&
       <div className="step-title choose-consignment-type">
         <label style={{}}>1. Enter the email address:</label>
         <div className="form-field-row" style={{ marginLeft: '32px', justifyContent: 'left', gap: '20px' }}>
