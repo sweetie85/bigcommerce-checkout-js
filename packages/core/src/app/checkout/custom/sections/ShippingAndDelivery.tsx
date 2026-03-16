@@ -30,6 +30,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
   const [guestEmalId, setGuestEmailId] = useState('');
   const [guestEmalError, setGuestEmalError] = useState<string | null>(null);
   const [billingAddress, setBillingAddress] = useState<BillingAddress | undefined>(undefined);
+  const [showTopSteps, setShowTopSteps] = useState(true);
 
   // Address
   const [customerAddresses, setCustomerAddresses] = useState<CustomerAddress[]>([]);
@@ -146,11 +147,13 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     { hasShippingAddressEnabled &&
       <div>
         <>
-          <ConsignmentOption
-            isSingleAddress={isSingleAddress} 
-            setIsSingleAddress={setIsSingleAddress} 
-            stepNumber={!customer || customer.isGuest ? 2 : 1}
-            />
+          {showTopSteps && 
+            <ConsignmentOption
+              isSingleAddress={isSingleAddress} 
+              setIsSingleAddress={setIsSingleAddress} 
+              stepNumber={!customer || customer.isGuest ? 2 : 1}
+              />
+          }
 
           {!isSingleAddress && <div>
             <MultipleConsignments 
@@ -160,6 +163,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
               gotoNextStep={gotoNextStep}
               setIsSingleAddress={setIsSingleAddress}
               stepNumber={!customer || customer.isGuest ? 3 : 2}
+              setShowTopSteps={setShowTopSteps}
             />
           </div>
           }

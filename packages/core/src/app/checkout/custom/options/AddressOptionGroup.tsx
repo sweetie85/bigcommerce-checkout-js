@@ -202,7 +202,7 @@ const AddressOptionGroup = ({
       </div>}
 
       <div className="step-title" style={{ marginTop: '40px'}}>
-        <label style={{ marginBottom: '10px' }}>*Future Ship Date:</label>
+        <label style={{ marginBottom: '10px' }}>*Future Ship Date (if applicable):</label>
         <FutureShipDateOptionGroup 
           futureShipDate={futureShipDate} 
           handleChangeDate={(date) => { 

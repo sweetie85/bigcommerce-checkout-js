@@ -17,11 +17,20 @@ interface SelectItemsProps {
   giftProducts: GiftProduct[];
   setIsInProgress: (inProgress: boolean) => void;
   gotoNextStep: () => void;
-  setIsSingleAddress: (isSet: boolean) => void
+  setIsSingleAddress: (isSet: boolean) => void;
+  setShowTopSteps: (isShow: boolean) => void;
   stepNumber: number;
 }
 
-const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep, setIsSingleAddress, stepNumber }: SelectItemsProps) => {
+const MultipleConsignments = ({ 
+  checkoutId, 
+  giftProducts, 
+  setIsInProgress, 
+  setShowTopSteps,
+  gotoNextStep, 
+  setIsSingleAddress, 
+  stepNumber 
+}: SelectItemsProps) => {
   const [mainCartItems, setMainCartItems] = useState<CustomItem[]>([]);
   const [selecedItemIds, setSelecedItemIds] = useState<number[]>([]);
   
@@ -109,7 +118,7 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
       } else {
         setUnassignedLineItems([]);
         setSelecedItemIds([]);
-        setIsNextStep(true);
+        // setIsNextStep(true);
       }
     }
   }, [consignments, cart]);
@@ -131,6 +140,14 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
       setIsGoTOOrderSummary(false);
     }
   }, [consignments, selectedShippingOptionIds]);
+
+  useEffect(() => {
+    if (isNextStep) {
+      setShowTopSteps(false);
+    } else {
+      setShowTopSteps(true);
+    }
+  }, [isNextStep]);
 
   const createHoldingConsignment = (items?: PhysicalItem[]) => {
     const PLACEHOLDER_ADDRESS = {
@@ -523,7 +540,11 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
   return <div className="consignments-wrapper">
     <div className="step-2-title step-title">
       <span>{stepNumber}. </span>
-      <span>Select an item to add a delivery address, select & group items going to the same address.</span>
+      { isNextStep ?
+        <span>Choose shipping method, future ship date, and an optional gift message for each group.</span>
+      :
+        <span>Select an item to add a delivery address, select & group items going to the same address.</span>
+      }
     </div>
 
     <div className="assignment-categories">
@@ -541,22 +562,28 @@ const MultipleConsignments = ({ checkoutId, giftProducts, setIsInProgress, gotoN
         )}
           <div className="item-options-wrapper">
             <div className="item-options__unassign-consignment" style={{ alignItems: 'center' }}>
-              <div className="assigned-address-line">
+              <div className={`assigned-address-line ${isNextStep ? 'w-auto!' : ''} `}>
                 <div className="line-1">All items in this group ship to: </div>
                 <div className="line-2" style={{ color: '#fff' }}>{formatAddress(c.address)}</div>
               </div>
 
-              <FutureShipDateOptionGroup 
-                futureShipDate={getFutureShipDate(c)} 
-                handleChangeDate={(value) => {
-                  // Check if address is changed
-                  if (getFutureShipDate(c) != value) {
-                    updateFutureShipDate(c, value as string);
-                  }
-                }} 
-                selectedConsignment={selectedConsignment} 
-                />
-
+              {isNextStep ?
+                <div className="assigned-address-line w-auto!">
+                  <div className="line-1">Future Ship Date: </div>
+                  <div className="line-2" style={{ color: '#fff' }}>{getFutureShipDate(c)}</div>
+                </div>
+              :
+                <FutureShipDateOptionGroup 
+                  futureShipDate={getFutureShipDate(c)} 
+                  handleChangeDate={(value) => {
+                    // Check if address is changed
+                    if (getFutureShipDate(c) != value) {
+                      updateFutureShipDate(c, value as string);
+                    }
+                  }} 
+                  selectedConsignment={selectedConsignment} 
+                  />
+              }
               <div className="max-md:hidden">
                 <a onClick={() => unassignConsignment(c)} style={{ textDecoration: 'underline', color: '#000' }}>Ungroup Items</a>
               </div>
