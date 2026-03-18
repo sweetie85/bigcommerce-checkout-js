@@ -1,6 +1,7 @@
 module.exports = {
     extends: 'stylelint-config-standard-scss',
     plugins: ['stylelint-order'],
+    ignoreFiles: ['**/tailwind.output.css'],
     rules: {
         'alpha-value-notation': null,
         'at-rule-empty-line-before': null,
