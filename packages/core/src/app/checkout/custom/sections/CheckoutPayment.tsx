@@ -78,7 +78,9 @@ const CheckoutPayment = ({ checkoutId, paymentForm } :CheckoutPaymentProps) => {
       console.log('Billing address updated.');
       console.log('Reloading checkout');
 
-      window.location.href = window.location.origin+window.location.pathname+'?tab=payment';
+      setIsInProgress(false);
+
+      // window.location.href = window.location.origin+window.location.pathname+'?tab=payment';
 
       // checkoutService.loadCheckout(checkoutId);
 

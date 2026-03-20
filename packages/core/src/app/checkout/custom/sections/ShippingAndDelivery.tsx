@@ -29,7 +29,6 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
   const [isSignInActice, setIsSigninActive] = useState<boolean>(false);
   const [guestEmalId, setGuestEmailId] = useState('');
   const [guestEmalError, setGuestEmalError] = useState<string | null>(null);
-  const [billingAddress, setBillingAddress] = useState<BillingAddress | undefined>(undefined);
   const [showTopSteps, setShowTopSteps] = useState(true);
 
   // Address
@@ -41,17 +40,15 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
   // Next page
   const [enabledNextStep, setEnabledNextStep] = useState(false);
   // const checkoutContext = useContext(CheckoutContext);
-  const { checkoutState, checkoutService, hasShippingAddressEnabled, hasShippingMethodEnabled } = useCheckout();
+  const { checkoutState, checkoutService } = useCheckout();
   const customer = checkoutState.data.getCustomer();
+  const billingAddress = checkoutState.data.getBillingAddress();
 
   useEffect(() => {
     // Load Customer address
     if (customer) {
       setCustomerAddresses(customer.addresses);
     }
-
-    const billingAddress = checkoutState.data.getBillingAddress();
-    setBillingAddress(billingAddress);
 
     // Guest email id is saving as billing address email id so use billing email as guest email
     setGuestEmailId(billingAddress && billingAddress.email ? billingAddress.email : '');
@@ -144,7 +141,8 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
       </div>
     }
 
-    { hasShippingAddressEnabled &&
+    {/* Important: Validating using billingAddress */}
+    { (billingAddress && billingAddress.email) &&
       <div>
         <>
           {showTopSteps && 

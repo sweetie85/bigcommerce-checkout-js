@@ -18,9 +18,11 @@ export const useLoadCheckout = (checkoutId: string, initialState?: CheckoutIniti
                     include: [
                         'cart.lineItems.physicalItems.categoryNames',
                         'cart.lineItems.digitalItems.categoryNames',
+                        'consignments.availableShippingOptions' // Added by Lalmani
                     ] as any, // FIXME: Currently the enum is not exported so it can't be used here.
                 },
             }),
+            checkoutService.loadShippingCountries(),  // Added by Lalmani
             extensionService.loadExtensions(),
         ]);
     };

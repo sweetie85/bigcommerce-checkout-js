@@ -9,17 +9,16 @@ import React, {
 import {
   CheckoutService,
   CheckoutSelectors,
-  createCheckoutService,
-  CheckoutIncludes,
+  createCheckoutService
 } from '@bigcommerce/checkout-sdk';
+
+import { useCheckout as useCheckoutDefault } from '@bigcommerce/checkout/payment-integration-api';
 
 // 👇 Define context shape
 interface CheckoutContextValue {
   checkoutService: CheckoutService;
   checkoutState: CheckoutSelectors;
   ready: boolean;
-  hasShippingAddressEnabled: boolean;
-  hasShippingMethodEnabled: boolean;
   storeConfig: {
     futureShipDateFieldId: string;
     environment: 'STAGING' | 'LIVE';
@@ -39,47 +38,51 @@ interface CheckoutProviderProps {
 export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   children,
 }) => {
-  const [checkoutService] = useState<CheckoutService>(() =>
-    createCheckoutService()
-  );
-  const [checkoutState, setCheckoutState] = useState<CheckoutSelectors>(
-    checkoutService.getState()
-  );
+  // const [checkoutService] = useState<CheckoutService>(() =>
+  //   createCheckoutService()
+  // );
+
+  const { checkoutService, checkoutState } = useCheckoutDefault();
+  // const [checkoutState, setCheckoutState] = useState<CheckoutSelectors>(
+  //   checkoutService.getState()
+  // );
 
   const [ready, setReady] = useState(false);
+  
 
   // Active Steps
-  const [hasShippingAddressEnabled, setHasShippingAddressEnabled] = useState(false);
-  const [hasShippingMethodEnabled, setHasShippingMethodEnabled] = useState(false);
   const [futureShipDateFieldId, setFutureShipDateFieldId] = useState('');
   const [environment, setEnvironment] = useState<'STAGING' | 'LIVE'>('STAGING');
 
   useEffect(() => {
-    let mounted = true;
+    // let mounted = true;
 
     async function initCheckout() {
       try {
 
+        // THiS MAKE contries available 
+        await checkoutService.loadShippingCountries();
+
         // 1️⃣ Load main checkout
-        const [checkoutState, countries] = await Promise.all([
-          await checkoutService.loadCheckout(undefined, {
-            params: {
-              include: [
-                'consignments.availableShippingOptions'
-              ] as any, // FIXME: Currently the enum is not exported so it can't be used here.
-            },
-          }),
+        // const [checkoutState] = await Promise.all([
+        //   await checkoutService.loadCheckout(undefined, {
+        //     params: {
+        //       include: [
+        //         'consignments.availableShippingOptions'
+        //       ] as any, // FIXME: Currently the enum is not exported so it can't be used here.
+        //     },
+        //   }),
 
           // 2️⃣ Load shipping countries (important!)
-          await checkoutService.loadShippingCountries()
-        ]);
+          // await checkoutService.loadShippingCountries()
+        // ]);
         // await checkoutService.loadShippingOptions();
 
-        if (mounted) {
+        // if (mounted) {
           // console.log('Initial Checkout state getConsignments: ');
           // console.log(checkoutState.data.getConsignments());
 
-          setCheckoutState(checkoutState);
+          // setCheckoutState(checkoutState);
 
           const checkoutConfig = checkoutState.data.getConfig();
           if(checkoutConfig) {
@@ -93,60 +96,45 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
           }
 
           setReady(true);
-        }
+        // }
       } catch (error) {
         console.error('Checkout initialization error:', error);
         setReady(true);
       }
 
       // 3️⃣ Subscribe to updates
-      const unsubscribe = checkoutService.subscribe(
-        (newState) => {
-          // console.log('newState.data: ');
-          // console.log(newState);
-          const billingAddress = newState.data.getBillingAddress();
-          const consignments = newState.data.getConsignments();
+      // const unsubscribe = checkoutService.subscribe(
+      //   (newState) => {
+      //     // console.log('newState.data: ');
+      //     // console.log(newState);
+      //     // setCheckoutState(newState)
+      //   },
+      //   (newState) => ({
+      //     billingAddress: newState.data.getBillingAddress(),
+      //     shippingAddress: newState.data.getShippingAddress(),
+      //     consignments: newState.data.getConsignments(),
+      //     cart: newState.data.getCart(),
+      //     shippingCountries: newState.data.getShippingCountries(),
+      //   })
+      // );
 
-          if (billingAddress && billingAddress.email) {
-            setHasShippingAddressEnabled(true);
-          }
-
-          if (consignments && consignments.length > 0 
-            && consignments[0].address.address1 != 'TO_BE_ASSIGNED' 
-            && !!consignments[0].address.postalCode) {
-              
-            setHasShippingMethodEnabled(true);
-          }
-          setCheckoutState(newState)
-        },
-        (newState) => ({
-          billingAddress: newState.data.getBillingAddress(),
-          shippingAddress: newState.data.getShippingAddress(),
-          consignments: newState.data.getConsignments(),
-          cart: newState.data.getCart(),
-          shippingCountries: newState.data.getShippingCountries(),
-        })
-      );
-
-      return unsubscribe;
+      // return unsubscribe;
     }
 
-    const unsubscribePromise = initCheckout();
+    initCheckout();
 
-    return () => {
-      mounted = false;
-      unsubscribePromise.then((unsubscribe) => {
-        if (typeof unsubscribe === 'function') unsubscribe();
-      });
-    };
-  }, [checkoutService]);
+    // return () => {
+    //   mounted = false;
+    //   unsubscribePromise.then((unsubscribe) => {
+    //     if (typeof unsubscribe === 'function') unsubscribe();
+    //   });
+    // };
+  }, [checkoutState]);
 
   const value: CheckoutContextValue = { 
     checkoutService, 
     checkoutState, 
     ready, 
-    hasShippingAddressEnabled,
-    hasShippingMethodEnabled,
     storeConfig: {
       futureShipDateFieldId,
       environment
