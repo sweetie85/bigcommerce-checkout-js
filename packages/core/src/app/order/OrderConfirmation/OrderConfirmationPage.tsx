@@ -7,7 +7,7 @@ import {
 } from '@bigcommerce/checkout-sdk';
 import classNames from 'classnames';
 import DOMPurify from 'dompurify';
-import React, { type ReactElement } from 'react';
+import React, { useEffect, type ReactElement } from 'react';
 
 import { ErrorModal } from '../../common/error';
 import { getPasswordRequirementsFromConfig } from '../../customer';
@@ -63,8 +63,30 @@ export const OrderConfirmationPage = ({
     siteLink,
     supportEmail,
     supportPhoneNumber,
-}: OrderConfirmationPageProps): ReactElement => (
-    <div
+}: OrderConfirmationPageProps): ReactElement => {
+
+    useEffect(() => {
+        console.log('Order confirmation: ');
+        console.log(order);
+
+        const saveOrderPaymentLog = async () => {
+            await fetch('https://custom-app.carolinacookie.com/bigcommerce-toms/api/checkout/save-payment-log', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                keepalive: true, // 🔥 important
+                body: JSON.stringify({
+                    order_id: order.orderId,
+                    payment_details: order.payments,
+                }),
+            });
+        }
+
+        saveOrderPaymentLog()
+    }, []);
+
+    return <div
         className={classNames('layout optimizedCheckout-contentPrimary custom-checkout', {
             'is-embedded': isEmbedded(),
         })}
@@ -118,5 +140,5 @@ export const OrderConfirmationPage = ({
 
         <ErrorModal error={error} onClose={onErrorModalClose} shouldShowErrorCode={false} />
     </div>
-);
+}
 
