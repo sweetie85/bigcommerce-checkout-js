@@ -58,6 +58,9 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     // let mounted = true;
 
     async function initCheckout() {
+
+      console.log('initCheckout: ');
+
       try {
 
         // THiS MAKE contries available 
@@ -129,7 +132,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     //     if (typeof unsubscribe === 'function') unsubscribe();
     //   });
     // };
-  }, [checkoutState]);
+  }, [checkoutService]);
 
   const value: CheckoutContextValue = { 
     checkoutService, 
