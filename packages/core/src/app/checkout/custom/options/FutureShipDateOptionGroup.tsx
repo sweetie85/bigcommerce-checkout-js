@@ -2,8 +2,7 @@ import { Consignment } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import { useCheckout } from "../context/CheckoutContext";
-
-// import "react-datepicker/dist/react-datepicker.css";
+import { isPast4PM_EST } from "../utility";
 
 interface FutureShipDateOptionProps {
   futureShipDate: string | null;
@@ -17,6 +16,7 @@ const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedC
 
   const { storeConfig } = useCheckout();
   const { futureShipDateFieldId: FUTURE_SHIP_DATE_FIELD_ID } = storeConfig;
+  const isPast4PM = isPast4PM_EST();
   
   const parseDateString = (value: string): Date | null => {
     const parts = value.split('/').map(Number);
@@ -95,9 +95,17 @@ const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedC
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  const isWeekday = (date: Date) => {
+  const filterDate = (date: Date) => {
     const day = date.getDay();
-    return day !== 0 && day !== 6; // 0 = Sunday, 6 = Saturday
+    const isWeekDay = day !== 0 && day !== 6; // 0 = Sunday, 6 = Saturday
+
+    const tomm = new Date();
+    tomm.setDate(tomm.getDate() + 1);
+    const isTomm = date.toDateString() === tomm.toDateString();
+
+    // exclude weekends and if it is past 4pm EST, then it does not allow the next day. 
+    // So only the following day would be an option.
+    return isWeekDay && (!isTomm || !isPast4PM);
   };
 
   return <div className="future-ship-date-wrapper">
@@ -107,7 +115,7 @@ const FutureShipDateOptionGroup = ({ futureShipDate, handleChangeDate, selectedC
         setShipDate(date);
         setIsOpen(false); // close after select
       }} 
-      filterDate={isWeekday} 
+      filterDate={filterDate} 
       placeholderText="Future Ship Date"
       minDate={tomorrow}
       open={isOpen}

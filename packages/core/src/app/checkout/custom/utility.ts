@@ -60,3 +60,24 @@ export function validateAddress(address: AddressRequestBody, setErrorMessage: (m
 
   return !hasError;
 }
+
+export function isPast4PM_EST() {
+  const date = new Date();
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: false
+  }).formatToParts(date);
+
+  const hourPart = parts.find(p => p.type === "hour");
+  const minutePart = parts.find(p => p.type === "minute");
+  if (!hourPart || !minutePart) {
+    return false;
+  }
+
+  const hour = Number(hourPart.value);
+  const minute = Number(minutePart.value);
+
+  return hour > 16 || (hour === 16 && minute >= 0);
+}

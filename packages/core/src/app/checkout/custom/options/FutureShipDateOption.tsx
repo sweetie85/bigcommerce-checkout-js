@@ -1,31 +1,20 @@
-import { Consignment } from "@bigcommerce/checkout-sdk";
 import { useCheckout } from "../context/CheckoutContext";
 import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
-
-// import "react-datepicker/dist/react-datepicker.css";
+import { isPast4PM_EST } from "../utility";
 
 type ShippingDateOption = "ship_now" | "ship_date";
 
-
 interface FutureShipDateOptionProps {
-  // futureShipDate: string | null;
   futureShipDateError: string | null;
   handleChangeDate: (v: string | null) => void;
-  // selectedConsignment: Consignment | null;
-  // shouldSelectShipDate: boolean;
   setShouldSelectShipDate: (show: boolean) => void;
-  // saveChanges: (moveNextStep: boolean, removeFufureShipDate: boolean) => void;
 }
 
-const FutureShipDateOption = ({ 
-  // futureShipDate, 
+const FutureShipDateOption = ({  
   futureShipDateError, 
   handleChangeDate, 
-  // selectedConsignment,
-  // shouldSelectShipDate,
   setShouldSelectShipDate,
-  // saveChanges
 }: FutureShipDateOptionProps) => {
   const [currentShipDate, setCurrentShipDate] = useState<Date | null>(null);
   const [newShipDate, setNewShipDate] = useState<Date | null>(null);
@@ -37,6 +26,7 @@ const FutureShipDateOption = ({
   const { checkoutState, storeConfig } = useCheckout();
   const { futureShipDateFieldId: FUTURE_SHIP_DATE_FIELD_ID } = storeConfig;
   const consignments = checkoutState.data.getConsignments();
+  const isPast4PM = isPast4PM_EST();
 
   const formatDateString = (date: Date) => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -104,62 +94,6 @@ const FutureShipDateOption = ({
     }
   };
 
-  /*
-  useEffect(() => {
-
-    let currentFutureShipDate = futureShipDate;
-    if (!currentFutureShipDate && selectedConsignment) {
-      const customDateField = selectedConsignment.address.customFields.find(c => c.fieldId == FUTURE_SHIP_DATE_FIELD_ID)
-      if (customDateField) {
-        // currentFutureShipDate = customDateField.fieldValue as string;
-      }
-    }
-
-    if (currentFutureShipDate) {
-      const selectedShipDate = parseDateString(currentFutureShipDate);
-      
-      if (selectedShipDate) {
-        setShipDate(selectedShipDate);
-      } else {
-        setShipDate(null);
-      }
-
-      setShouldSelectShipDate(true);
-    } else {
-      // setShipDate(null);
-    }
-
-  }, [futureShipDate, shouldSelectShipDate, selectedConsignment]);
-
-   useEffect(() => {
-    if (shipDate) {
-      const dateString = formatDateString(shipDate);
-
-      if (dateString !== futureShipDate) {
-        handleChangeDate(dateString);
-      }
-    } else {
-      if (futureShipDate) {
-        handleChangeDate('');
-      }
-    }
-  }, [shipDate, futureShipDate]);
-
-  const handleChange = (e: any) => {
-    // console.log('e.target.value: '+e.target.value);
-    if (e.target.value == '1') {
-      setShouldSelectShipDate(true);
-      setShouldUserSelectShipDate(true);
-    } else {
-      setShouldSelectShipDate(false);
-      setShouldUserSelectShipDate(false);
-      handleChangeDate('');
-
-      saveChanges(false, true);
-    }
-  };
-  */
-
   const handleDateChange = (newDate: Date | null) => {
     if (newDate) {
       setNewShipDate(newDate);
@@ -172,9 +106,17 @@ const FutureShipDateOption = ({
     }
   }
 
-  const isWeekday = (date: Date) => {
+  const filterDate = (date: Date) => {
     const day = date.getDay();
-    return day !== 0 && day !== 6; // 0 = Sunday, 6 = Saturday
+    const isWeekDay = day !== 0 && day !== 6; // 0 = Sunday, 6 = Saturday
+
+    const tomm = new Date();
+    tomm.setDate(tomm.getDate() + 1);
+    const isTomm = date.toDateString() === tomm.toDateString();
+
+    // exclude weekends and if it is past 4pm EST, then it does not allow the next day. 
+    // So only the following day would be an option.
+    return isWeekDay && (!isTomm || !isPast4PM);
   };
 
   // Get tomorrow's date
@@ -213,7 +155,7 @@ const FutureShipDateOption = ({
           <DatePicker 
             selected={newShipDate} 
             onChange={handleDateChange} 
-            filterDate={isWeekday} 
+            filterDate={filterDate} 
             placeholderText="Future Ship Date"
             minDate={tomorrow}
             open={isOpen}
