@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Consignment, ShippingOption } from '@bigcommerce/checkout-sdk';
+import { Cart, Consignment, ShippingOption } from '@bigcommerce/checkout-sdk';
 import { useCheckout } from "../context/CheckoutContext";
 
 interface ShippingMethodOptionProps {
@@ -14,7 +14,34 @@ const ShippingMethodOption = ({ updatedShippingOptionId, handleChange, selectedC
   const [selectedShippingOptionId, setSelectedShippingOptionId] = useState(updatedShippingOptionId);
   const { checkoutState } = useCheckout();
   const shippingOptionsAll = checkoutState.data.getShippingOptions() ?? [];
-  const shippingOptions = shippingOptionsAll.filter(so => so.description != 'Pick Up');
+  const cart: Cart | undefined = checkoutState.data.getCart();
+  
+  const rangeShippingOptions = [
+    '$300 - $1000 Range',
+    '$1000 - $2000 Range',
+    '$2000 - $3000 Range',
+    '$3000 - $4000 Range'
+  ];
+
+  const shippingOptions = shippingOptionsAll
+    .filter(so => so.description != 'Pick Up')
+    .filter(so => {
+      if (!cart) {
+        return true;
+      }
+
+      if (cart.baseAmount < 300) {
+        return !rangeShippingOptions.includes(so.description);
+      } else if (cart.baseAmount > 300 && cart.baseAmount <= 1000) {
+        return so.description == rangeShippingOptions[0];
+      } else if (cart.baseAmount > 1000 && cart.baseAmount <= 2000) {
+        return so.description == rangeShippingOptions[1];
+      } else if (cart.baseAmount > 2000 && cart.baseAmount <= 3000) {
+        return so.description == rangeShippingOptions[2];
+      } else if (cart.baseAmount > 3000 && cart.baseAmount <= 4000) {
+        return so.description == rangeShippingOptions[3];
+      }
+    });
 
   useEffect(() => {
     if (selectedConsignment && selectedConsignment.selectedShippingOption) {
