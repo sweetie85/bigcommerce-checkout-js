@@ -16,31 +16,53 @@ const ShippingMethodOption = ({ updatedShippingOptionId, handleChange, selectedC
   const shippingOptionsAll = checkoutState.data.getShippingOptions() ?? [];
   const cart: Cart | undefined = checkoutState.data.getCart();
   
-  const rangeShippingOptions = [
-    '$300 - $1000 Range',
-    '$1000 - $2000 Range',
-    '$2000 - $3000 Range',
-    '$3000 - $4000 Range'
-  ];
+  const rangeShippingOptionsRates = Array.from({ length: 10 }, (_, i) => {
+    return {
+      rate: (i + 1) * 50,
+      threshold: (i + 1) * 1000
+    };
+  });
+
+  // Generated these rates
+  // const rangeShippingOptionsRates = [
+  //   { rate: 50, threshold: 1000 },
+  //   { rate: 100, threshold: 2000 },
+  //   { rate: 150, threshold: 3000 },
+  //   { rate: 200, threshold: 4000 },
+  //   { rate: 250, threshold: 5000 },
+  //   { rate: 300, threshold: 6000 },
+  //   { rate: 350, threshold: 7000 },
+  //   { rate: 400, threshold: 8000 },
+  //   { rate: 450, threshold: 9000 },
+  //   { rate: 500, threshold: 10000 },
+  // ];
+
+  const cartTotal = cart ? cart.baseAmount : null;
+  const selectedShippingOptionRange = cartTotal === null || cartTotal < 300
+    ? null
+    : rangeShippingOptionsRates.find(r => {
+      if (cartTotal <= 10000) {
+        return cartTotal <= r.threshold
+      }
+
+      // Cart total is more than 10,000 (Rare case) then max: 500
+      return r.rate == 500; 
+    });
 
   const shippingOptions = shippingOptionsAll
     .filter(so => so.description != 'Pick Up')
     .filter(so => {
-      if (!cart) {
+      if (!cartTotal) {
         return true;
       }
 
-      if (cart.baseAmount < 300) {
-        return !rangeShippingOptions.includes(so.description);
-      } else if (cart.baseAmount > 300 && cart.baseAmount <= 1000) {
-        return so.description == rangeShippingOptions[0];
-      } else if (cart.baseAmount > 1000 && cart.baseAmount <= 2000) {
-        return so.description == rangeShippingOptions[1];
-      } else if (cart.baseAmount > 2000 && cart.baseAmount <= 3000) {
-        return so.description == rangeShippingOptions[2];
-      } else if (cart.baseAmount > 3000 && cart.baseAmount <= 4000) {
-        return so.description == rangeShippingOptions[3];
+      if (cartTotal < 300) {
+        return so.cost < 50;
       }
+
+      return selectedShippingOptionRange 
+        ? so.cost == selectedShippingOptionRange.rate 
+        : so.cost == 500;
     });
 
   useEffect(() => {
