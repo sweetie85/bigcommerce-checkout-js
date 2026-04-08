@@ -45,6 +45,13 @@ interface OrderConfirmationPageProps {
     onErrorModalClose(): void;
 }
 
+declare global {
+  interface Window {
+    dataLayer: any[];
+    gtag: (...args: any[]) => void;
+  }
+}
+
 export const OrderConfirmationPage = ({
     config,
     currency,
@@ -85,6 +92,23 @@ export const OrderConfirmationPage = ({
 
         saveOrderPaymentLog()
     }, []);
+
+    useEffect(() => {
+
+        if (!window.gtag || !order) return;
+
+        const conversionData = {
+            send_to: 'AW-319189248/0RrqCP-FvIgYEIDimZgB',
+            value: order.orderAmount,
+            currency: order.currency || 'USD',
+            transaction_id: order.orderId?.toString(),
+        };
+
+        console.log('Adding gtag: ');
+        console.log(conversionData);
+
+        window.gtag('event', 'conversion', conversionData);
+    }, [order]);
 
     return <div
         className={classNames('layout optimizedCheckout-contentPrimary custom-checkout', {
