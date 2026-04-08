@@ -1,4 +1,4 @@
-import { AddressRequestBody, Cart, Consignment, ConsignmentAssignmentRequestBody, ConsignmentLineItem, PhysicalItem } from "@bigcommerce/checkout-sdk";
+import { Cart, Consignment, ConsignmentAssignmentRequestBody, ConsignmentLineItem, PhysicalItem } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
 import { formatAddress } from "../../custom-utility";
 import { useCheckout } from "../context/CheckoutContext";
@@ -8,7 +8,7 @@ import GiftMessageOptionGroup from "../options/GiftMessageOptionGroup";
 import AddressOptionGroup from "../options/AddressOptionGroup";
 import ConsignmentItemCard from "../components/ConsignmentItemCard";
 import ConfirmDialog from "../components/ConfirmDialog";
-import { GiftProduct, CustomItem } from "../types";
+import { GiftProduct, CustomItem, CustomAddressRequestBody } from "../types";
 import GiftMessageOptionGroupEdit from "../options/GiftMessageOptionGroupEdit";
 import { handleCheckoutError, validateAddress } from "../utility";
 
@@ -35,7 +35,7 @@ const MultipleConsignments = ({
   const [selecedItemIds, setSelecedItemIds] = useState<number[]>([]);
   
   const [isUpdateAddressChecked, setIsUpdateAddressChecked] = useState(false);
-  const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
+  const [shippingAddress, setShippingAddress] = useState<CustomAddressRequestBody | null>(null);
   const [shippingAddressError, setShippingAddressError] = useState<string | null>(null);
   const [selectedConsignment, setSelectedConsignment] = useState<Consignment | null>(null);
   const [holdingConsignment, setHoldingConsignment] = useState<Consignment | null>(null);
@@ -55,6 +55,7 @@ const MultipleConsignments = ({
   const cart: Cart | undefined = checkoutState.data.getCart();
   const consignments: Consignment[] | undefined = checkoutState.data.getConsignments() ?? [];
   const { futureShipDateFieldId: FUTURE_SHIP_DATE_FIELD_ID } = storeConfig;
+  const { emailAddressFieldId: EMAIL_ADDRESS_FIELD_ID } = storeConfig;
 
   useEffect(() => {
     if (cart) {
@@ -156,7 +157,7 @@ const MultipleConsignments = ({
       city: 'Temp',
       postalCode: '00000',
       address1: 'TO_BE_ASSIGNED',
-    } as AddressRequestBody;
+    } as CustomAddressRequestBody;
 
     if (cart) {
 
@@ -198,7 +199,7 @@ const MultipleConsignments = ({
     setSelecedItemIds(newSelecedItemIds)
   }
 
-  const handleAddressChange = (updatedAddress: AddressRequestBody) => {
+  const handleAddressChange = (updatedAddress: CustomAddressRequestBody) => {
     // console.log('setShippingAddress 2: ');
     setShippingAddress(updatedAddress); // ✅ Update single source of truth
   };
@@ -308,6 +309,20 @@ const MultipleConsignments = ({
         } else {
           updatedAddress.customFields = [futureDateCustomData];
         }
+      }
+
+      if (updatedAddress && updatedAddress.emailAddress) {
+
+        const emailAddressCustomData = {
+          fieldId: EMAIL_ADDRESS_FIELD_ID,
+          fieldValue: updatedAddress.emailAddress,
+        };
+
+        if (updatedAddress.customFields) {
+          updatedAddress.customFields.push(emailAddressCustomData);
+        } else {
+          updatedAddress.customFields = [emailAddressCustomData];
+        }
 
 
         // Add new product: SH-DATE
@@ -323,7 +338,6 @@ const MultipleConsignments = ({
         */
       }
       
-
       const requestBody = {
         address: updatedAddress,
         shippingAddress: updatedAddress,

@@ -4,9 +4,9 @@ import AddressOption from "../options/AddressOption";
 import FutureShipDateOption from "../options/FutureShipDateOption";
 import ShippingMethodOption from "../options/ShippingMethodOption";
 import GiftMessageOption from "../options/GiftMessageOption";
-import { AddressRequestBody, Consignment, ConsignmentAssignmentRequestBody, ConsignmentLineItem, PhysicalItem } from "@bigcommerce/checkout-sdk";
+import { Consignment, ConsignmentAssignmentRequestBody, ConsignmentLineItem, PhysicalItem } from "@bigcommerce/checkout-sdk";
 import { useCheckout } from "../context/CheckoutContext";
-import { GiftProduct } from "../types";
+import { GiftProduct, CustomAddressRequestBody } from "../types";
 import { handleCheckoutError, validateAddress } from "../utility";
 
 interface SingleConsignmentProps {
@@ -20,7 +20,7 @@ interface SingleConsignmentProps {
 const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNextStep }: SingleConsignmentProps) => {
 
   const [isUpdateAddressChecked, setIsUpdateAddressChecked] = useState(false);
-  const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
+  const [shippingAddress, setShippingAddress] = useState<CustomAddressRequestBody | null>(null);
   const [selectedConsignment, setSelectedConsignment] = useState<Consignment | null>(null);
   const [enabledNextStep, setEnabledNextStep] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -43,6 +43,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
   const shippingOptions = checkoutState.data.getShippingOptions() ?? [];
 
   const { futureShipDateFieldId: FUTURE_SHIP_DATE_FIELD_ID } = storeConfig;
+  const { emailAddressFieldId: EMAIL_ADDRESS_FIELD_ID } = storeConfig;
   
   useEffect(() => {
     if (customerShippingAddress) {
@@ -90,7 +91,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
     }
   }, [customerShippingAddress]);
 
-  const handleAddressChange = (updatedAddress: AddressRequestBody) => {
+  const handleAddressChange = (updatedAddress: CustomAddressRequestBody) => {
     // console.log('setShippingAddress 2: ');
     setShippingAddress(updatedAddress); // ✅ Update single source of truth
   };
@@ -124,16 +125,29 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
       }
 
       const updatedAddress = shippingAddress;
-      if (updatedAddress) {
+      if (updatedAddress && futureShipDate) {
         const futureDateCustomData = {
           fieldId: FUTURE_SHIP_DATE_FIELD_ID,
-          fieldValue: futureShipDate ? futureShipDate : '',
+          fieldValue: futureShipDate,
         };
 
         if (updatedAddress.customFields) {
           updatedAddress.customFields.push(futureDateCustomData);
         } else {
           updatedAddress.customFields = [futureDateCustomData];
+        }
+      }
+
+      if (updatedAddress && updatedAddress.emailAddress) {
+        const emailAddressCustomData = {
+          fieldId: EMAIL_ADDRESS_FIELD_ID,
+          fieldValue: updatedAddress.emailAddress,
+        };
+
+        if (updatedAddress.customFields) {
+          updatedAddress.customFields.push(emailAddressCustomData);
+        } else {
+          updatedAddress.customFields = [emailAddressCustomData];
         }
       }
 

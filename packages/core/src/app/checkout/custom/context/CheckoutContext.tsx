@@ -21,6 +21,7 @@ interface CheckoutContextValue {
   ready: boolean;
   storeConfig: {
     futureShipDateFieldId: string;
+    emailAddressFieldId: string;
     environment: 'STAGING' | 'LIVE';
   }
 }
@@ -52,11 +53,10 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
   // Active Steps
   const [futureShipDateFieldId, setFutureShipDateFieldId] = useState('');
+  const [emailAddressFieldId, setEmailAddressFieldId] = useState('');
   const [environment, setEnvironment] = useState<'STAGING' | 'LIVE'>('STAGING');
 
   useEffect(() => {
-    // let mounted = true;
-
     async function initCheckout() {
 
       console.log('initCheckout: ');
@@ -66,72 +66,28 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         // THiS MAKE contries available 
         await checkoutService.loadShippingCountries();
 
-        // 1️⃣ Load main checkout
-        // const [checkoutState] = await Promise.all([
-        //   await checkoutService.loadCheckout(undefined, {
-        //     params: {
-        //       include: [
-        //         'consignments.availableShippingOptions'
-        //       ] as any, // FIXME: Currently the enum is not exported so it can't be used here.
-        //     },
-        //   }),
-
-          // 2️⃣ Load shipping countries (important!)
-          // await checkoutService.loadShippingCountries()
-        // ]);
-        // await checkoutService.loadShippingOptions();
-
-        // if (mounted) {
-          // console.log('Initial Checkout state getConsignments: ');
-          // console.log(checkoutState.data.getConsignments());
-
-          // setCheckoutState(checkoutState);
-
-          const checkoutConfig = checkoutState.data.getConfig();
-          if(checkoutConfig) {
-            if(checkoutConfig.storeProfile.storeHash == '46licyettj') { // Staging
-              setEnvironment('STAGING')
-              setFutureShipDateFieldId('field_26');
-            } else { // Production
-              setEnvironment('LIVE')
-              setFutureShipDateFieldId('field_31');
-            }
+        const checkoutConfig = checkoutState.data.getConfig();
+        if(checkoutConfig) {
+          if(checkoutConfig.storeProfile.storeHash == '46licyettj') { // Staging
+            setEnvironment('STAGING')
+            setFutureShipDateFieldId('field_26');
+            setEmailAddressFieldId('field_28')
+          } else { // Production
+            setEnvironment('LIVE')
+            setFutureShipDateFieldId('field_31');
+            setEmailAddressFieldId('field_32')
           }
+        }
 
-          setReady(true);
-        // }
+        setReady(true);
       } catch (error) {
         console.error('Checkout initialization error:', error);
         setReady(true);
       }
 
-      // 3️⃣ Subscribe to updates
-      // const unsubscribe = checkoutService.subscribe(
-      //   (newState) => {
-      //     // console.log('newState.data: ');
-      //     // console.log(newState);
-      //     // setCheckoutState(newState)
-      //   },
-      //   (newState) => ({
-      //     billingAddress: newState.data.getBillingAddress(),
-      //     shippingAddress: newState.data.getShippingAddress(),
-      //     consignments: newState.data.getConsignments(),
-      //     cart: newState.data.getCart(),
-      //     shippingCountries: newState.data.getShippingCountries(),
-      //   })
-      // );
-
-      // return unsubscribe;
     }
 
     initCheckout();
-
-    // return () => {
-    //   mounted = false;
-    //   unsubscribePromise.then((unsubscribe) => {
-    //     if (typeof unsubscribe === 'function') unsubscribe();
-    //   });
-    // };
   }, [checkoutService]);
 
   const value: CheckoutContextValue = { 
@@ -140,6 +96,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     ready, 
     storeConfig: {
       futureShipDateFieldId,
+      emailAddressFieldId,
       environment
     }
   };

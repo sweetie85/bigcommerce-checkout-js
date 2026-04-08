@@ -1,11 +1,12 @@
-import { AddressRequestBody, Consignment, Country, Customer, CustomerAddress, Region } from "@bigcommerce/checkout-sdk";
+import { Consignment, Country, Customer, CustomerAddress, Region } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
 import { useCheckout } from "../context/CheckoutContext";
 import FutureShipDateOptionGroup from "./FutureShipDateOptionGroup";
+import { CustomAddressRequestBody } from "../types";
 
 interface AddressOptionProps {
-  updatedShippingAddress: AddressRequestBody | null;
-  onInputChange: (updated: AddressRequestBody ) => void;
+  updatedShippingAddress: CustomAddressRequestBody | null;
+  onInputChange: (updated: CustomAddressRequestBody ) => void;
   selectedConsignment: Consignment | null;
   isUpdateAddressChecked: boolean;
   setIsUpdateAddressChecked: (isUpdate: boolean) => void
@@ -68,7 +69,7 @@ const AddressOptionGroup = ({
     const updatedShippingAddress = {
       ...shippingAddress,
       [e.target.name]: e.target.value,
-    } as AddressRequestBody;
+    } as CustomAddressRequestBody;
 
     onInputChange(updatedShippingAddress);
     setShippingAddress(updatedShippingAddress);
@@ -81,7 +82,7 @@ const AddressOptionGroup = ({
     }
   };
 
-  function isSameAddress(a: AddressRequestBody, b: AddressRequestBody): boolean {
+  function isSameAddress(a: CustomAddressRequestBody, b: CustomAddressRequestBody): boolean {
     // debugger;
     if (!a || !b) return false;
 
@@ -97,7 +98,7 @@ const AddressOptionGroup = ({
   }
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onInputChange(customerAddresses.find(a => a.id == (e.target.value as unknown as number)) as AddressRequestBody);
+    onInputChange(customerAddresses.find(a => a.id == (e.target.value as unknown as number)) as CustomAddressRequestBody);
   }
 
   const handleAddressChangeOption = () => {
@@ -173,12 +174,15 @@ const AddressOptionGroup = ({
           <input className="custom-form-input text" type="text" placeholder="*Last Name" name="lastName" value={shippingAddress?.lastName} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
-          <input className="custom-form-input text" type="text" placeholder="Company Name" name="company" value={shippingAddress?.company} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="Email Address" name="emailAddress" value={shippingAddress?.emailAddress} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="Phone Number" name="phone" value={shippingAddress?.phone} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
+          <input className="custom-form-input text" type="text" placeholder="Company Name" name="company" value={shippingAddress?.company} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="*Address" name="address1" value={shippingAddress?.address1} onChange={handleInputChange} />
-          <input className="custom-form-input text" type="text" placeholder="Address/Suite/Building" name="address2" value={shippingAddress?.address2} onChange={handleInputChange} />
+        </div>
+        <div className="form-field-row">
+          <input className="custom-form-input text" style={{ width: '100%' }} type="text" placeholder="Address/Suite/Building" name="address2" value={shippingAddress?.address2} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
           <input className="custom-form-input text" type="text" placeholder="*City" name="city" value={shippingAddress?.city} onChange={handleInputChange} />

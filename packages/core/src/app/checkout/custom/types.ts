@@ -1,4 +1,4 @@
-import { PhysicalItem } from "@bigcommerce/checkout-sdk";
+import { AddressRequestBody, PhysicalItem } from "@bigcommerce/checkout-sdk";
 
 export enum CheckoutStep {
   Consignment = 'consignment',
@@ -15,4 +15,8 @@ export interface GiftProduct {
   bigcommerce_product_id: string;
   product_sku: string; 
   frontend_title: string;
+}
+
+export interface CustomAddressRequestBody extends AddressRequestBody {
+    emailAddress?: string;
 }
