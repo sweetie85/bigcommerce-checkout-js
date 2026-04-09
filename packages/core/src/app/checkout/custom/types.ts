@@ -18,5 +18,5 @@ export interface GiftProduct {
 }
 
 export interface CustomAddressRequestBody extends AddressRequestBody {
-    emailAddress?: string;
+    email?: string;
 }

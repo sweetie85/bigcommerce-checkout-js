@@ -24,8 +24,6 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
   const countries = checkoutState.data.getShippingCountries() ?? [];
   const customerAddresses = customer?.addresses ?? [];
 
-  const { emailAddressFieldId: EMAIL_ADDRESS_FIELD_ID } = storeConfig;
-
   useEffect(() => {
     if (selectedConsignment && selectedConsignment.address.address1 != 'TO_BE_ASSIGNED') {
       setShippingAddress(selectedConsignment.address);
@@ -44,12 +42,6 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
         setProvinces(selectedCountry.subdivisions);
       }
     }
-
-    if (shippingAddress && shippingAddress.customFields) {
-      const emailAddressDateField = shippingAddress.customFields.find(c => c.fieldId == EMAIL_ADDRESS_FIELD_ID);
-      setCustomFieldEmailAddress(emailAddressDateField?.fieldValue as string);
-    }
-
   }, [shippingAddress]);
 
   const handleChange = (e: any) => {
@@ -150,7 +142,7 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
           <input className="custom-form-input text" type="text" placeholder="*Last Name" name="lastName" value={shippingAddress?.lastName} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
-          <input className="custom-form-input text" type="text" placeholder="Email Address" name="emailAddress" value={shippingAddress?.emailAddress ? shippingAddress?.emailAddress : customFieldEmailAddress} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="Email Address" name="email" value={shippingAddress?.email} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="Phone Number" name="phone" value={shippingAddress?.phone} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">

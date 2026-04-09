@@ -43,7 +43,6 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
   const shippingOptions = checkoutState.data.getShippingOptions() ?? [];
 
   const { futureShipDateFieldId: FUTURE_SHIP_DATE_FIELD_ID } = storeConfig;
-  const { emailAddressFieldId: EMAIL_ADDRESS_FIELD_ID } = storeConfig;
   
   useEffect(() => {
     if (customerShippingAddress) {
@@ -135,19 +134,6 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
           updatedAddress.customFields.push(futureDateCustomData);
         } else {
           updatedAddress.customFields = [futureDateCustomData];
-        }
-      }
-
-      if (updatedAddress && updatedAddress.emailAddress) {
-        const emailAddressCustomData = {
-          fieldId: EMAIL_ADDRESS_FIELD_ID,
-          fieldValue: updatedAddress.emailAddress,
-        };
-
-        if (updatedAddress.customFields) {
-          updatedAddress.customFields.push(emailAddressCustomData);
-        } else {
-          updatedAddress.customFields = [emailAddressCustomData];
         }
       }
 

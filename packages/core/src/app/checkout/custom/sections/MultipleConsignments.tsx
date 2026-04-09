@@ -55,7 +55,6 @@ const MultipleConsignments = ({
   const cart: Cart | undefined = checkoutState.data.getCart();
   const consignments: Consignment[] | undefined = checkoutState.data.getConsignments() ?? [];
   const { futureShipDateFieldId: FUTURE_SHIP_DATE_FIELD_ID } = storeConfig;
-  const { emailAddressFieldId: EMAIL_ADDRESS_FIELD_ID } = storeConfig;
 
   useEffect(() => {
     if (cart) {
@@ -311,19 +310,6 @@ const MultipleConsignments = ({
         }
       }
 
-      if (updatedAddress && updatedAddress.emailAddress) {
-
-        const emailAddressCustomData = {
-          fieldId: EMAIL_ADDRESS_FIELD_ID,
-          fieldValue: updatedAddress.emailAddress,
-        };
-
-        if (updatedAddress.customFields) {
-          updatedAddress.customFields.push(emailAddressCustomData);
-        } else {
-          updatedAddress.customFields = [emailAddressCustomData];
-        }
-
 
         // Add new product: SH-DATE
         /*
@@ -336,7 +322,6 @@ const MultipleConsignments = ({
           lineItems.push({ itemId: shipDateItem.id, quantity: 1 });
         }
         */
-      }
       
       const requestBody = {
         address: updatedAddress,

@@ -174,7 +174,7 @@ const AddressOptionGroup = ({
           <input className="custom-form-input text" type="text" placeholder="*Last Name" name="lastName" value={shippingAddress?.lastName} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
-          <input className="custom-form-input text" type="text" placeholder="Email Address" name="emailAddress" value={shippingAddress?.emailAddress} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="Email Address" name="email" value={shippingAddress?.email} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="Phone Number" name="phone" value={shippingAddress?.phone} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">

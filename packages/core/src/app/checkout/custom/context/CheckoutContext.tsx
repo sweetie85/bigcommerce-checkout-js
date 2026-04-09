@@ -21,7 +21,6 @@ interface CheckoutContextValue {
   ready: boolean;
   storeConfig: {
     futureShipDateFieldId: string;
-    emailAddressFieldId: string;
     environment: 'STAGING' | 'LIVE';
   }
 }
@@ -53,7 +52,6 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
   // Active Steps
   const [futureShipDateFieldId, setFutureShipDateFieldId] = useState('');
-  const [emailAddressFieldId, setEmailAddressFieldId] = useState('');
   const [environment, setEnvironment] = useState<'STAGING' | 'LIVE'>('STAGING');
 
   useEffect(() => {
@@ -71,11 +69,9 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
           if(checkoutConfig.storeProfile.storeHash == '46licyettj') { // Staging
             setEnvironment('STAGING')
             setFutureShipDateFieldId('field_26');
-            setEmailAddressFieldId('field_28')
           } else { // Production
             setEnvironment('LIVE')
             setFutureShipDateFieldId('field_31');
-            setEmailAddressFieldId('field_32')
           }
         }
 
@@ -96,7 +92,6 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     ready, 
     storeConfig: {
       futureShipDateFieldId,
-      emailAddressFieldId,
       environment
     }
   };
