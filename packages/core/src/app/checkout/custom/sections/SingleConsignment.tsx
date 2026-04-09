@@ -276,7 +276,8 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
     // debugger;
 
     // console.log('Saving future save date: ');
-    checkoutService.updateCheckout({ customerMessage: futureShipDate ? futureShipDate : getTomorrowDate() });
+    // This doesn't require to save now since we are adding in custom field.
+    // checkoutService.updateCheckout({ customerMessage: futureShipDate ? futureShipDate : getTomorrowDate() });
     
     if (selectedShippingOptionId) {
       if (selectedConsignment) {
