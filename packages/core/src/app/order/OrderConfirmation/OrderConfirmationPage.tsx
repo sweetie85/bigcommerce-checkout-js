@@ -52,6 +52,13 @@ declare global {
   }
 }
 
+type GoogleAdsConversion = {
+  send_to: string;
+  value: number;
+  currency: string;
+  transaction_id?: string;
+};
+
 export const OrderConfirmationPage = ({
     config,
     currency,
@@ -100,9 +107,9 @@ export const OrderConfirmationPage = ({
         const conversionData = {
             send_to: 'AW-319189248/0RrqCP-FvIgYEIDimZgB',
             value: order.orderAmount,
-            currency: order.currency || 'USD',
+            currency: order.currency?.code || 'USD',
             transaction_id: order.orderId?.toString(),
-        };
+        } as GoogleAdsConversion;
 
         console.log('Adding gtag: ');
         console.log(conversionData);
