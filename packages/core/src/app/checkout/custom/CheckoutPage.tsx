@@ -50,7 +50,6 @@ const CheckoutPage = ({ checkoutId, paymentForm  }: CustomCheckoutPageProps) => 
       case CheckoutStep.Consignment:
         return <ShippingAndDelivery checkoutId={checkoutId} gotoNextStep={() => {
           
-          console.log('Moved to next step...');
           window.scrollTo({ top: 0, behavior: 'smooth'});
           setActiveTabIndex(CheckoutStep.OrderSummary);
 

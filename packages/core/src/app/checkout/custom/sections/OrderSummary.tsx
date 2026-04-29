@@ -45,7 +45,10 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
   return <section className="order-summary relative">
     <p className="order-summary__title"> Order Summary</p>
     <div className="absolute right-10 -top-2">
-      <button onClick={() => { onChangeTab(CheckoutStep.Payment) }} style={{ backgroundColor: '#F6A601', padding: '12px 50px', borderRadius: '8px' }}>GO TO PAYMENT</button>
+      <button onClick={() => { 
+        onChangeTab(CheckoutStep.Payment);
+        window.scrollTo({ top: 0, behavior: 'smooth'});
+      }} style={{ backgroundColor: '#F6A601', padding: '12px 50px', borderRadius: '8px' }}>GO TO PAYMENT</button>
     </div>
 
     <div className="order-summary__cart-items custom-box-shadow">
@@ -122,7 +125,10 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
 
       { mainCartItems.length > 0 &&
         <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', justifyContent: 'right', alignItems: 'end' }}>
-          <button onClick={() => { onChangeTab(CheckoutStep.Payment) }} style={{ backgroundColor: '#F6A601', padding: '12px 50px', marginTop: '30px', borderRadius: '8px' }}>GO TO PAYMENT</button>
+          <button onClick={() => { 
+            onChangeTab(CheckoutStep.Payment);
+            window.scrollTo({ top: 0, behavior: 'smooth'});
+          }} style={{ backgroundColor: '#F6A601', padding: '12px 50px', marginTop: '30px', borderRadius: '8px' }}>GO TO PAYMENT</button>
           <p className="w-[40%] mt-5 text-left text-[#f6a601]">*Please review your order carefully-due to our baking schedule, changes cannot be made once orders are submitted. Thank you for understanding!</p>
         </div>
       }

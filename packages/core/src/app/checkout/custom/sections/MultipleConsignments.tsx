@@ -722,7 +722,10 @@ const MultipleConsignments = ({
         :
           <>
             { !isNextStep &&
-              <button onClick={() => { setIsNextStep(true) }} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
+              <button onClick={() => { 
+                setIsNextStep(true); 
+                window.scrollTo({ top: 0, behavior: 'smooth'});
+              }} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
             }
             { isNextStep && !isGoTOOrderSummary ?
               <>
