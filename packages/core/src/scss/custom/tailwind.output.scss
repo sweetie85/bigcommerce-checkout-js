@@ -19,6 +19,18 @@
 .end {
   inset-inline-end: var(--spacing);
 }
+.-top-2 {
+  top: calc(var(--spacing) * -2);
+}
+.top-1 {
+  top: calc(var(--spacing) * 1);
+}
+.right-0 {
+  right: calc(var(--spacing) * 0);
+}
+.right-10 {
+  right: calc(var(--spacing) * 10);
+}
 .mt-2 {
   margin-top: calc(var(--spacing) * 2);
 }

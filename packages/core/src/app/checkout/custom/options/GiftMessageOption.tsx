@@ -50,7 +50,7 @@ const GiftMessageOption = ({ giftProducts, selectedConsignment, setGiftProductId
   }, [selectedConsignment]);
 
   const remainingCharacters = () => {
-    return allowedCharLenth - giftMessageLength;
+    return allowedCharLenth >= giftMessageLength ? allowedCharLenth - giftMessageLength : 0;
   }
 
   return <div className="add-gift-single-popup-wrapper">
@@ -73,9 +73,9 @@ const GiftMessageOption = ({ giftProducts, selectedConsignment, setGiftProductId
       </div>
 
       <div>
-        <textarea maxLength={allowedCharLenth} className="p-2 max-md:w-11/12!" onChange={(e) => (allowedCharLenth - giftMessageLength) >= 0 ? setGiftMessage(e.target.value) : null } placeholder="Type your message here"></textarea>
+        <textarea maxLength={allowedCharLenth} className="p-2 max-md:w-11/12!" onChange={(e) => remainingCharacters() >= 0 ? setGiftMessage(e.target.value) : null } placeholder="Type your message here"></textarea>
       </div>
-      <p style={{ marginLeft: '20px', marginTop: '5px', color: '#ccc'}}>{allowedCharLenth - giftMessageLength} characters remaining of {allowedCharLenth}</p>
+      <p style={{ marginLeft: '20px', marginTop: '5px', color: '#ccc'}}>{remainingCharacters()} characters remaining of {allowedCharLenth}</p>
     </>
     }
   </div>

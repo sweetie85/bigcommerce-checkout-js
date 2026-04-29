@@ -119,12 +119,14 @@ const AddressOptionGroup = ({
   }
 
   const validateAndSave = () => {
-    if (!futureShipDate) {
-      setFutureShipDateError('Please select future ship date!');
-    } else {
-      setFutureShipDateError(null);
-      saveChanges();
-    }
+    // This is optional
+    // if (!futureShipDate) {
+    //   setFutureShipDateError('Please select future ship date!');
+    // } else {
+    //   setFutureShipDateError(null);
+    // }
+
+    saveChanges();
   }
 
   return <div style={{ marginLeft: '20px' }}>
@@ -202,7 +204,7 @@ const AddressOptionGroup = ({
       </div>}
 
       <div className="step-title" style={{ marginTop: '40px'}}>
-        <label style={{ marginBottom: '10px' }}>*Future Ship Date (if applicable):</label>
+        <label style={{ marginBottom: '10px' }}>Future Ship Date (if applicable):</label>
         <FutureShipDateOptionGroup 
           futureShipDate={futureShipDate} 
           handleChangeDate={(date) => { 

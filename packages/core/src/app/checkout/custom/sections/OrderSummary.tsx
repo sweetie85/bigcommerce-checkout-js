@@ -31,7 +31,7 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
       const mainItems = cart.lineItems.physicalItems.filter(c => !c.parentId);
       setMainCartItems(mainItems);
     }
-  }, []);
+  }, [consignments]);
 
   const cartTotalAmount = () => {
     let totalAmount = cart ? cart.cartAmount : 0;
@@ -42,8 +42,12 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
     return totalAmount.toFixed(2);
   }
 
-  return <section className="order-summary">
+  return <section className="order-summary relative">
     <p className="order-summary__title"> Order Summary</p>
+    <div className="absolute right-10 -top-2">
+      <button onClick={() => { onChangeTab(CheckoutStep.Payment) }} style={{ backgroundColor: '#F6A601', padding: '12px 50px', borderRadius: '8px' }}>GO TO PAYMENT</button>
+    </div>
+
     <div className="order-summary__cart-items custom-box-shadow">
 
     <div className="order-summary__cart-item header">

@@ -19,7 +19,8 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
 
   const [isEnabled, setIsEnabled] = useState(false);
   const [hasMultipleGiftMessage, setHasMultipleGiftMessage] = useState(false);
-
+  const [allowedCharLenth, setAllowedCharLenth] = useState(250);
+  
   // Custom message
   const [gitProductId, setGiftProductId] = useState<string | null>(null);
   const [giftMessage, setGiftMessage] = useState<string | null>(null);
@@ -146,6 +147,15 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
     setIsInProgress(false);
   }
 
+  const remainingCharacters = () => {
+    if (!giftMessage) {
+      return allowedCharLenth;
+    }
+
+    const giftMessageLength = giftMessage.length;
+    return allowedCharLenth >= giftMessageLength ? allowedCharLenth - giftMessageLength : 0;
+  }
+
   return <div style={{ position: 'relative', width: '100%' }}>
     <div style={{ position: 'relative' }}>
       <button className="button-add-gift-message" onClick={() => setIsEnabled(!isEnabled)}>Add Gift Message</button>
@@ -159,16 +169,20 @@ const GiftMessageOptionGroup = ({ checkoutId, giftProducts, selectedConsignment,
     { hasMultipleGiftMessage && <p style={{ color: 'red' }}>NOTE: You may only apply one gift message to each consignment.</p> }
     { giftItemError && <p style={{ color: 'red' }}>Error: {giftItemError}</p> }
     <div>
-      <select onChange={(e) => setGiftProductId(e.target.value) }>
+      <select onChange={(e) => { 
+        setGiftProductId(e.target.value) 
+        const selectedProduct = giftProducts.find(p => p.bigcommerce_product_id == e.target.value);
+        setAllowedCharLenth(selectedProduct ? parseInt(selectedProduct.message_characters_limit.toString()) : 250);
+      }}>
         <option value="">None</option>
         { giftProducts.map((p) => <option key={p.bigcommerce_product_id} value={p.bigcommerce_product_id}>{p.frontend_title}</option>) }
       </select>
       </div>
 
       <div>
-        <textarea onChange={(e) => setGiftMessage(e.target.value)} placeholder="Type your message here"></textarea>
+        <textarea maxLength={allowedCharLenth} onChange={(e) => remainingCharacters() >= 0 ? setGiftMessage(e.target.value) : null} placeholder="Type your message here"></textarea>
       </div>
-      {/* <p style={{ marginLeft: '20px', marginTop: '5px', color: '#ccc'}}>150 characters remaining of 150</p> */}
+      <p style={{ marginTop: '5px', color: '#ccc'}}>{remainingCharacters()} characters remaining of {allowedCharLenth}</p>
 
       <div className="save-button-wrapper">
         <button className="save-button" onClick={addItemToCart}>Save Changes</button>
