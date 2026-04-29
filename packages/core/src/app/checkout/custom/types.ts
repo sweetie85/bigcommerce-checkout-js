@@ -15,4 +15,5 @@ export interface GiftProduct {
   bigcommerce_product_id: string;
   product_sku: string; 
   frontend_title: string;
+  message_characters_limit: number;
 }

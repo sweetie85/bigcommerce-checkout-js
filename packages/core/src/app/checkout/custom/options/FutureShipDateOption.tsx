@@ -28,6 +28,9 @@ const FutureShipDateOption = ({
   const consignments = checkoutState.data.getConsignments();
   const isPast4PM = isPast4PM_EST();
 
+  const customer = checkoutState.data.getCustomer();
+  const stepNumber = customer?.isGuest ? 5 : 4;
+
   const formatDateString = (date: Date) => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
@@ -125,7 +128,7 @@ const FutureShipDateOption = ({
 
   return <div>
     <div className="step-title">
-      <label style={{ marginLeft: '10px' }}>4. Choose a future ship date:</label>
+      <label style={{ marginLeft: '10px' }}>{stepNumber}. Choose a future ship date:</label>
     </div>
     <div style={{ marginLeft: '30px' }}>
       <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>

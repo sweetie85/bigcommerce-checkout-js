@@ -31,20 +31,11 @@
 .mt-6 {
   margin-top: calc(var(--spacing) * 6);
 }
-.ml-5 {
-  margin-left: calc(var(--spacing) * 5);
-}
 .flex {
   display: flex;
 }
-.w-1\/2 {
-  width: calc(1 / 2 * 100%);
-}
 .w-\[40\%\] {
   width: 40%;
-}
-.w-auto {
-  width: auto;
 }
 .w-auto\! {
   width: auto !important;

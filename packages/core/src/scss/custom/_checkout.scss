@@ -544,7 +544,7 @@
 }
 
 .single-address-card-wrapper {
-  margin-left: space(2); 
+  // margin-left: space(2); 
   margin-top: space(2);
 
   .input-select--address {
@@ -606,13 +606,13 @@
 
     .shipping-options {
       @include breakpoint('medium') {
-        width: 60%;
+        width: 49%;
       }
     }
 
     .future-ship-date-option {
       @include breakpoint('medium') {
-        width: 40%;
+        width: 49%;
       }
     }
 

@@ -8,16 +8,20 @@ interface GiftMessageOptionProps {
   giftProducts: GiftProduct[];
   setGiftProductId: (id: string) => void;
   setGiftMessage: (message: string) => void;
+  giftMessageLength: number;
   selectedConsignment: Consignment | null;
 }
 
-const GiftMessageOption = ({ giftProducts, selectedConsignment, setGiftProductId, setGiftMessage }: GiftMessageOptionProps) => {
+const GiftMessageOption = ({ giftProducts, selectedConsignment, setGiftProductId, setGiftMessage, giftMessageLength }: GiftMessageOptionProps) => {
 
   const [isEnabled, setIsEnabled] = useState(false);
   const [hasMultipleGiftMessage, setHasMultipleGiftMessage] = useState(false);
-
+  const [allowedCharLenth, setAllowedCharLenth] = useState(250);
   const { checkoutState } = useCheckout();
   
+  const customer = checkoutState.data.getCustomer();
+  const stepNumber = customer?.isGuest ? 6 : 5;
+
   useEffect(() => {
     if (selectedConsignment) {
 
@@ -45,25 +49,33 @@ const GiftMessageOption = ({ giftProducts, selectedConsignment, setGiftProductId
 
   }, [selectedConsignment]);
 
+  const remainingCharacters = () => {
+    return allowedCharLenth - giftMessageLength;
+  }
+
   return <div className="add-gift-single-popup-wrapper">
     <div className="step-title">
       <input onChange={(e) => setIsEnabled(!isEnabled)} name="address_option_saved" id="choose_gift_item" type="radio" value={1} ></input>
-      <label htmlFor="choose_gift_item" style={{ marginLeft: '10px' }}>5. Add gift message::</label>
+      <label htmlFor="choose_gift_item" style={{ marginLeft: '10px' }}>{stepNumber}. Add gift message::</label>
     </div>
 
     {isEnabled && <>
     { hasMultipleGiftMessage && <p style={{ color: 'red' }}>NOTE: You may only apply one gift message to each consignment.</p> }
     <div>
-      <select className="max-md:w-11/12!" onChange={(e) => setGiftProductId(e.target.value) }>
+      <select className="max-md:w-11/12!" onChange={(e) => {
+        setGiftProductId(e.target.value);
+        const selectedProduct = giftProducts.find(p => p.bigcommerce_product_id == e.target.value);
+        setAllowedCharLenth(selectedProduct ? parseInt(selectedProduct.message_characters_limit.toString()) : 250);
+      }}>
         <option value="">None</option>
         { giftProducts.map((p) => <option key={p.bigcommerce_product_id} value={p.bigcommerce_product_id}>{p.frontend_title}</option>) }
       </select>
       </div>
 
       <div>
-        <textarea className="p-2 max-md:w-11/12!" onChange={(e) => setGiftMessage(e.target.value)} placeholder="Type your message here"></textarea>
+        <textarea maxLength={allowedCharLenth} className="p-2 max-md:w-11/12!" onChange={(e) => (allowedCharLenth - giftMessageLength) >= 0 ? setGiftMessage(e.target.value) : null } placeholder="Type your message here"></textarea>
       </div>
-      <p style={{ marginLeft: '20px', marginTop: '5px', color: '#ccc'}}>150 characters remaining of 150</p>
+      <p style={{ marginLeft: '20px', marginTop: '5px', color: '#ccc'}}>{allowedCharLenth - giftMessageLength} characters remaining of {allowedCharLenth}</p>
     </>
     }
   </div>

@@ -286,8 +286,11 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
       }
     }
 
-    setEnabledNextStep(true);
     setIsInProgress(false);
+
+    if (selectedShippingOptionId) {
+      setEnabledNextStep(true);
+    }
 
     if (selectedConsignment && moveNextStep) {
       gotoNextStep();
@@ -356,6 +359,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
       giftProducts={giftProducts} 
       setGiftProductId={setGiftProductId} 
       setGiftMessage={setGiftMessage} 
+      giftMessageLength={giftMessage ? giftMessage.length : 0}
       selectedConsignment={selectedConsignment}
       />
 

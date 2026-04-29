@@ -23,19 +23,8 @@ const ShippingMethodOption = ({ updatedShippingOptionId, handleChange, selectedC
     };
   });
 
-  // Generated these rates
-  // const rangeShippingOptionsRates = [
-  //   { rate: 50, threshold: 1000 },
-  //   { rate: 100, threshold: 2000 },
-  //   { rate: 150, threshold: 3000 },
-  //   { rate: 200, threshold: 4000 },
-  //   { rate: 250, threshold: 5000 },
-  //   { rate: 300, threshold: 6000 },
-  //   { rate: 350, threshold: 7000 },
-  //   { rate: 400, threshold: 8000 },
-  //   { rate: 450, threshold: 9000 },
-  //   { rate: 500, threshold: 10000 },
-  // ];
+  const customer = checkoutState.data.getCustomer();
+  const stepNumber = customer?.isGuest ? 4 : 3;
 
   const cartTotal = cart ? cart.baseAmount : null;
   const selectedShippingOptionRange = cartTotal === null || cartTotal < 300
@@ -78,10 +67,10 @@ const ShippingMethodOption = ({ updatedShippingOptionId, handleChange, selectedC
   return <div>
     <div>
       <div className="step-title">
-        <label style={{ marginLeft: '10px' }}>3. Shipping Method:</label>
+        <label>{stepNumber}. Shipping Method:</label>
       </div>
       {shippingOptions.length > 0 ? 
-        <div style={{ marginLeft: '30px', marginTop: '6px', border: '1px solid #315B4287', borderRadius: '10px' }}>
+        <div style={{ marginTop: '6px', border: '1px solid #315B4287', borderRadius: '10px' }}>
           {shippingOptions.map((so, index) => <div key={so.id} style={{ cursor: 'pointer', borderBottom: (index != shippingOptions.length - 1) ? '1px solid #315B4287' : '' , padding: '10px', display: 'flex', justifyContent: 'space-between'}}>
             <div style={{ display: 'flex', gap: '10px' }}>
               <input checked={selectedShippingOptionId == so.id} onChange={(e) => handleChange(e.target.value)} name="shipping_method" id={"choose_shipping_method_"+so.id} type="radio" value={so.id} />
