@@ -10,7 +10,7 @@ import ConsignmentItemCard from "../components/ConsignmentItemCard";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { GiftProduct, CustomItem } from "../types";
 import GiftMessageOptionGroupEdit from "../options/GiftMessageOptionGroupEdit";
-import { handleCheckoutError, validateAddress } from "../utility";
+import { handleCheckoutError, isHoldingConsignment, validateAddress } from "../utility";
 
 interface SelectItemsProps {
   checkoutId: string;
@@ -78,19 +78,19 @@ const MultipleConsignments = ({
 
       // Detect if single consignments
       if (!isConsignmentAssignedManually && consignments.length <= 1) {
-        if (consignments.length == 0 || consignments[0].address.address1 != 'TO_BE_ASSIGNED') {
+        if (consignments.length == 0 || !isHoldingConsignment(consignments[0])) {
           // console.log('createHoldingConsignment: ');
           // Move all items to dummy consignments
           createHoldingConsignment();
         }
       }
 
-      if (isConsignmentAssignedManually && consignments.length == 1 && consignments[0].address.address1 != 'TO_BE_ASSIGNED') {
+      if (isConsignmentAssignedManually && consignments.length == 1 && !isHoldingConsignment(consignments[0])) {
         window.sessionStorage.removeItem('CCC-PARAM--consignment-is-assigned-manually');
         setIsShowSingleAddressConfirmation(true);
       }
 
-      const holdingConsignment = consignments.find(c => c.address.address1 == 'TO_BE_ASSIGNED');
+      const holdingConsignment = consignments.find(c => isHoldingConsignment(c));
       if (holdingConsignment) {
         // console.log('holding consignment found.');
         // console.log(consignments[0].lineItemIds);
@@ -111,7 +111,15 @@ const MultipleConsignments = ({
         }
 
         setHoldingConsignment(holdingConsignment);
-        setUnassignedLineItems(mainItems.filter(i => !isGiftItem(i.item) && holdingConsignment.lineItemIds.includes(i.item.id as string)));
+
+        console.log('UnassignedLineItems: ');
+        console.log(mainItems.filter(i => 
+          !isGiftItem(i.item) && (holdingConsignment.lineItemIds.includes(i.item.id as string) || selecedItemIds.includes(i.itemIndex)))
+        );
+
+        setUnassignedLineItems(mainItems.filter(i => 
+          !isGiftItem(i.item) && (holdingConsignment.lineItemIds.includes(i.item.id as string) || selecedItemIds.includes(i.itemIndex)))
+        );
 
         setIsNextStep(false);
         setIsGoTOOrderSummary(false);
@@ -131,8 +139,8 @@ const MultipleConsignments = ({
 
   // Verify if all consignment are assinged a shipping method
   useEffect(() => {
-    const pendingShipppingMethod = consignments.find(c => !c.selectedShippingOption && c.address.address1 != 'TO_BE_ASSIGNED'  && (!selectedShippingOptionIds[c.id] || selectedShippingOptionIds[c.id] == ''));
-    const pendingShipppingMethodEdit = consignments.find(c => c.address.address1 != 'TO_BE_ASSIGNED' && selectedShippingOptionIds[c.id] == '');
+    const pendingShipppingMethod = consignments.find(c => !c.selectedShippingOption && !isHoldingConsignment(c) && (!selectedShippingOptionIds[c.id] || selectedShippingOptionIds[c.id] == ''));
+    const pendingShipppingMethodEdit = consignments.find(c => !isHoldingConsignment(c) && selectedShippingOptionIds[c.id] == '');
 
     if (!pendingShipppingMethod && !pendingShipppingMethodEdit) {
       setIsGoTOOrderSummary(true);
@@ -155,7 +163,7 @@ const MultipleConsignments = ({
       stateOrProvinceCode: 'CA',
       city: 'Temp',
       postalCode: '00000',
-      address1: 'TO_BE_ASSIGNED',
+      firstName: 'TO_BE_ASSIGNED',
     } as AddressRequestBody;
 
     if (cart) {
@@ -322,16 +330,26 @@ const MultipleConsignments = ({
         }
         */
       }
-      
+
+      const isFinalUpdate = selectedConsignment && selectedShippingOptionIds[selectedConsignment.id];
 
       const requestBody = {
-        address: updatedAddress,
+        address: isFinalUpdate ? updatedAddress : { ...updatedAddress, firstName: 'TO_BE_ASSIGNED' },
         shippingAddress: updatedAddress,
         lineItems: lineItems,
       } as ConsignmentAssignmentRequestBody;
 
       try {
-        await checkoutService.assignItemsToAddress(requestBody);
+        const res = await checkoutService.assignItemsToAddress(requestBody);
+
+        const updatedConsignments = res.data.getConsignments();
+        const lastConsignment = updatedConsignments ? updatedConsignments[updatedConsignments.length - 1] : null;
+        setSelectedConsignment(lastConsignment);
+
+        if (isFinalUpdate && lastConsignment) {
+          await checkoutService.selectConsignmentShippingOption(lastConsignment.id, selectedShippingOptionIds[selectedConsignment.id]);
+        }
+
       } catch(e: unknown) {
         const messages = handleCheckoutError(e);
         // messages.forEach(msg => alert(msg));
@@ -341,11 +359,16 @@ const MultipleConsignments = ({
         }
       }
 
+      console.log('isFinalUpdate: ');
+      console.log(isFinalUpdate);
+
       // reset shipping details form once saved
-      setFutureShipDate(null);
-      setIsUpdateAddressChecked(false);
-      setSelecedItemIds([]);
-      setShippingAddress(null);
+      if (isFinalUpdate) {
+        setFutureShipDate(null);
+        setIsUpdateAddressChecked(false);
+        setSelecedItemIds([]);
+        setShippingAddress(null);
+      }
       setShippingAddressError(null);
     }
   }
@@ -540,11 +563,11 @@ const MultipleConsignments = ({
   return <div className="consignments-wrapper">
     <div className="step-2-title step-title">
       <span>{stepNumber}. </span>
-      { isNextStep ?
-        <span>Choose shipping method, future ship date, and an optional gift message for each group.</span>
-      :
+      {/* { isNextStep ? */}
         <span>Select an item to add a delivery address, select & group items going to the same address.</span>
-      }
+        <span>Choose shipping method, future ship date, and an optional gift message for each group.</span>
+      {/* :      
+      } */}
     </div>
 
     <div className="assignment-categories">
@@ -554,8 +577,8 @@ const MultipleConsignments = ({
       {/* <p>Consignments: </p> */}
       
       {/* Iterate through every consignmets and filter items */}
-      { consignments.filter(c => c.address.address1 !== 'TO_BE_ASSIGNED').map(c => <div key={c.id} style={{ margin: '0 10px', backgroundColor: '#c7cfc5', boxShadow: '0px 4px 4px 0px #00000026', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {mainCartItems.filter(i => !isGiftItem(i.item) && c.lineItemIds.includes(i.item.id as string))
+      { consignments.filter(c => !isHoldingConsignment(c)).map(c => <div key={c.id} style={{ margin: '0 10px', backgroundColor: '#c7cfc5', boxShadow: '0px 4px 4px 0px #00000026', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {mainCartItems.filter(i => !isGiftItem(i.item) && !selecedItemIds.includes(i.itemIndex) && c.lineItemIds.includes(i.item.id as string))
           .map(i => <div key={i.item.id} className="item-card-wrapper">
             <ConsignmentItemCard i={i.item} unassignItem={(i) => unassignItem(i)} />
           </div>
@@ -567,12 +590,12 @@ const MultipleConsignments = ({
                 <div className="line-2" style={{ color: '#fff' }}>{formatAddress(c.address)}</div>
               </div>
 
-              {isNextStep ?
+              {/* {isNextStep ?
                 <div className="assigned-address-line w-auto!">
                   <div className="line-1">Future Ship Date: </div>
                   <div className="line-2" style={{ color: '#fff' }}>{getFutureShipDate(c)}</div>
                 </div>
-              :
+              : */}
                 <FutureShipDateOptionGroup 
                   futureShipDate={getFutureShipDate(c)} 
                   handleChangeDate={(value) => {
@@ -583,12 +606,12 @@ const MultipleConsignments = ({
                   }} 
                   selectedConsignment={selectedConsignment} 
                   />
-              }
+              {/* } */}
               <div className="max-md:hidden">
                 <a onClick={() => unassignConsignment(c)} style={{ textDecoration: 'underline', color: '#000' }}>Ungroup Items</a>
               </div>
             </div>
-            { isNextStep &&
+            
             <>
               <div className="item-options item-options__shipping-option-wrapper">
                 <div className="bottom-options">
@@ -637,7 +660,6 @@ const MultipleConsignments = ({
               </div>
               {!c.availableShippingOptions || c.availableShippingOptions.length == 0 && <div style={{ color: '#900000', marginTop: '10px' }}>Please check your shipping address, the current address does not have validated shipping methods.</div>}
             </>
-            }
 
             <div className="md:hidden flex justify-end mt-3">
               <a onClick={() => unassignConsignment(c)} style={{ textDecoration: 'underline', color: '#000' }}>Ungroup Items</a>
@@ -672,9 +694,17 @@ const MultipleConsignments = ({
               setFutureShipDate={(date) => setFutureShipDate(date)}
               saveChanges={saveChanges}
               errorMessage={errorMessage}
+              handleShippingMethodChange={(id) => {
+                if (selectedConsignment) {
+                  setSelectedShippingOptionIds({ ...selectedShippingOptionIds, [selectedConsignment.id]: id });
+                }
+              }}
+              selectedShippingOptionIds={selectedShippingOptionIds}
             />
 
             {shippingAddressError && <p style={{ color: 'red', fontWeight: 'bold' }}>{shippingAddressError}</p>}
+
+            
 
             {/* {(!customer || customer.isGuest) &&
               <div style={{ marginTop: '30px' }}>
@@ -703,7 +733,7 @@ const MultipleConsignments = ({
 
     {/* Buttom Buttons */}
     <div className="next-step-buttons-wrapper">
-      { isNextStep ?
+      {/* { isNextStep ?
         <div className="step-title" style={{ cursor: 'pointer', display: 'flex', gap: '8px', alignItems: 'center' }} onClick={() => { setIsNextStep(false) }}>
           <svg style={{ transform: 'rotate(180deg)' }} width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M2.14483 0L9 6.97857L2.14483 14L0 11.7841L4.70206 7.02143L0 2.21585L2.14483 0Z" fill="#315B42"/>
@@ -712,7 +742,7 @@ const MultipleConsignments = ({
         </div>
       :
         <div></div>
-      }
+      } */}
 
       <div style={{ margin: '20px 0', display: 'flex', flexDirection: 'column', justifyContent: 'right', alignItems: 'end', gap: '20px' }}>
         {unassignedLineItems.length > 0 ? <>
@@ -721,19 +751,19 @@ const MultipleConsignments = ({
         </>
         :
           <>
-            { !isNextStep &&
+            {/* { !isNextStep &&
               <button onClick={() => { 
                 setIsNextStep(true); 
                 window.scrollTo({ top: 0, behavior: 'smooth'});
               }} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
-            }
-            { isNextStep && !isGoTOOrderSummary ?
+            } */}
+            { !isGoTOOrderSummary ?
               <>
                 <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
                 <div className="desktop-only" style={{ color: '#EB2F2F', fontSize: '16px', maxWidth: '400px' }}>** Choose Shipping Method before continuing.</div>
               </>
             :
-              isNextStep && <button onClick={() => saveShippingMethods()} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
+              <button onClick={() => saveShippingMethods()} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
             }
           </>
         }
@@ -746,7 +776,7 @@ const MultipleConsignments = ({
         <div className="mobile-only" style={{ color: '#EB2F2F', fontSize: '14px', maxWidth: '250px' }}>*Assign delivery address to all items before continuing.</div>
       }
 
-      { (isNextStep && !isGoTOOrderSummary) &&
+      { (!isGoTOOrderSummary) &&
         <div className="mobile-only" style={{ color: '#EB2F2F', fontSize: '14px', maxWidth: '250px' }}>**Choose shipping method and date for all groups before continuing.</div>
       }
 

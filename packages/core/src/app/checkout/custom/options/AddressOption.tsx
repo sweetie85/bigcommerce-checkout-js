@@ -1,6 +1,7 @@
 import { AddressRequestBody, Consignment, Country, Customer, CustomerAddress, Region } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
 import { useCheckout } from "../context/CheckoutContext";
+import { isHoldingConsignment } from "../utility";
 
 interface AddressOptionProps {
   updatedShippingAddress: AddressRequestBody | null;
@@ -23,7 +24,7 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
   const customerAddresses = customer?.addresses ?? [];
 
   useEffect(() => {
-    if (selectedConsignment && selectedConsignment.address.address1 != 'TO_BE_ASSIGNED') {
+    if (selectedConsignment && !isHoldingConsignment(selectedConsignment)) {
       setShippingAddress(selectedConsignment.address);
     }
   }, [selectedConsignment])

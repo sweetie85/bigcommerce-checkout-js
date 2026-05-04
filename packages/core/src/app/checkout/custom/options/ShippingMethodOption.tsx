@@ -4,12 +4,13 @@ import { Cart, Consignment, ShippingOption } from '@bigcommerce/checkout-sdk';
 import { useCheckout } from "../context/CheckoutContext";
 
 interface ShippingMethodOptionProps {
+  showNumbering?: boolean;
   updatedShippingOptionId: string | null;
   handleChange: (id: string) => void,
   selectedConsignment: Consignment | null;
 }
 
-const ShippingMethodOption = ({ updatedShippingOptionId, handleChange, selectedConsignment }: ShippingMethodOptionProps) => {
+const ShippingMethodOption = ({ showNumbering = true, updatedShippingOptionId, handleChange, selectedConsignment }: ShippingMethodOptionProps) => {
 
   const [selectedShippingOptionId, setSelectedShippingOptionId] = useState(updatedShippingOptionId);
   const { checkoutState } = useCheckout();
@@ -67,7 +68,7 @@ const ShippingMethodOption = ({ updatedShippingOptionId, handleChange, selectedC
   return <div>
     <div>
       <div className="step-title">
-        <label>{stepNumber}. Shipping Method:</label>
+        <label>{showNumbering && <span>{stepNumber}. </span>}Shipping Method:</label>
       </div>
       {shippingOptions.length > 0 ? 
         <div style={{ marginTop: '6px', border: '1px solid #315B4287', borderRadius: '10px' }}>

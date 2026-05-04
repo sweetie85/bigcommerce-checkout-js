@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useCheckout } from '../context/CheckoutContext';
 import { CheckoutStep } from '../types';
+import { isHoldingConsignment } from '../utility';
 
 interface CheckoutHeaderProps {
   activeStep?: CheckoutStep;
@@ -55,7 +56,7 @@ const CheckoutHeader = ({activeStep = CheckoutStep.Consignment, onChangeStep} : 
       // debugger;
       
       // Check if all item as having consignment
-      const userConsignments = consignments.filter(c => c.address.address1 != 'TO_BE_ASSIGNED')
+      const userConsignments = consignments.filter(c => !isHoldingConsignment(c))
 
       // Ensure all line items are included
       const totalItems = cart.lineItems.physicalItems.filter(i => !i.parentId).length

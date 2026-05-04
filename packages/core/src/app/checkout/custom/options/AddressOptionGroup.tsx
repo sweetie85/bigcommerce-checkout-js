@@ -2,6 +2,8 @@ import { AddressRequestBody, Consignment, Country, Customer, CustomerAddress, Re
 import React, { useEffect, useState } from "react";
 import { useCheckout } from "../context/CheckoutContext";
 import FutureShipDateOptionGroup from "./FutureShipDateOptionGroup";
+import ShippingMethodOption from "./ShippingMethodOption";
+import FutureShipDateOption from "./FutureShipDateOption";
 
 interface AddressOptionProps {
   updatedShippingAddress: AddressRequestBody | null;
@@ -13,6 +15,8 @@ interface AddressOptionProps {
   setFutureShipDate: (date: string | null) => void
   saveChanges: () => {}
   errorMessage: string | null;
+  handleShippingMethodChange: (id: string) => void;
+  selectedShippingOptionIds: Record<string, string>;
 }
 
 const AddressOptionGroup = ({ 
@@ -24,7 +28,9 @@ const AddressOptionGroup = ({
   futureShipDate,
   setFutureShipDate,
   saveChanges,
-  errorMessage
+  errorMessage,
+  handleShippingMethodChange,
+  selectedShippingOptionIds
 }: AddressOptionProps) => {
 
   const [isNewAddress, setIsNewAddress] = useState(false);
@@ -203,7 +209,7 @@ const AddressOptionGroup = ({
         </div>
       </div>}
 
-      <div className="step-title" style={{ marginTop: '40px'}}>
+      {/* <div className="step-title" style={{ marginTop: '40px'}}>
         <label style={{ marginBottom: '10px' }}>Future Ship Date (if applicable):</label>
         <FutureShipDateOptionGroup 
           futureShipDate={futureShipDate} 
@@ -214,11 +220,42 @@ const AddressOptionGroup = ({
           selectedConsignment={null}
           />
           {futureShipDateError && <p className="text-red-600">{futureShipDateError}</p>}
-      </div>
+      </div> */}
 
-      <div style={{ marginTop: '20px' }}>
-        <button className="save-changes-button" onClick={() => validateAndSave()}>SAVE CHANGES</button>
+      { !selectedConsignment ?
+        <div style={{ marginTop: '30px' }}>
+          <button onClick={() => validateAndSave()} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>CONTINUE</button>
+        </div>
+      :
+      <div className="mt-8">
+        <div className="shipping-options-wrapper flex gap-5">
+          <div className="shipping-options w-[48%]">
+            <ShippingMethodOption 
+              handleChange={handleShippingMethodChange} 
+              updatedShippingOptionId={selectedConsignment ? selectedShippingOptionIds[selectedConsignment.id]: null} 
+              selectedConsignment={selectedConsignment}
+              showNumbering={false}
+              />
+
+          </div>
+          <div className="future-ship-date-option w-[48%]">
+            <FutureShipDateOption 
+              // futureShipDate={futureShipDate} 
+              handleChangeDate={setFutureShipDate}
+              // selectedConsignment={selectedConsignment}
+              futureShipDateError={''}
+              setShouldSelectShipDate={() => {}}
+              // saveChanges={saveChanges}
+              showNumbering={false}
+              />
+          </div>
+        </div>
+
+        <div style={{ marginTop: '20px' }}>
+          <button className="save-changes-button" onClick={() => validateAndSave()}>SAVE CHANGES</button>
+        </div>
       </div>
+      }
     </div>
     }
  </div>

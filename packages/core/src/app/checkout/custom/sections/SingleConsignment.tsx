@@ -46,8 +46,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
   
   useEffect(() => {
     if (customerShippingAddress) {
-      if (customerShippingAddress.address1 !== 'TO_BE_ASSIGNED') {
-        console.log('setShippingAddress TO_BE_ASSIGNED');
+      if (customerShippingAddress.firstName !== 'TO_BE_ASSIGNED') {
         setShippingAddress(customerShippingAddress);
       } else {
         console.log('setShippingAddress');
@@ -306,7 +305,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
   }, [shippingOptions, selectedShippingOptionId]);
 
   const shouldShowContinueButton = () => {
-    return (!customer || customer.isGuest) && (!customerShippingAddress?.postalCode || customerShippingAddress.address1 == 'TO_BE_ASSIGNED');
+    return (!customer || customer.isGuest) && (!customerShippingAddress?.postalCode || customerShippingAddress.firstName == 'TO_BE_ASSIGNED');
   }
 
   return <>

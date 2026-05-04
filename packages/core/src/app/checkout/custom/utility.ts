@@ -1,4 +1,4 @@
-import { AddressRequestBody } from "@bigcommerce/checkout-sdk";
+import { AddressRequestBody, Consignment } from "@bigcommerce/checkout-sdk";
 
 export function formatedDate(mmddyyyy: string) {
   if (!mmddyyyy) return '';
@@ -80,4 +80,8 @@ export function isPast4PM_EST() {
   const minute = Number(minutePart.value);
 
   return hour > 16 || (hour === 16 && minute >= 0);
+}
+
+export function isHoldingConsignment(consignment: Consignment): boolean {
+  return consignment.address.firstName == 'TO_BE_ASSIGNED';
 }

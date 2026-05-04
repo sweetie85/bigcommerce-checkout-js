@@ -6,12 +6,14 @@ import { isPast4PM_EST } from "../utility";
 type ShippingDateOption = "ship_now" | "ship_date";
 
 interface FutureShipDateOptionProps {
+  showNumbering?: boolean;
   futureShipDateError: string | null;
   handleChangeDate: (v: string | null) => void;
   setShouldSelectShipDate: (show: boolean) => void;
 }
 
-const FutureShipDateOption = ({  
+const FutureShipDateOption = ({ 
+  showNumbering = true,
   futureShipDateError, 
   handleChangeDate, 
   setShouldSelectShipDate,
@@ -128,7 +130,7 @@ const FutureShipDateOption = ({
 
   return <div>
     <div className="step-title">
-      <label style={{ marginLeft: '10px' }}>{stepNumber}. Choose a future ship date:</label>
+      <label style={{ marginLeft: '10px' }}>{showNumbering && <span>{stepNumber}. </span>}Choose a future ship date:</label>
     </div>
     <div style={{ marginLeft: '30px' }}>
       <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
