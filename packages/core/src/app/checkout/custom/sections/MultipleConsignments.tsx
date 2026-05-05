@@ -43,8 +43,8 @@ const MultipleConsignments = ({
   const [isNextStep, setIsNextStep] = useState<boolean>(false);
   const [isGoTOOrderSummary, setIsGoTOOrderSummary] = useState<boolean>(false);
 
-  const [selectedShippingOptionIds, setSelectedShippingOptionIds] = useState<Record<string, string>>({});
   const [futureShipDate, setFutureShipDate] = useState<string | null>(null);
+  const [selectedShippingOptionId, setSelectedShippingOptionId] = useState<string | null>(null);
   const [giftItemError, setGiftItemError] = useState<string | null>(null);
   const [isShowSingleAddressConfirmation, setIsShowSingleAddressConfirmation] = useState(false);
 
@@ -134,15 +134,15 @@ const MultipleConsignments = ({
 
   // Verify if all consignment are assinged a shipping method
   useEffect(() => {
-    const pendingShipppingMethod = consignments.find(c => !c.selectedShippingOption && !isHoldingConsignment(c) && (!selectedShippingOptionIds[c.id] || selectedShippingOptionIds[c.id] == ''));
-    const pendingShipppingMethodEdit = consignments.find(c => !isHoldingConsignment(c) && selectedShippingOptionIds[c.id] == '');
+    const pendingShipppingMethod = consignments.find(c => !c.selectedShippingOption && !isHoldingConsignment(c) && !c.selectedShippingOption);
+    const pendingShipppingMethodEdit = consignments.find(c => !isHoldingConsignment(c) && !c.selectedShippingOption);
 
     if (!pendingShipppingMethod && !pendingShipppingMethodEdit) {
       setIsGoTOOrderSummary(true);
     } else {
       setIsGoTOOrderSummary(false);
     }
-  }, [consignments, selectedShippingOptionIds]);
+  }, [consignments]);
 
   useEffect(() => {
     if (isNextStep) {
@@ -326,7 +326,7 @@ const MultipleConsignments = ({
         */
       }
 
-      const isFinalUpdate = selectedConsignment && selectedShippingOptionIds[selectedConsignment.id];
+      const isFinalUpdate = selectedShippingOptionId;
 
       const requestBody = {
         address: isFinalUpdate ? updatedAddress : { ...updatedAddress, firstName: 'TO_BE_ASSIGNED' },
@@ -341,17 +341,8 @@ const MultipleConsignments = ({
         const lastConsignment = updatedConsignments ? updatedConsignments[updatedConsignments.length - 1] : null;
         setSelectedConsignment(lastConsignment);
 
-        if (isFinalUpdate && lastConsignment) {
-          // setSelectedShippingOptionIds({ ...selectedShippingOptionIds, [lastConsignment.id]: id });
-          const shippingMethodId = selectedShippingOptionIds[selectedConsignment.id];
-          await checkoutService.selectConsignmentShippingOption(lastConsignment.id, shippingMethodId);
-
-          const selectedShippingOptionIdsCopy = { ...selectedShippingOptionIds };
-          delete selectedShippingOptionIdsCopy[selectedConsignment.id];
-
-          selectedShippingOptionIdsCopy[lastConsignment.id] = shippingMethodId;
-
-          setSelectedShippingOptionIds({ ...selectedShippingOptionIdsCopy });
+        if (selectedShippingOptionId && lastConsignment) {
+          await checkoutService.selectConsignmentShippingOption(lastConsignment.id, selectedShippingOptionId);
         }
 
       } catch(e: unknown) {
@@ -373,6 +364,7 @@ const MultipleConsignments = ({
         setSelecedItemIds([]);
         setShippingAddress(null);
         setSelectedConsignment(null);
+        setSelectedShippingOptionId(null);
       }
       setShippingAddressError(null);
     }
@@ -465,19 +457,10 @@ const MultipleConsignments = ({
     setIsInProgress(false);
   }
 
-  const saveShippingMethods = async () => {
-
+  const saveShippingMethod = async (consignmentId: string, shippingMethodId: string) => {
     setIsInProgress(true);
-
-    for (const [consignmentId, shippingMethodId] of Object.entries(selectedShippingOptionIds)) {
-      // Save shipping method
-      if (shippingMethodId && shippingMethodId != '') {
-        await checkoutService.selectConsignmentShippingOption(consignmentId, shippingMethodId);
-      }
-    }
-
+    await checkoutService.selectConsignmentShippingOption(consignmentId, shippingMethodId);
     setIsInProgress(false);
-    gotoNextStep();
   }
 
   const unassignItem = async (item: PhysicalItem) => {
@@ -604,12 +587,13 @@ const MultipleConsignments = ({
                 <FutureShipDateOptionGroup 
                   futureShipDate={getFutureShipDate(c)} 
                   handleChangeDate={(value) => {
+
                     // Check if address is changed
                     if (getFutureShipDate(c) != value) {
                       updateFutureShipDate(c, value as string);
                     }
                   }} 
-                  selectedConsignment={selectedConsignment} 
+                  selectedConsignment={c} 
                   />
               {/* } */}
               <div className="max-md:hidden">
@@ -623,7 +607,7 @@ const MultipleConsignments = ({
                   <div className="item-options__shipping-option">
                     <ShippingMethodOptionGroup 
                       handleChange={(id) => {
-                        setSelectedShippingOptionIds({ ...selectedShippingOptionIds, [c.id]: id });
+                        saveShippingMethod(c.id, id);
                       }}
                       selectedConsignment={c}
                     />
@@ -701,10 +685,10 @@ const MultipleConsignments = ({
               errorMessage={errorMessage}
               handleShippingMethodChange={(id) => {
                 if (selectedConsignment) {
-                  setSelectedShippingOptionIds({ ...selectedShippingOptionIds, [selectedConsignment.id]: id });
+                  setSelectedShippingOptionId(id);
                 }
               }}
-              selectedShippingOptionIds={selectedShippingOptionIds}
+              selectedShippingOptionId={selectedShippingOptionId}
             />
 
             {shippingAddressError && <p style={{ color: 'red', fontWeight: 'bold' }}>{shippingAddressError}</p>}
@@ -769,7 +753,7 @@ const MultipleConsignments = ({
                 <div className="desktop-only" style={{ color: '#EB2F2F', fontSize: '16px', maxWidth: '400px' }}>** Choose Shipping Method before continuing.</div>
               </>
             :
-              <button onClick={() => saveShippingMethods()} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
+              <button onClick={gotoNextStep} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
             }
           </>
         }

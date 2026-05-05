@@ -16,7 +16,7 @@ interface AddressOptionProps {
   saveChanges: () => {}
   errorMessage: string | null;
   handleShippingMethodChange: (id: string) => void;
-  selectedShippingOptionIds: Record<string, string>;
+  selectedShippingOptionId: string | null;
 }
 
 const AddressOptionGroup = ({ 
@@ -30,7 +30,7 @@ const AddressOptionGroup = ({
   saveChanges,
   errorMessage,
   handleShippingMethodChange,
-  selectedShippingOptionIds
+  selectedShippingOptionId
 }: AddressOptionProps) => {
 
   const [isNewAddress, setIsNewAddress] = useState(false);
@@ -232,7 +232,7 @@ const AddressOptionGroup = ({
           <div className="shipping-options w-[48%]">
             <ShippingMethodOption 
               handleChange={handleShippingMethodChange} 
-              updatedShippingOptionId={selectedConsignment ? selectedShippingOptionIds[selectedConsignment.id]: null} 
+              updatedShippingOptionId={selectedShippingOptionId} 
               selectedConsignment={selectedConsignment}
               showNumbering={false}
               />
