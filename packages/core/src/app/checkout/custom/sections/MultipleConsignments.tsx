@@ -34,21 +34,13 @@ const MultipleConsignments = ({
   const [mainCartItems, setMainCartItems] = useState<CustomItem[]>([]);
   const [selecedItemIds, setSelecedItemIds] = useState<number[]>([]);
   
-  const [isUpdateAddressChecked, setIsUpdateAddressChecked] = useState(false);
-  const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
-  const [shippingAddressError, setShippingAddressError] = useState<string | null>(null);
-  const [selectedConsignment, setSelectedConsignment] = useState<Consignment | null>(null);
   const [holdingConsignment, setHoldingConsignment] = useState<Consignment | null>(null);
   const [unassignedLineItems, setUnassignedLineItems] = useState<CustomItem[]>([]);
   const [isNextStep, setIsNextStep] = useState<boolean>(false);
   const [isGoTOOrderSummary, setIsGoTOOrderSummary] = useState<boolean>(false);
 
-  const [futureShipDate, setFutureShipDate] = useState<string | null>(null);
-  const [selectedShippingOptionId, setSelectedShippingOptionId] = useState<string | null>(null);
   const [giftItemError, setGiftItemError] = useState<string | null>(null);
   const [isShowSingleAddressConfirmation, setIsShowSingleAddressConfirmation] = useState(false);
-
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const { checkoutState, checkoutService, storeConfig } = useCheckout();
 
@@ -126,12 +118,6 @@ const MultipleConsignments = ({
     }
   }, [consignments, cart, selecedItemIds]);
 
-  useEffect(() => {
-    if (shippingAddress) {
-      setShippingAddressError(null);
-    }
-  }, [shippingAddress])
-
   // Verify if all consignment are assinged a shipping method
   useEffect(() => {
     const pendingShipppingMethod = consignments.find(c => !c.selectedShippingOption && !isHoldingConsignment(c) && !c.selectedShippingOption);
@@ -199,175 +185,6 @@ const MultipleConsignments = ({
     }
 
     setSelecedItemIds(newSelecedItemIds)
-  }
-
-  const handleAddressChange = (updatedAddress: AddressRequestBody) => {
-    // console.log('setShippingAddress 2: ');
-    setShippingAddress(updatedAddress); // ✅ Update single source of truth
-  };
-
-  /*
-  const addFutureShipDateToCart = async (futureShipDate: string): Promise<PhysicalItem | null> => {
-
-    // console.log('addFutureShipDateToCart: ');
-
-    const [productId, optionId] = ['140', '148'];
-
-    const lineItems = [];
-    const lineItem = {
-      quantity: 1,
-      productId: parseInt(productId),
-      optionSelections: [{
-        optionId: parseInt(optionId),
-        optionValue: futureShipDate
-      }],
-    };
-
-    lineItems.push(lineItem);
-
-    const endpoint = `/api/storefront/cart/${checkoutId}/items`;
-
-    const payload = { lineItems };
-
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if(!res.ok) {
-      const error = await res.json();
-      console.error('Add item error:', error);
-      alert('Error adding add-ons: ' + (error.title || 'Unknown error'));
-      
-      setIsInProgress(false);
-      return null;
-    } else {
-
-      // console.log('Item added successfully.');
-      // window.location.reload();
-      // console.log(res);
-
-      const response = await res.json();
-      const physicalItems = response.lineItems.physicalItems as PhysicalItem[];
-
-      // Collect only main products
-      const cartItems = physicalItems.filter(i => !i.parentId);
-      const lastItem = cartItems[cartItems.length - 1];
-
-      return lastItem;
-    }
-  }
-  */
-
-  const updateConsignments = async () => {
-
-    const cart = checkoutState.data.getCart();
-
-    if (!shippingAddress) {
-      setErrorMessage('Please enter shipping address!');
-      return null;
-    }
-
-    if (cart && shippingAddress) {
-      // Check if all items are assigned to single address
-      // const cartItems = cart.lineItems.physicalItems.filter(i => !i.parentId);
-      // if (selecedItemIds.length == cartItems.length) {
-      //   setIsShowSingleAddressConfirmation(true);
-      //   return;
-      // }
-
-      // Validate address
-      if (!validateAddress(shippingAddress, setErrorMessage)) {
-        return null;
-      } else {
-        setErrorMessage(null);
-      }
-
-      const lineItems = mainCartItems.filter(i => selecedItemIds.length == 0 || selecedItemIds.includes(i.itemIndex))
-        .map(i => {
-          return { itemId: i.item.id, quantity: 1 };
-        }) as ConsignmentLineItem[];
-
-      const updatedAddress = shippingAddress;
-      if (!updatedAddress) {
-        setShippingAddressError('Please select shipping address!');
-        return null;
-      }
-
-      if (updatedAddress && futureShipDate) {
-
-        const futureDateCustomData = {
-          fieldId: FUTURE_SHIP_DATE_FIELD_ID,
-          fieldValue: futureShipDate,
-        };
-
-        if (updatedAddress.customFields) {
-          updatedAddress.customFields.push(futureDateCustomData);
-        } else {
-          updatedAddress.customFields = [futureDateCustomData];
-        }
-
-
-        // Add new product: SH-DATE
-        /*
-        const shipDateItem = await addFutureShipDateToCart(futureShipDate);
-
-        // console.log('shipDateItem: ');
-        // console.log(shipDateItem);
-
-        if (shipDateItem) {
-          lineItems.push({ itemId: shipDateItem.id, quantity: 1 });
-        }
-        */
-      }
-
-      const isFinalUpdate = selectedShippingOptionId;
-
-      const requestBody = {
-        address: isFinalUpdate ? updatedAddress : { ...updatedAddress, firstName: 'TO_BE_ASSIGNED' },
-        shippingAddress: updatedAddress,
-        lineItems: lineItems,
-      } as ConsignmentAssignmentRequestBody;
-
-      try {
-        const res = await checkoutService.assignItemsToAddress(requestBody);
-
-        const updatedConsignments = res.data.getConsignments();
-        const lastConsignment = updatedConsignments ? updatedConsignments[updatedConsignments.length - 1] : null;
-        setSelectedConsignment(lastConsignment);
-
-        if (selectedShippingOptionId && lastConsignment) {
-          await checkoutService.selectConsignmentShippingOption(lastConsignment.id, selectedShippingOptionId);
-        }
-
-      } catch(e: unknown) {
-        const messages = handleCheckoutError(e);
-        // messages.forEach(msg => alert(msg));
-        if (messages.length > 0) {
-          setErrorMessage(messages[0]);
-          return null;
-        }
-      }
-
-      console.log('isFinalUpdate: ');
-      console.log(isFinalUpdate);
-
-      // reset shipping details form once saved
-      if (isFinalUpdate) {
-        setFutureShipDate(null);
-        setIsUpdateAddressChecked(false);
-        setSelecedItemIds([]);
-        setShippingAddress(null);
-        setSelectedConsignment(null);
-        setSelectedShippingOptionId(null);
-      }
-      setShippingAddressError(null);
-    }
   }
 
   async function updateFutureShipDate(consignment: Consignment, dateString: string) {
@@ -445,16 +262,6 @@ const MultipleConsignments = ({
 
     // Force SDK to refresh its internal state
     await checkoutService.loadCheckout(checkoutId);
-  }
-
-  const saveChanges = async () => {
-    setIsInProgress(true);
-
-    // Mark this as multiple-consignment is manually assigned
-    window.sessionStorage.setItem('CCC-PARAM--consignment-is-assigned-manually', '1');
-    
-    await updateConsignments();
-    setIsInProgress(false);
   }
 
   const saveShippingMethod = async (consignmentId: string, shippingMethodId: string) => {
@@ -674,27 +481,11 @@ const MultipleConsignments = ({
 
           {selecedItemIds.length > 0 && <div>
             <AddressOptionGroup 
-              isUpdateAddressChecked={isUpdateAddressChecked}
-              setIsUpdateAddressChecked={setIsUpdateAddressChecked}
-              updatedShippingAddress={shippingAddress} 
-              onInputChange={handleAddressChange}
-              selectedConsignment={selectedConsignment}
-              futureShipDate={futureShipDate}
-              setFutureShipDate={(date) => setFutureShipDate(date)}
-              saveChanges={saveChanges}
-              errorMessage={errorMessage}
-              handleShippingMethodChange={(id) => {
-                if (selectedConsignment) {
-                  setSelectedShippingOptionId(id);
-                }
-              }}
-              selectedShippingOptionId={selectedShippingOptionId}
               giftProducts={giftProducts}
+              selectedLineItems={mainCartItems.filter(i => selecedItemIds.length == 0 || selecedItemIds.includes(i.itemIndex))}
+              setIsInProgress={setIsInProgress}
+              onComplete={() => setSelecedItemIds([])}              
             />
-
-            {shippingAddressError && <p style={{ color: 'red', fontWeight: 'bold' }}>{shippingAddressError}</p>}
-
-            
 
             {/* {(!customer || customer.isGuest) &&
               <div style={{ marginTop: '30px' }}>

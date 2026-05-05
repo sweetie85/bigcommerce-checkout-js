@@ -1,61 +1,54 @@
-import { AddressRequestBody, Consignment, Country, Customer, CustomerAddress, Region } from "@bigcommerce/checkout-sdk";
+import { AddressRequestBody, Consignment, ConsignmentAssignmentRequestBody, ConsignmentLineItem, Country, Customer, CustomerAddress, Region } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react";
 import { useCheckout } from "../context/CheckoutContext";
 import FutureShipDateOptionGroup from "./FutureShipDateOptionGroup";
 import ShippingMethodOption from "./ShippingMethodOption";
 import FutureShipDateOption from "./FutureShipDateOption";
 import GiftMessageOption from "./GiftMessageOption";
-import { GiftProduct } from "../types";
+import { CustomItem, GiftProduct } from "../types";
+import { handleCheckoutError, validateAddress } from "../utility";
 
 interface AddressOptionProps {
-  updatedShippingAddress: AddressRequestBody | null;
-  onInputChange: (updated: AddressRequestBody ) => void;
-  selectedConsignment: Consignment | null;
-  isUpdateAddressChecked: boolean;
-  setIsUpdateAddressChecked: (isUpdate: boolean) => void
-  futureShipDate: string | null;
-  setFutureShipDate: (date: string | null) => void
-  saveChanges: () => {}
-  errorMessage: string | null;
-  handleShippingMethodChange: (id: string) => void;
-  selectedShippingOptionId: string | null;
   giftProducts: GiftProduct[];
+  selectedLineItems: CustomItem[];
+  setIsInProgress: (inProgress: boolean) => void;
+  onComplete: () => void;
 }
 
-const AddressOptionGroup = ({ 
-  updatedShippingAddress, 
-  onInputChange, 
-  selectedConsignment, 
-  isUpdateAddressChecked, 
-  setIsUpdateAddressChecked,
-  futureShipDate,
-  setFutureShipDate,
-  saveChanges,
-  errorMessage,
-  handleShippingMethodChange,
-  selectedShippingOptionId,
-  giftProducts
+const AddressOptionGroup = ({  
+  giftProducts,
+  selectedLineItems,
+  setIsInProgress,
+  onComplete
 }: AddressOptionProps) => {
 
   const [isNewAddress, setIsNewAddress] = useState(false);
   const [provinces, setProvinces] = useState<Region[]>([]);
-  const [shippingAddress, setShippingAddress] = useState(updatedShippingAddress);
-  const [futureShipDateError, setFutureShipDateError] = useState<string | null>(null);
 
+  const [isUpdateAddressChecked, setIsUpdateAddressChecked] = useState(false);
+  const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
+  const [shippingAddressError, setShippingAddressError] = useState<string | null>(null);
+  const [selectedConsignment, setSelectedConsignment] = useState<Consignment | null>(null);
+  const [futureShipDate, setFutureShipDate] = useState<string | null>(null);
+  const [selectedShippingOptionId, setSelectedShippingOptionId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  
   // Custom message
   const [gitProductId, setGiftProductId] = useState<string | null>(null);
   const [giftMessage, setGiftMessage] = useState<string | null>(null);
 
-  const { checkoutState } = useCheckout();
+  const { checkoutState, checkoutService, storeConfig } = useCheckout();
   const customer = checkoutState.data.getCustomer();
   const countries = checkoutState.data.getShippingCountries() ?? [];
   const customerAddresses = customer?.addresses ?? [];
 
-  useEffect(() => {
-    if (selectedConsignment) {
-      setShippingAddress(selectedConsignment.address);
-    }
-  }, [selectedConsignment])
+  const { futureShipDateFieldId: FUTURE_SHIP_DATE_FIELD_ID } = storeConfig;
+
+  // useEffect(() => {
+  //   if (selectedConsignment) {
+  //     setShippingAddress(selectedConsignment.address);
+  //   }
+  // }, [selectedConsignment])
 
   useEffect(() => {
     // console.log('AddressOption shippingAddress: ');
@@ -84,7 +77,7 @@ const AddressOptionGroup = ({
       [e.target.name]: e.target.value,
     } as AddressRequestBody;
 
-    onInputChange(updatedShippingAddress);
+    // onInputChange(updatedShippingAddress);
     setShippingAddress(updatedShippingAddress);
 
     if (e.target.name == 'countryCode') {
@@ -109,9 +102,10 @@ const AddressOptionGroup = ({
       normalize(a.stateOrProvinceCode) === normalize(b.stateOrProvinceCode)
     );
   }
-
+ 
   const handleAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onInputChange(customerAddresses.find(a => a.id == (e.target.value as unknown as number)) as AddressRequestBody);
+    // onInputChange(customerAddresses.find(a => a.id == (e.target.value as unknown as number)) as AddressRequestBody);
+    setShippingAddress(customerAddresses.find(a => a.id == (e.target.value as unknown as number)) as AddressRequestBody);
   }
 
   const handleAddressChangeOption = () => {
@@ -141,6 +135,121 @@ const AddressOptionGroup = ({
     // }
 
     saveChanges();
+  }
+
+  const saveChanges = async () => {
+    setIsInProgress(true);
+
+    // Mark this as multiple-consignment is manually assigned
+    window.sessionStorage.setItem('CCC-PARAM--consignment-is-assigned-manually', '1');
+    
+    await updateConsignments();
+    setIsInProgress(false);
+  }
+
+  const updateConsignments = async () => {
+  
+    const cart = checkoutState.data.getCart();
+
+    if (!shippingAddress) {
+      setErrorMessage('Please enter shipping address!');
+      return null;
+    }
+
+    if (cart && shippingAddress) {
+      // Check if all items are assigned to single address
+      // const cartItems = cart.lineItems.physicalItems.filter(i => !i.parentId);
+      // if (selecedItemIds.length == cartItems.length) {
+      //   setIsShowSingleAddressConfirmation(true);
+      //   return;
+      // }
+
+      // Validate address
+      if (!validateAddress(shippingAddress, setErrorMessage)) {
+        return null;
+      } else {
+        setErrorMessage(null);
+      }
+
+      const lineItems = selectedLineItems.map(i => {
+        return { itemId: i.item.id, quantity: 1 };
+      }) as ConsignmentLineItem[];
+
+      const updatedAddress = shippingAddress;
+      if (!updatedAddress) {
+        setShippingAddressError('Please select shipping address!');
+        return null;
+      }
+
+      if (updatedAddress && futureShipDate) {
+
+        const futureDateCustomData = {
+          fieldId: FUTURE_SHIP_DATE_FIELD_ID,
+          fieldValue: futureShipDate,
+        };
+
+        if (updatedAddress.customFields) {
+          updatedAddress.customFields.push(futureDateCustomData);
+        } else {
+          updatedAddress.customFields = [futureDateCustomData];
+        }
+
+
+        // Add new product: SH-DATE
+        /*
+        const shipDateItem = await addFutureShipDateToCart(futureShipDate);
+
+        // console.log('shipDateItem: ');
+        // console.log(shipDateItem);
+
+        if (shipDateItem) {
+          lineItems.push({ itemId: shipDateItem.id, quantity: 1 });
+        }
+        */
+      }
+
+      debugger;
+
+      const isFinalUpdate = selectedShippingOptionId;
+
+      const requestBody = {
+        address: isFinalUpdate ? updatedAddress : { ...updatedAddress, firstName: 'TO_BE_ASSIGNED' },
+        shippingAddress: updatedAddress,
+        lineItems: lineItems,
+      } as ConsignmentAssignmentRequestBody;
+
+      try {
+        const res = await checkoutService.assignItemsToAddress(requestBody);
+
+        const updatedConsignments = res.data.getConsignments();
+        const lastConsignment = updatedConsignments ? updatedConsignments[updatedConsignments.length - 1] : null;
+        setSelectedConsignment(lastConsignment);
+
+        if (selectedShippingOptionId && lastConsignment) {
+          await checkoutService.selectConsignmentShippingOption(lastConsignment.id, selectedShippingOptionId);
+        }
+
+      } catch(e: unknown) {
+        const messages = handleCheckoutError(e);
+        // messages.forEach(msg => alert(msg));
+        if (messages.length > 0) {
+          setErrorMessage(messages[0]);
+          return null;
+        }
+      }
+
+      // reset shipping details form once saved
+      if (isFinalUpdate) {
+        setFutureShipDate(null);
+        setIsUpdateAddressChecked(false);
+        setShippingAddress(null);
+        setSelectedConsignment(null);
+        setSelectedShippingOptionId(null);
+        
+        onComplete();
+      }
+      setShippingAddressError(null);
+    }
   }
 
   return <div style={{ marginLeft: '20px' }}>
@@ -217,19 +326,6 @@ const AddressOptionGroup = ({
         </div>
       </div>}
 
-      {/* <div className="step-title" style={{ marginTop: '40px'}}>
-        <label style={{ marginBottom: '10px' }}>Future Ship Date (if applicable):</label>
-        <FutureShipDateOptionGroup 
-          futureShipDate={futureShipDate} 
-          handleChangeDate={(date) => { 
-            setFutureShipDate(date)
-            setFutureShipDateError(null)
-          }}
-          selectedConsignment={null}
-          />
-          {futureShipDateError && <p className="text-red-600">{futureShipDateError}</p>}
-      </div> */}
-
       { !selectedConsignment ?
         <div style={{ marginTop: '30px' }}>
           <button onClick={() => validateAndSave()} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>CONTINUE</button>
@@ -239,7 +335,7 @@ const AddressOptionGroup = ({
         <div className="shipping-options-wrapper flex gap-5">
           <div className="shipping-options w-[48%]">
             <ShippingMethodOption 
-              handleChange={handleShippingMethodChange} 
+              handleChange={(id) => setSelectedShippingOptionId(id)} 
               updatedShippingOptionId={selectedShippingOptionId} 
               selectedConsignment={selectedConsignment}
               showNumbering={false}
@@ -248,12 +344,10 @@ const AddressOptionGroup = ({
           </div>
           <div className="future-ship-date-option w-[48%]">
             <FutureShipDateOption 
-              // futureShipDate={futureShipDate} 
               handleChangeDate={setFutureShipDate}
               selectedConsignment={selectedConsignment}
               futureShipDateError={''}
               setShouldSelectShipDate={() => {}}
-              // saveChanges={saveChanges}
               showNumbering={false}
               />
           </div>
@@ -270,6 +364,7 @@ const AddressOptionGroup = ({
             />
         </div>
 
+        {shippingAddressError && <p style={{ color: 'red', fontWeight: 'bold' }}>{shippingAddressError}</p>}
         <div style={{ marginTop: '20px' }}>
           <button className="save-changes-button" onClick={() => validateAndSave()}>SAVE CHANGES</button>
         </div>
