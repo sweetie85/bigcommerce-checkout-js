@@ -112,11 +112,6 @@ const MultipleConsignments = ({
 
         setHoldingConsignment(holdingConsignment);
 
-        console.log('UnassignedLineItems: ');
-        console.log(mainItems.filter(i => 
-          !isGiftItem(i.item) && (holdingConsignment.lineItemIds.includes(i.item.id as string) || selecedItemIds.includes(i.itemIndex)))
-        );
-
         setUnassignedLineItems(mainItems.filter(i => 
           !isGiftItem(i.item) && (holdingConsignment.lineItemIds.includes(i.item.id as string) || selecedItemIds.includes(i.itemIndex)))
         );
@@ -125,11 +120,11 @@ const MultipleConsignments = ({
         setIsGoTOOrderSummary(false);
       } else {
         setUnassignedLineItems([]);
-        setSelecedItemIds([]);
+        // setSelecedItemIds([]);
         // setIsNextStep(true);
       }
     }
-  }, [consignments, cart]);
+  }, [consignments, cart, selecedItemIds]);
 
   useEffect(() => {
     if (shippingAddress) {
@@ -347,7 +342,16 @@ const MultipleConsignments = ({
         setSelectedConsignment(lastConsignment);
 
         if (isFinalUpdate && lastConsignment) {
-          await checkoutService.selectConsignmentShippingOption(lastConsignment.id, selectedShippingOptionIds[selectedConsignment.id]);
+          // setSelectedShippingOptionIds({ ...selectedShippingOptionIds, [lastConsignment.id]: id });
+          const shippingMethodId = selectedShippingOptionIds[selectedConsignment.id];
+          await checkoutService.selectConsignmentShippingOption(lastConsignment.id, shippingMethodId);
+
+          const selectedShippingOptionIdsCopy = { ...selectedShippingOptionIds };
+          delete selectedShippingOptionIdsCopy[selectedConsignment.id];
+
+          selectedShippingOptionIdsCopy[lastConsignment.id] = shippingMethodId;
+
+          setSelectedShippingOptionIds({ ...selectedShippingOptionIdsCopy });
         }
 
       } catch(e: unknown) {
@@ -744,9 +748,10 @@ const MultipleConsignments = ({
         <div></div>
       } */}
 
+      <div></div>
       <div style={{ margin: '20px 0', display: 'flex', flexDirection: 'column', justifyContent: 'right', alignItems: 'end', gap: '20px' }}>
         {unassignedLineItems.length > 0 ? <>
-          <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
+          <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
           <div className="desktop-only" style={{ color: '#EB2F2F', fontSize: '14px', maxWidth: '400px' }}>*Assign delivery address to all items before continuing.</div>
         </>
         :
