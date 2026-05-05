@@ -2,6 +2,7 @@ import { useCheckout } from "../context/CheckoutContext";
 import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import { isPast4PM_EST } from "../utility";
+import { Consignment } from "@bigcommerce/checkout-sdk";
 
 type ShippingDateOption = "ship_now" | "ship_date";
 
@@ -10,6 +11,7 @@ interface FutureShipDateOptionProps {
   futureShipDateError: string | null;
   handleChangeDate: (v: string | null) => void;
   setShouldSelectShipDate: (show: boolean) => void;
+  selectedConsignment: Consignment | null;
 }
 
 const FutureShipDateOption = ({ 
@@ -17,6 +19,7 @@ const FutureShipDateOption = ({
   futureShipDateError, 
   handleChangeDate, 
   setShouldSelectShipDate,
+  selectedConsignment,
 }: FutureShipDateOptionProps) => {
   const [currentShipDate, setCurrentShipDate] = useState<Date | null>(null);
   const [newShipDate, setNewShipDate] = useState<Date | null>(null);
@@ -68,8 +71,7 @@ const FutureShipDateOption = ({
   };
 
   useEffect(() => {
-    if (consignments) {
-      const selectedConsignment = consignments[0]
+    if (consignments && selectedConsignment) {
       const customDateField = selectedConsignment.address.customFields.find(c => c.fieldId == FUTURE_SHIP_DATE_FIELD_ID)
       if (customDateField && customDateField.fieldValue && customDateField.fieldValue != '') {
         const currentFutureShipDate = customDateField.fieldValue as string;

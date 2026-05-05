@@ -152,7 +152,7 @@ const MultipleConsignments = ({
     }
   }, [isNextStep]);
 
-  const createHoldingConsignment = (items?: PhysicalItem[]) => {
+  const createHoldingConsignment = async (items?: PhysicalItem[]) => {
     const PLACEHOLDER_ADDRESS = {
       countryCode: 'US',
       stateOrProvinceCode: 'CA',
@@ -171,7 +171,7 @@ const MultipleConsignments = ({
 
       setIsInProgress(true);
 
-      checkoutService.createConsignments([{
+      await checkoutService.createConsignments([{
         address: PLACEHOLDER_ADDRESS,
         lineItems: items.map(i => {
           return { itemId: i.id, quantity: i.quantity };
@@ -372,6 +372,7 @@ const MultipleConsignments = ({
         setIsUpdateAddressChecked(false);
         setSelecedItemIds([]);
         setShippingAddress(null);
+        setSelectedConsignment(null);
       }
       setShippingAddressError(null);
     }

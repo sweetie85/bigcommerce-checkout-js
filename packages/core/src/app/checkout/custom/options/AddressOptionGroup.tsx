@@ -242,7 +242,7 @@ const AddressOptionGroup = ({
             <FutureShipDateOption 
               // futureShipDate={futureShipDate} 
               handleChangeDate={setFutureShipDate}
-              // selectedConsignment={selectedConsignment}
+              selectedConsignment={selectedConsignment}
               futureShipDateError={''}
               setShouldSelectShipDate={() => {}}
               // saveChanges={saveChanges}
