@@ -5,6 +5,7 @@ import { GiftProduct } from "../types";
 
 
 interface GiftMessageOptionProps {
+  showNumbering?: boolean;
   giftProducts: GiftProduct[];
   setGiftProductId: (id: string) => void;
   setGiftMessage: (message: string) => void;
@@ -12,7 +13,7 @@ interface GiftMessageOptionProps {
   selectedConsignment: Consignment | null;
 }
 
-const GiftMessageOption = ({ giftProducts, selectedConsignment, setGiftProductId, setGiftMessage, giftMessageLength }: GiftMessageOptionProps) => {
+const GiftMessageOption = ({ showNumbering = true, giftProducts, selectedConsignment, setGiftProductId, setGiftMessage, giftMessageLength }: GiftMessageOptionProps) => {
 
   const [isEnabled, setIsEnabled] = useState(false);
   const [hasMultipleGiftMessage, setHasMultipleGiftMessage] = useState(false);
@@ -56,13 +57,13 @@ const GiftMessageOption = ({ giftProducts, selectedConsignment, setGiftProductId
   return <div className="add-gift-single-popup-wrapper">
     <div className="step-title">
       <input onChange={(e) => setIsEnabled(!isEnabled)} name="address_option_saved" id="choose_gift_item" type="radio" value={1} ></input>
-      <label htmlFor="choose_gift_item" style={{ marginLeft: '10px' }}>{stepNumber}. Add gift message::</label>
+      <label htmlFor="choose_gift_item" style={{ marginLeft: '10px' }}>{showNumbering && <span>{stepNumber}. </span>} Add gift message::</label>
     </div>
 
     {isEnabled && <>
     { hasMultipleGiftMessage && <p style={{ color: 'red' }}>NOTE: You may only apply one gift message to each consignment.</p> }
     <div>
-      <select className="max-md:w-11/12!" onChange={(e) => {
+      <select className="max-md:w-11/12! md:w-125 rounded-md mt-2.5 p-2.5" onChange={(e) => {
         setGiftProductId(e.target.value);
         const selectedProduct = giftProducts.find(p => p.bigcommerce_product_id == e.target.value);
         setAllowedCharLenth(selectedProduct ? parseInt(selectedProduct.message_characters_limit.toString()) : 250);
@@ -73,7 +74,7 @@ const GiftMessageOption = ({ giftProducts, selectedConsignment, setGiftProductId
       </div>
 
       <div>
-        <textarea maxLength={allowedCharLenth} className="p-2 max-md:w-11/12!" onChange={(e) => remainingCharacters() >= 0 ? setGiftMessage(e.target.value) : null } placeholder="Type your message here"></textarea>
+        <textarea maxLength={allowedCharLenth} className="p-2 h-25 max-md:w-11/12! md:w-125 rounded-md mt-2.5" onChange={(e) => remainingCharacters() >= 0 ? setGiftMessage(e.target.value) : null } placeholder="Type your message here"></textarea>
       </div>
       <p style={{ marginLeft: '20px', marginTop: '5px', color: '#ccc'}}>{remainingCharacters()} characters remaining of {allowedCharLenth}</p>
     </>

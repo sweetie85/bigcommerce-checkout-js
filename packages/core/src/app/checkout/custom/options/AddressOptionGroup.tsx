@@ -4,6 +4,8 @@ import { useCheckout } from "../context/CheckoutContext";
 import FutureShipDateOptionGroup from "./FutureShipDateOptionGroup";
 import ShippingMethodOption from "./ShippingMethodOption";
 import FutureShipDateOption from "./FutureShipDateOption";
+import GiftMessageOption from "./GiftMessageOption";
+import { GiftProduct } from "../types";
 
 interface AddressOptionProps {
   updatedShippingAddress: AddressRequestBody | null;
@@ -17,6 +19,7 @@ interface AddressOptionProps {
   errorMessage: string | null;
   handleShippingMethodChange: (id: string) => void;
   selectedShippingOptionId: string | null;
+  giftProducts: GiftProduct[];
 }
 
 const AddressOptionGroup = ({ 
@@ -30,13 +33,18 @@ const AddressOptionGroup = ({
   saveChanges,
   errorMessage,
   handleShippingMethodChange,
-  selectedShippingOptionId
+  selectedShippingOptionId,
+  giftProducts
 }: AddressOptionProps) => {
 
   const [isNewAddress, setIsNewAddress] = useState(false);
   const [provinces, setProvinces] = useState<Region[]>([]);
   const [shippingAddress, setShippingAddress] = useState(updatedShippingAddress);
   const [futureShipDateError, setFutureShipDateError] = useState<string | null>(null);
+
+  // Custom message
+  const [gitProductId, setGiftProductId] = useState<string | null>(null);
+  const [giftMessage, setGiftMessage] = useState<string | null>(null);
 
   const { checkoutState } = useCheckout();
   const customer = checkoutState.data.getCustomer();
@@ -249,6 +257,17 @@ const AddressOptionGroup = ({
               showNumbering={false}
               />
           </div>
+        </div>
+
+        <div className="mt-8">
+          <GiftMessageOption 
+            giftProducts={giftProducts} 
+            setGiftProductId={setGiftProductId} 
+            setGiftMessage={setGiftMessage} 
+            giftMessageLength={giftMessage ? giftMessage.length : 0}
+            selectedConsignment={selectedConsignment}
+            showNumbering={false}
+            />
         </div>
 
         <div style={{ marginTop: '20px' }}>

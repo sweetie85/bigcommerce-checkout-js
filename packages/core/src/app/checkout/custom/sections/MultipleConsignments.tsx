@@ -689,6 +689,7 @@ const MultipleConsignments = ({
                 }
               }}
               selectedShippingOptionId={selectedShippingOptionId}
+              giftProducts={giftProducts}
             />
 
             {shippingAddressError && <p style={{ color: 'red', fontWeight: 'bold' }}>{shippingAddressError}</p>}
