@@ -48,7 +48,7 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
       <button onClick={() => { 
         onChangeTab(CheckoutStep.Payment);
         window.scrollTo({ top: 0, behavior: 'smooth'});
-      }} style={{ backgroundColor: '#F6A601', padding: '12px 50px', borderRadius: '8px' }}>GO TO PAYMENT</button>
+      }} className="bg-[#F6A601] py-3 px-12.5 rounded-lg">GO TO PAYMENT</button>
     </div>
 
     <div className="order-summary__cart-items custom-box-shadow">

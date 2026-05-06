@@ -70,7 +70,7 @@ const CheckoutPage = ({ checkoutId, paymentForm  }: CustomCheckoutPageProps) => 
     <CheckoutHeader activeStep={activeTabIndex} onChangeStep={setActiveTabIndex} />
     <div className="checkout-body">
       <div className="shipping-n-delivery">
-        <div className='tag-page-content' style={{ paddingBottom: '40px' }}>
+        <div className='tag-page-content pb-10'>
           { renderStep(activeTabIndex) }
         </div>
       </div>

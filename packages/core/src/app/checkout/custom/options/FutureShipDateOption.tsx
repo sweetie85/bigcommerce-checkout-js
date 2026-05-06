@@ -132,10 +132,10 @@ const FutureShipDateOption = ({
 
   return <div>
     <div className="step-title">
-      <label style={{ marginLeft: '10px' }}>{showNumbering && <span>{stepNumber}. </span>}Choose a future ship date:</label>
+      <label className="ml-2.5">{showNumbering && <span>{stepNumber}. </span>}Choose a future ship date:</label>
     </div>
-    <div style={{ marginLeft: '30px' }}>
-      <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
+    <div className="ml-8">
+      <div className="mt-2.5 flex gap-2.5">
         <input 
           value="ship_now" 
           checked={shippingDateOption === "ship_now"} 
@@ -145,7 +145,7 @@ const FutureShipDateOption = ({
         </input>
         <label className="cursor-pointer" htmlFor={"future_ship_date_ship_all"}>Ship all items right away</label>
       </div>
-      <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
+      <div className="mt-2.5 flex gap-2.5">
         {/* <input value="1" checked={shouldSelectShipDate} name="ship_date_option" onChange={handleChange} id={"future_ship_date_select_date"} type="radio" ></input> */}
         <input 
           value="ship_date" 
@@ -158,7 +158,7 @@ const FutureShipDateOption = ({
       </div>
 
       {shippingDateOption === "ship_date" && <>
-        <div className="future-ship-date-wrapper" style={{ marginTop: '10px' }}>
+        <div className="future-ship-date-wrapper mt-2.5">
           <DatePicker 
             selected={newShipDate} 
             onChange={handleDateChange} 
@@ -177,7 +177,7 @@ const FutureShipDateOption = ({
             }}
             customInput={<input readOnly={true} onKeyDown={(e) => e.preventDefault()} className="input-text" type="text" />}
             />
-            <svg onClick={() => setIsOpen((prev) => !prev)} style={{ position: 'absolute', right: '10px', top: '12px', cursor: 'pointer' }} width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg onClick={() => setIsOpen((prev) => !prev)} className="absolute right-2.5 top-3 cursor-pointer" width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M14 2.14483L7.02143 9L-9.37535e-08 2.14483L2.21585 -5.15101e-07L6.97857 4.70206L11.7841 -9.6858e-08L14 2.14483Z" fill="#315B42"/>
             </svg>
         </div>

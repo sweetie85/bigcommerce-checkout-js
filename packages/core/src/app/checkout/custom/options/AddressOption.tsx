@@ -104,7 +104,7 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
       
       {/* <div className="step-title">
         <input id="is_shipping_address_update" type="checkbox" checked={isUpdateAddressChecked} onChange={handleAddressChangeOption}></input>        
-        <label style={{ marginLeft: '10px' }} htmlFor="is_shipping_address_update">Add delivery address:</label>
+        <label htmlFor="is_shipping_address_update">Add delivery address:</label>
       </div> */}
 
       {/* {isUpdateAddressChecked && */}
@@ -122,7 +122,7 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
           </select>
         </div>
       
-        <div className="step-title step-title-radio flex-align-center" style={{ marginTop: '20px' }}>
+        <div className="step-title step-title-radio flex-align-center mt-5">
           <input onChange={handleChange} value={1} name="address_option_saved" id="choose_new_address" type="radio" ></input>
           <label className={isNewAddress ? 'selected' : ''} htmlFor="choose_new_address">Enter a new adddress:</label>
         </div>
@@ -131,7 +131,7 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
       </>
       :
       <div className="step-title">
-        <label>{!customer || customer.isGuest ? '3' : '2'}. Shipping Address <span style={{ color: 'red' }}>{errorMessage}</span></label>
+        <label>{!customer || customer.isGuest ? '3' : '2'}. Shipping Address <span className="text-red-500">{errorMessage}</span></label>
       </div>
     }
 

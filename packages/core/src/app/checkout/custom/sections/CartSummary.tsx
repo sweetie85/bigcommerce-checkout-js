@@ -38,27 +38,27 @@ const CartSummary = () => {
     return totalAmount.toFixed(2);
   }
 
-  return <div style={{ marginTop: '40px' }}>
+  return <div className="mt-10">
     <div className="desktop-only">
       <p className="title"> Cart Summary ({mainCartItems.length} Items)</p>
-      <hr className="" style={{ borderColor: '#315B42', marginBottom: '20px'}} />
+      <hr className="border-[#315B42] mb-5" />
 
       <div className="cart-items custom-box-shadow">
         { cart ?
         (mainCartItems.map(i => <div key={i.id} className="cart-item">
-          <div style={{ width: '20%' }}><img src={i.imageUrl} /></div>
-          <div style={{ width: '60%' }}>
-            <div className="product-title" style={{ fontSize: '14px' }}>{i.quantity} x {i.name}</div>
-            {i.options?.map(o => <div key={o.nameId} style={{ fontSize: '14px' }} className="product-option">{o.name} {o.value}</div>)}
+          <div className="w-1/5"><img src={i.imageUrl} /></div>
+          <div className="w-3/5">
+            <div className="product-title text-sm">{i.quantity} x {i.name}</div>
+            {i.options?.map(o => <div key={o.nameId} className="text-sm product-option">{o.name} {o.value}</div>)}
           </div>
-          <div style={{ width: '20%', fontSize: '14px' }} className="product-price">${(i.salePrice * i.quantity).toFixed(2)}</div>
+          <div className="w-1/5 text-sm product-price">${(i.salePrice * i.quantity).toFixed(2)}</div>
         </div>))
         : <></>
         }
       </div>
     </div>
 
-    <div style={{ marginTop: '10px' }}>
+    <div className="mt-2.5">
       <div className="cart-amount-line">
         <span>Subtotal</span>
         <span>${cart?.baseAmount}</span>
@@ -78,11 +78,11 @@ const CartSummary = () => {
         <span>$0.00</span>
       </div>
 
-      <hr style={{ borderColor: '#315B42'}} />
+      <hr className="border-[#315B42]" />
 
       <div className="cart-amount-line">
-        <span style={{ fontSize: '18px' }}>Total (USD)</span>
-        <span style={{ fontSize: '20px', fontWeight: 'bold' }}>${cartTotalAmount()}</span>
+        <span className="text-lg">Total (USD)</span>
+        <span className="text-xl font-bold">${cartTotalAmount()}</span>
       </div>
     </div>
 

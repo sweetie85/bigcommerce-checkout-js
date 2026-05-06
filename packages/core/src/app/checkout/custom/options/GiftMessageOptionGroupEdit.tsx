@@ -207,26 +207,26 @@ const GiftMessageOptionGroupEdit = ({ checkoutId, giftItem, giftProducts, select
     return allowedCharLenth >= giftMessageLength ? allowedCharLenth - giftMessageLength : 0;
   }
 
-  return <div style={{ position: 'relative', width: '100%' }}>
-    <div style={{ position: 'relative', display: 'flex', gap: '20px' }}>
-      <div className="button-add-gift-message" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+  return <div className="relative w-full">
+    <div className="relative flex gap-5">
+      <div className="button-add-gift-message flex justify-between items-center">
         <span>{ getGiftItemName() }</span>
-        <svg onClick={() => { setIsShowDeleteConfirmation(true) }} style={{ cursor: 'pointer', width: '22px', height: '22px' }} width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg onClick={() => { setIsShowDeleteConfirmation(true) }} className="cursor-pointer w-5.5 h-5.5" width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="14.5" cy="14.5" r="14" fill="#D9D9D9" stroke="#315B42"></circle>
           <path d="M12.7715 9.785L15.2615 13.55H14.7515L17.2265 9.785H19.8665L16.1765 15.185L16.0865 14.48L19.8965 20H17.1965L14.5865 16.1H15.3215L12.7415 20H10.0415L13.8065 14.48L13.8215 15.185L10.1465 9.785H12.7715Z" fill="#315B42"></path>
         </svg>
       </div>
-      {/* <svg style={{ position: 'absolute', right: '10px', top: '16px' }} width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* <svg width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M14 2.14483L7.02143 9L-9.37535e-08 2.14483L2.21585 -5.15101e-07L6.97857 4.70206L11.7841 -9.6858e-08L14 2.14483Z" fill="#315B42"/>
       </svg> */}
 
-      <button onClick={() => setIsEnabled(!isEnabled)} style={{ width: '150px', textAlign: 'center', backgroundColor: 'rgb(49, 91, 66)', color: '#fff', borderRadius: '10px', padding: '10px' }}>View Details</button>
+      <button onClick={() => setIsEnabled(!isEnabled)} className="w-37.5 text-center text-white rounded-lg p-2.5 bg-[#315b42]">View Details</button>
     </div>
 
 
     {isEnabled && <div ref={popupRef} className="add-gift-popup-wrapper">
-    {/* { hasMultipleGiftMessage && <p style={{ color: 'red' }}>NOTE: You may only apply one gift message to each consignment.</p> } */}
-    { giftItemError && <p style={{ color: 'red' }}>Error: {giftItemError}</p> }
+    {/* { hasMultipleGiftMessage && <p>NOTE: You may only apply one gift message to each consignment.</p> } */}
+    { giftItemError && <p className="text-red-500">Error: {giftItemError}</p> }
     <div>
       <select onChange={(e) => {
         setGiftProductId(e.target.value); 
@@ -242,10 +242,10 @@ const GiftMessageOptionGroupEdit = ({ checkoutId, giftItem, giftProducts, select
       <div>
         <textarea maxLength={allowedCharLenth} onChange={(e) => remainingCharacters() >= 0 ? setGiftMessage(e.target.value) : null} placeholder="Type your message here">{giftMessage}</textarea>
       </div>
-      <p style={{ marginTop: '5px', color: '#ccc'}}>{remainingCharacters()} characters remaining of {allowedCharLenth}</p>
+      <p className="mt-1 text-[#ccc]">{remainingCharacters()} characters remaining of {allowedCharLenth}</p>
 
       <div className="save-button-wrapper">
-        <button onClick={() => { setIsShowDeleteConfirmation(true) }}  style={{ marginRight: '20px' }}>Remove</button>
+        <button onClick={() => { setIsShowDeleteConfirmation(true) }} className="mr-5">Remove</button>
         <button className="save-button" onClick={() => updateItemToCart(giftItem.item.id as string)}>Update</button>
       </div>
     </div>

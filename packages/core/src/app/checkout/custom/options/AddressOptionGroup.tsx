@@ -259,7 +259,7 @@ const AddressOptionGroup = ({
     }
   }
 
-  return <div style={{ marginLeft: '20px' }}>
+  return <div className="ml-5">
     <div className="step-title address-update-arrow-wrapper" onClick={() => handleAddressChangeOption()}>
       {/* <input id="is_shipping_address_update" type="checkbox" checked={isUpdateAddressChecked} onChange={handleAddressChangeOption}></input>         */}
       <label className="is-shipping-address-update" htmlFor="is_shipping_address_update">Add delivery address</label>
@@ -291,14 +291,14 @@ const AddressOptionGroup = ({
           </select>
         </div>
       
-        <div className="step-title step-title-radio flex-align-center" style={{ marginTop: '40px' }}>
+        <div className="step-title step-title-radio flex-align-center mt-10">
           <input onChange={handleChange} value={1} name="address_option_saved" id="choose_new_address" type="radio" ></input>
           <label className={isNewAddress ? 'selected' : ''} htmlFor="choose_new_address">Enter a new adddress:</label>
         </div>
       </>}
       
       {(!customer || customer.isGuest || isNewAddress) && <div>
-        <div style={{ color: 'red', marginBottom: '20px' }}>{errorMessage}</div>
+        <div className="text-red-500 mb-5">{errorMessage}</div>
 
         <div className="form-field-row">
           <input className="custom-form-input text" type="text" placeholder="*First Name" name="firstName" value={shippingAddress?.firstName} onChange={handleInputChange} />
@@ -334,8 +334,8 @@ const AddressOptionGroup = ({
       </div>}
 
       { !selectedConsignment ?
-        <div style={{ marginTop: '30px' }}>
-          <button onClick={() => validateAndSave()} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>CONTINUE</button>
+        <div className="mt-8">
+          <button onClick={() => validateAndSave()} className="w-50 text-center bg-[#315B42] text-white rounded-lg p-2.5">CONTINUE</button>
         </div>
       :
       <div className="mt-8">
@@ -371,8 +371,8 @@ const AddressOptionGroup = ({
             />
         </div>
 
-        {shippingAddressError && <p style={{ color: 'red', fontWeight: 'bold' }}>{shippingAddressError}</p>}
-        <div style={{ marginTop: '20px' }}>
+        {shippingAddressError && <p className="text-red-500 font-bold">{shippingAddressError}</p>}
+        <div className="mt-5">
           <button className="save-changes-button" onClick={() => validateAndSave()}>SAVE CHANGES</button>
         </div>
       </div>

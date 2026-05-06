@@ -121,13 +121,13 @@ const CheckoutHeader = ({activeStep = CheckoutStep.Consignment, onChangeStep} : 
 
   <div>
     <div className='header-tabs'>
-      <div onClick={() => onChangeStep(CheckoutStep.Consignment)} style={{ borderRight: '1px solid #969696' }} className={`header-tab ${activeStep == CheckoutStep.Consignment ? 'active' : ''}`}>
+      <div onClick={() => onChangeStep(CheckoutStep.Consignment)} className={`header-tab border-r border-r-[#969696] ${activeStep == CheckoutStep.Consignment ? 'active' : ''}`}>
         <div>
           <div className='step-number'>1</div>
         </div>
         <div className='step-title'>Delivery & Shipping</div>
       </div>
-      <div onClick={() => verifyAndGotoStep(CheckoutStep.OrderSummary)} style={{ borderRight: '1px solid #969696' }} className={`header-tab ${activeStep == CheckoutStep.OrderSummary ? 'active' : ''} ${!hasOrderSummaryEnabled ? 'disabled' : '' }`}>
+      <div onClick={() => verifyAndGotoStep(CheckoutStep.OrderSummary)} className={`border-r border-r-[#969696] header-tab ${activeStep == CheckoutStep.OrderSummary ? 'active' : ''} ${!hasOrderSummaryEnabled ? 'disabled' : '' }`}>
         <div>
           <div className='step-number'>2</div>
         </div>

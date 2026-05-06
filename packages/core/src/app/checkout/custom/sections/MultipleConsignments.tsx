@@ -372,23 +372,23 @@ const MultipleConsignments = ({
       {/* <p>Consignments: </p> */}
       
       {/* Iterate through every consignmets and filter items */}
-      { consignments.filter(c => !isHoldingConsignment(c)).map(c => <div key={c.id} style={{ margin: '0 10px', backgroundColor: '#c7cfc5', boxShadow: '0px 4px 4px 0px #00000026', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      { consignments.filter(c => !isHoldingConsignment(c)).map(c => <div key={c.id} className="mx-2.5 bg-[#c7cfc5] rounded-lg flex flex-col gap-5" style={{ boxShadow: '0px 4px 4px 0px #00000026' }}>
         {mainCartItems.filter(i => !isGiftItem(i.item) && !selecedItemIds.includes(i.itemIndex) && c.lineItemIds.includes(i.item.id as string))
           .map(i => <div key={i.item.id} className="item-card-wrapper">
             <ConsignmentItemCard i={i.item} unassignItem={(i) => unassignItem(i)} />
           </div>
         )}
           <div className="item-options-wrapper">
-            <div className="item-options__unassign-consignment" style={{ alignItems: 'center' }}>
+            <div className="item-options__unassign-consignment items-center">
               <div className={`assigned-address-line ${isNextStep ? 'w-auto!' : ''} `}>
                 <div className="line-1">All items in this group ship to: </div>
-                <div className="line-2" style={{ color: '#fff' }}>{formatAddress(c.address)}</div>
+                <div className="line-2 text-white">{formatAddress(c.address)}</div>
               </div>
 
               {/* {isNextStep ?
                 <div className="assigned-address-line w-auto!">
                   <div className="line-1">Future Ship Date: </div>
-                  <div className="line-2" style={{ color: '#fff' }}>{getFutureShipDate(c)}</div>
+                  <div className="line-2">{getFutureShipDate(c)}</div>
                 </div>
               : */}
                 <FutureShipDateOptionGroup 
@@ -404,7 +404,7 @@ const MultipleConsignments = ({
                   />
               {/* } */}
               <div className="max-md:hidden">
-                <a onClick={() => unassignConsignment(c)} style={{ textDecoration: 'underline', color: '#000' }}>Ungroup Items</a>
+                <a onClick={() => unassignConsignment(c)} className="underline text-black">Ungroup Items</a>
               </div>
             </div>
             
@@ -420,7 +420,7 @@ const MultipleConsignments = ({
                     />
                   </div>
                   {/* <div className="item-options__ship_date">
-                    {/* <input className="future-ship-date-value" placeholder="Future Ship Date" readOnly value={c.address.customFields.find(c => c.fieldId == FUTURE_SHIP_DATE_FIELD_ID)?.fieldValue} style={{ padding: '10px', fontSize: '14px' }} type="text" />
+                    {/* <input className="future-ship-date-value" placeholder="Future Ship Date" readOnly value={c.address.customFields.find(c => c.fieldId == FUTURE_SHIP_DATE_FIELD_ID)?.fieldValue} type="text" />
                     <FutureShipDateOptionGroup 
                       futureShipDate={getFutureShipDate(c)} 
                       handleChangeDate={(value) => {
@@ -454,11 +454,11 @@ const MultipleConsignments = ({
                   }
                 </div>
               </div>
-              {!c.availableShippingOptions || c.availableShippingOptions.length == 0 && <div style={{ color: '#900000', marginTop: '10px' }}>Please check your shipping address, the current address does not have validated shipping methods.</div>}
+              {!c.availableShippingOptions || c.availableShippingOptions.length == 0 && <div className="text-[#900000] mt-2.5">Please check your shipping address, the current address does not have validated shipping methods.</div>}
             </>
 
             <div className="md:hidden flex justify-end mt-3">
-              <a onClick={() => unassignConsignment(c)} style={{ textDecoration: 'underline', color: '#000' }}>Ungroup Items</a>
+              <a onClick={() => unassignConsignment(c)} className="underline text-black">Ungroup Items</a>
             </div>
           </div>
 
@@ -487,12 +487,6 @@ const MultipleConsignments = ({
               setIsInProgress={setIsInProgress}
               onComplete={() => setSelecedItemIds([])}              
             />
-
-            {/* {(!customer || customer.isGuest) &&
-              <div style={{ marginTop: '30px' }}>
-                <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>CONTINUE</button>
-              </div>
-            } */}
           </div>}
         </div>
       }
@@ -515,31 +509,15 @@ const MultipleConsignments = ({
 
     {/* Buttom Buttons */}
     <div className="next-step-buttons-wrapper">
-      {/* { isNextStep ?
-        <div className="step-title" style={{ cursor: 'pointer', display: 'flex', gap: '8px', alignItems: 'center' }} onClick={() => { setIsNextStep(false) }}>
-          <svg style={{ transform: 'rotate(180deg)' }} width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M2.14483 0L9 6.97857L2.14483 14L0 11.7841L4.70206 7.02143L0 2.21585L2.14483 0Z" fill="#315B42"/>
-          </svg>
-          <label style={{ marginLeft: '10px', textDecoration: 'underline' }}>Previous Step</label>
-        </div>
-      :
-        <div></div>
-      } */}
 
       <div></div>
-      <div style={{ margin: '20px 0', display: 'flex', flexDirection: 'column', justifyContent: 'right', alignItems: 'end', gap: '20px' }}>
+      <div className="my-5 flex flex-col justify-end items-end gap-5">
         {unassignedLineItems.length > 0 ? <>
-          <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
+          <button disabled className="opacity-50 bg-[#F6A601] py-3 px-7.5" style={{ borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
           <div className="desktop-only" style={{ color: '#EB2F2F', fontSize: '14px', maxWidth: '400px' }}>*Assign delivery address to all items before continuing.</div>
         </>
         :
           <>
-            {/* { !isNextStep &&
-              <button onClick={() => { 
-                setIsNextStep(true); 
-                window.scrollTo({ top: 0, behavior: 'smooth'});
-              }} style={{ backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>NEXT STEP</button>
-            } */}
             { !isGoTOOrderSummary ?
               <>
                 <button disabled style={{ opacity: '0.5', backgroundColor: '#F6A601', padding: '12px 30px', borderRadius: '10px' }}>GO TO ORDER SUMMARY</button>
