@@ -83,7 +83,11 @@ export function isPast4PM_EST() {
 }
 
 export function isHoldingConsignment(consignment: Consignment): boolean {
-  return consignment.address.firstName == 'TO_BE_ASSIGNED';
+  return consignment.address.firstName == 'TO_BE_ASSIGNED' && consignment.address.address1 == '';
+}
+
+export function isIncompleteConsignment(consignment: Consignment): boolean {
+  return consignment.address.firstName == 'TO_BE_ASSIGNED' && consignment.address.address1 != '';
 }
 
 export const addItemsToCart = async (checkoutId: string, gitProductId: string | null, giftMessage: string | null) => {

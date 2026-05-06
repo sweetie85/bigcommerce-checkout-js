@@ -10,7 +10,7 @@ import ConsignmentItemCard from "../components/ConsignmentItemCard";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { GiftProduct, CustomItem } from "../types";
 import GiftMessageOptionGroupEdit from "../options/GiftMessageOptionGroupEdit";
-import { handleCheckoutError, isHoldingConsignment, validateAddress } from "../utility";
+import { isHoldingConsignment, isIncompleteConsignment } from "../utility";
 
 interface SelectItemsProps {
   checkoutId: string;
@@ -33,6 +33,7 @@ const MultipleConsignments = ({
 }: SelectItemsProps) => {
   const [mainCartItems, setMainCartItems] = useState<CustomItem[]>([]);
   const [selecedItemIds, setSelecedItemIds] = useState<number[]>([]);
+  const [incompleteConsignments, setIncompleteConsignments] = useState<Consignment[]>([]);
   
   const [holdingConsignment, setHoldingConsignment] = useState<Consignment | null>(null);
   const [unassignedLineItems, setUnassignedLineItems] = useState<CustomItem[]>([]);
@@ -115,8 +116,20 @@ const MultipleConsignments = ({
         // setSelecedItemIds([]);
         // setIsNextStep(true);
       }
+
+      const incompleteConsignments = consignments.filter(c => isIncompleteConsignment(c));
+      if (incompleteConsignments.length > 0) {
+        // incompleteConsignments.forEach(async (c) => await unassignConsignment(c));
+        setIncompleteConsignments(incompleteConsignments);
+      }
     }
   }, [consignments, cart, selecedItemIds]);
+
+  useEffect(() => {
+    if (incompleteConsignments.length > 0) {
+      incompleteConsignments.forEach(async (c) => await unassignConsignment(c));
+    }
+  }, [incompleteConsignments]);
 
   // Verify if all consignment are assinged a shipping method
   useEffect(() => {
@@ -372,7 +385,7 @@ const MultipleConsignments = ({
       {/* <p>Consignments: </p> */}
       
       {/* Iterate through every consignmets and filter items */}
-      { consignments.filter(c => !isHoldingConsignment(c)).map(c => <div key={c.id} className="mx-2.5 bg-[#c7cfc5] rounded-lg flex flex-col gap-5" style={{ boxShadow: '0px 4px 4px 0px #00000026' }}>
+      { consignments.filter(c => !isHoldingConsignment(c) && !isIncompleteConsignment(c)).map(c => <div key={c.id} className="mx-2.5 bg-[#c7cfc5] rounded-lg flex flex-col gap-5" style={{ boxShadow: '0px 4px 4px 0px #00000026' }}>
         {mainCartItems.filter(i => !isGiftItem(i.item) && !selecedItemIds.includes(i.itemIndex) && c.lineItemIds.includes(i.item.id as string))
           .map(i => <div key={i.item.id} className="item-card-wrapper">
             <ConsignmentItemCard i={i.item} unassignItem={(i) => unassignItem(i)} />
@@ -404,7 +417,7 @@ const MultipleConsignments = ({
                   />
               {/* } */}
               <div className="max-md:hidden">
-                <a onClick={() => unassignConsignment(c)} className="underline text-black">Ungroup Items</a>
+                <a onClick={() => unassignConsignment(c)} className="underline text-black!">Ungroup Items</a>
               </div>
             </div>
             
@@ -458,7 +471,7 @@ const MultipleConsignments = ({
             </>
 
             <div className="md:hidden flex justify-end mt-3">
-              <a onClick={() => unassignConsignment(c)} className="underline text-black">Ungroup Items</a>
+              <a onClick={() => unassignConsignment(c)} className="underline text-black!">Ungroup Items</a>
             </div>
           </div>
 
