@@ -61,7 +61,7 @@ const GiftMessageOption = ({ showNumbering = true, giftProducts, selectedConsign
     </div>
 
     {isEnabled && <>
-    { hasMultipleGiftMessage && <p style={{ color: 'red' }}>NOTE: You may only apply one gift message to each consignment.</p> }
+    {/* { hasMultipleGiftMessage && <p style={{ color: 'red' }}>NOTE: You may only apply one gift message to each consignment.</p> } */}
     <div>
       <select className="max-md:w-11/12! md:w-125 rounded-md mt-2.5 p-2.5" onChange={(e) => {
         setGiftProductId(e.target.value);

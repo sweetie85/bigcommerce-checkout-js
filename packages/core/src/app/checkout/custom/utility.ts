@@ -1,4 +1,4 @@
-import { AddressRequestBody, Consignment } from "@bigcommerce/checkout-sdk";
+import { AddressRequestBody, Consignment, PhysicalItem } from "@bigcommerce/checkout-sdk";
 
 export function formatedDate(mmddyyyy: string) {
   if (!mmddyyyy) return '';
@@ -85,3 +85,62 @@ export function isPast4PM_EST() {
 export function isHoldingConsignment(consignment: Consignment): boolean {
   return consignment.address.firstName == 'TO_BE_ASSIGNED';
 }
+
+export const addItemsToCart = async (checkoutId: string, gitProductId: string | null, giftMessage: string | null) => {
+  
+    // console.log('addItemsToCart: ');
+
+    if (!gitProductId || !giftMessage) {
+      return null;
+    }
+
+    const [productId, optionId] = gitProductId.split('|');
+
+    const lineItems = [];
+    const lineItem = {
+      quantity: 1,
+      productId: parseInt(productId),
+      optionSelections: [{
+        optionId: parseInt(optionId),
+        optionValue: giftMessage
+      }],
+    };
+
+    lineItems.push(lineItem);
+
+    // console.log('lineItems: ');
+    // console.log(lineItems);
+
+    const endpoint = `/api/storefront/cart/${checkoutId}/items`;
+
+    const payload = { lineItems };
+
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      console.error('Add item error:', error);
+      alert('Error adding add-ons: ' + (error.title || 'Unknown error'));
+      return null;
+    } else {
+
+      // console.log('Item added successfully.');
+      // window.location.reload();
+      // console.log(res);
+      const response = await res.json();
+      const physicalItems = response.lineItems.physicalItems as PhysicalItem[];
+      
+      const cartItems = physicalItems.filter(c => !c.parentId);;
+      const lastItem = cartItems[cartItems.length - 1];
+
+      return { itemId: lastItem.id, quantity: lastItem.quantity };
+    }
+  }

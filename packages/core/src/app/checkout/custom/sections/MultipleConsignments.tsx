@@ -481,6 +481,7 @@ const MultipleConsignments = ({
 
           {selecedItemIds.length > 0 && <div>
             <AddressOptionGroup 
+              checkoutId={checkoutId}
               giftProducts={giftProducts}
               selectedLineItems={mainCartItems.filter(i => selecedItemIds.length == 0 || selecedItemIds.includes(i.itemIndex))}
               setIsInProgress={setIsInProgress}

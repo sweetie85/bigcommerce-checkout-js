@@ -7,7 +7,7 @@ import GiftMessageOption from "../options/GiftMessageOption";
 import { AddressRequestBody, Consignment, ConsignmentAssignmentRequestBody, ConsignmentLineItem, PhysicalItem } from "@bigcommerce/checkout-sdk";
 import { useCheckout } from "../context/CheckoutContext";
 import { GiftProduct } from "../types";
-import { handleCheckoutError, validateAddress } from "../utility";
+import { addItemsToCart, handleCheckoutError, validateAddress } from "../utility";
 
 interface SingleConsignmentProps {
   checkoutId: string;
@@ -94,7 +94,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
     setShippingAddress(updatedAddress); // ✅ Update single source of truth
   };
 
-  const updateConsignments = async (giftItem: ConsignmentLineItem | null, removeFufureShipDate: boolean) : Promise<Consignment | null> => {
+  const updateConsignments = async (giftItem: ConsignmentLineItem | null) : Promise<Consignment | null> => {
   
     const cart = checkoutState.data.getCart();
 
@@ -165,65 +165,6 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
     return null;
   }
 
-  const addItemsToCart = async (gitProductId: string | null, giftMessage: string | null) => {
-  
-    // console.log('addItemsToCart: ');
-
-    if (!gitProductId || !giftMessage) {
-      return null;
-    }
-
-    const [productId, optionId] = gitProductId.split('|');
-
-    const lineItems = [];
-    const lineItem = {
-      quantity: 1,
-      productId: parseInt(productId),
-      optionSelections: [{
-        optionId: parseInt(optionId),
-        optionValue: giftMessage
-      }],
-    };
-
-    lineItems.push(lineItem);
-
-    // console.log('lineItems: ');
-    // console.log(lineItems);
-
-    const endpoint = `/api/storefront/cart/${checkoutId}/items`;
-
-    const payload = { lineItems };
-
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!res.ok) {
-      const error = await res.json();
-      console.error('Add item error:', error);
-      alert('Error adding add-ons: ' + (error.title || 'Unknown error'));
-      return null;
-    } else {
-
-      // console.log('Item added successfully.');
-      // window.location.reload();
-      // console.log(res);
-      const response = await res.json();
-      const physicalItems = response.lineItems.physicalItems as PhysicalItem[];
-      
-      const cartItems = physicalItems.filter(c => !c.parentId);;
-      const lastItem = cartItems[cartItems.length - 1];
-
-      return { itemId: lastItem.id, quantity: lastItem.quantity };
-    }
-  }
-
   const isGiftItem = (item: PhysicalItem) => {
     return !!giftProducts.find(p => p.product_sku == item.sku);
   }
@@ -268,9 +209,9 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
     }
 
     // console.log('saveChanges: ');
-    const giftItem = await addItemsToCart(gitProductId, giftMessage);
+    const giftItem = await addItemsToCart(checkoutId, gitProductId, giftMessage);
 
-    const selectedConsignment = await updateConsignments(giftItem, removeFufureShipDate);
+    const selectedConsignment = await updateConsignments(giftItem);
 
     // debugger;
 

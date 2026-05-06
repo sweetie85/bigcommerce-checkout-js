@@ -6,16 +6,18 @@ import ShippingMethodOption from "./ShippingMethodOption";
 import FutureShipDateOption from "./FutureShipDateOption";
 import GiftMessageOption from "./GiftMessageOption";
 import { CustomItem, GiftProduct } from "../types";
-import { handleCheckoutError, validateAddress } from "../utility";
+import { addItemsToCart, handleCheckoutError, validateAddress } from "../utility";
 
 interface AddressOptionProps {
+  checkoutId: string;
   giftProducts: GiftProduct[];
   selectedLineItems: CustomItem[];
   setIsInProgress: (inProgress: boolean) => void;
   onComplete: () => void;
 }
 
-const AddressOptionGroup = ({  
+const AddressOptionGroup = ({
+  checkoutId,
   giftProducts,
   selectedLineItems,
   setIsInProgress,
@@ -143,11 +145,12 @@ const AddressOptionGroup = ({
     // Mark this as multiple-consignment is manually assigned
     window.sessionStorage.setItem('CCC-PARAM--consignment-is-assigned-manually', '1');
     
-    await updateConsignments();
+    const giftItem = await addItemsToCart(checkoutId, gitProductId, giftMessage);
+    await updateConsignments(giftItem);
     setIsInProgress(false);
   }
 
-  const updateConsignments = async () => {
+  const updateConsignments = async (giftItem: ConsignmentLineItem | null) => {
   
     const cart = checkoutState.data.getCart();
 
@@ -174,6 +177,10 @@ const AddressOptionGroup = ({
       const lineItems = selectedLineItems.map(i => {
         return { itemId: i.item.id, quantity: 1 };
       }) as ConsignmentLineItem[];
+
+      if (giftItem) {
+        lineItems.push(giftItem);
+      }
 
       const updatedAddress = shippingAddress;
       if (!updatedAddress) {
