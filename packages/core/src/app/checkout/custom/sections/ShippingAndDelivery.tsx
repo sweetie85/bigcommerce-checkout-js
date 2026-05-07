@@ -116,8 +116,8 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
 
     {((!customer || customer.isGuest) && showTopSteps) &&
       <div className="step-title choose-consignment-type">
-        <label style={{}}>1. Enter your email address:</label>
-        <div className="form-field-row" style={{ marginLeft: '32px', justifyContent: 'left', gap: '20px' }}>
+        <label>1. Enter your email address:</label>
+        <div className="form-field-row ml-8 gap-5 justify-start">
           <input className="custom-form-input text" type="text" placeholder="Email Id" onChange={handleGuestEmailChange} value={guestEmalId} />
           <button className="button-continue" onClick={saveGuestEmail}>Continue</button>
         </div>
@@ -128,14 +128,14 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
           <div className="form-field-row">
             <input className="custom-form-input text" type="password" placeholder="Password" onChange={handleGuestEmailChange} />
           </div>
-          <div style={{ marginTop: '30px' }}>
-            <button onClick={() => {}} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '5px', padding: '10px'}}>Sign In</button>
-            <button onClick={() => setIsSigninActive(false)} style={{ color: '#315B42', marginLeft: '10px', width: '200px', textAlign: 'center', backgroundColor: '#fff', border: '1px solid #cccccc', borderRadius: '5px', padding: '10px'}}>Cancel</button>
+          <div className="mt-7">
+            <button onClick={() => {}} className="w-50 text-center bg-[#315B42] text-white rounded p-2">Sign In</button>
+            <button onClick={() => setIsSigninActive(false)} className="text-[#315B42] ml-2 w-50 text-center bg-white border border-[#ccc] rounded-sm p-2">Cancel</button>
           </div>
           </>
         : 
-          <div style={{ marginLeft: '32px', marginTop: '20px', marginBottom: '20px' }}>
-            Already have an account? <a onClick={() => window.location.href = "/login.php"} style={{ cursor: 'pointer', textDecoration: 'underline' }}>Sign in now</a>
+          <div className="ml-8 mt-5 mb-5">
+            Already have an account? <a onClick={() => window.location.href = "/login.php"} className="cursor-pointer underline">Sign in now</a>
           </div>
         }
       </div>

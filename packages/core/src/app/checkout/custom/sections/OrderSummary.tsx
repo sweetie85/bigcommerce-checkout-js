@@ -54,11 +54,11 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
     <div className="order-summary__cart-items custom-box-shadow">
 
     <div className="order-summary__cart-item header">
-      <div style={{ width: '100px' }}>Item</div>
-      <div style={{ width: '30%' }}></div>
-      <div style={{ width: '30%' }}>Delivery Address</div>
-      <div style={{ width: '20%' }}>Ship Date and Method</div>
-      <div style={{ width: '10%' }}>Price</div>
+      <div className="w-25">Item</div>
+      <div className="w-[30%]"></div>
+      <div className="w-[30%]">Delivery Address</div>
+      <div className="w-[20%]">Ship Date and Method</div>
+      <div className="w-[10%]">Price</div>
     </div>
 
       { consignments.map(c => <div className="order-summary__consignment">
@@ -66,27 +66,27 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
         .map((i, index) => <div key={i.id}>
           
           <div key={i.id} className="order-summary__cart-item">
-            <div style={{ width: '100px' }}><img src={i.imageUrl} /></div>
-            <div style={{ width: '30%' }}>
+            <div className="w-25"><img src={i.imageUrl} /></div>
+            <div className="w-[30%]">
               <div className="product-title">{i.quantity} x {i.name}</div>
               {i.options?.map(o => <div key={o.nameId} className="product-option">{o.name} {o.value}</div>)}
             </div>
             
-            <div style={{ width: '30%' }}>
+            <div className="w-[30%]">
               {index == 0 && formatAddress(c.address)}
             </div>
 
-            <div style={{ width: '20%' }}>
-              {index == 0 && <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div style={{ minHeight: '50px' }}>
+            <div className="w-[20%]">
+              {index == 0 && <div className="flex flex-col gap-5">
+                <div className="min-h-12">
                   {c.address.customFields[0] && c.address.customFields[0].fieldId == FUTURE_SHIP_DATE_FIELD_ID && c.address.customFields[0].fieldValue != '' ? formatedDate(c.address.customFields[0].fieldValue as string) : 'No Shipping date (standard)'}
                 </div>
                 <div>{c.selectedShippingOption?.description}</div>
               </div>}
             </div>
 
-            <div style={{ width: '10%', display: 'flex', flexDirection: 'column', gap: '20px' }} className="product-price">
-              <div style={{ minHeight: '50px' }}>${(i.salePrice * i.quantity).toFixed(2)}</div>
+            <div className="product-price w-[10%] flex flex-col gap-5">
+              <div className="min-h-12">${(i.salePrice * i.quantity).toFixed(2)}</div>
               {index == 0 && <div>${c.selectedShippingOption?.cost}</div>}
             </div>
           </div>
@@ -94,14 +94,14 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
       </div>
       )}
     
-      <hr style={{ borderColor: '#315B42'}} />
+      <hr className="border-[#315B42]" />
 
       <div className="order-summary__footer">
-        <p style={{ width: '40%', fontWeight: 'bold' }}>
+        <p className="w-2/5 font-bold">
         </p>
 
-        <div className="cart-summary" style={{ padding: 0 }}>
-          <div className="cart-amount-line" style={{ paddingTop: 0 }}>
+        <div className="cart-summary p-0">
+          <div className="cart-amount-line pt-0">
             <span>Subtotal</span>
             <span>${cart?.baseAmount}</span>
           </div>
@@ -114,21 +114,21 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
             <span>$0.00</span>
           </div>
 
-          <hr style={{ borderColor: '#315B42'}} />
+          <hr className="border-[#315B42]" />
 
           <div className="cart-amount-line">
-            <span style={{ fontSize: '18px' }}>Total (USD)</span>
-            <span style={{ fontSize: '20px', fontWeight: 'bold' }}>${cartTotalAmount()}</span>
+            <span className="text-lg">Total (USD)</span>
+            <span className="text-xl font-bold">${cartTotalAmount()}</span>
           </div>
         </div>
       </div>
 
       { mainCartItems.length > 0 &&
-        <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', justifyContent: 'right', alignItems: 'end' }}>
+        <div className="text-right flex flex-col justify-end items-end">
           <button onClick={() => { 
             onChangeTab(CheckoutStep.Payment);
             window.scrollTo({ top: 0, behavior: 'smooth'});
-          }} style={{ backgroundColor: '#F6A601', padding: '12px 50px', marginTop: '30px', borderRadius: '8px' }}>GO TO PAYMENT</button>
+          }} className="bg-[#F6A601] py-3 px-12 mt-7 rounded-lg">GO TO PAYMENT</button>
           <p className="w-[40%] mt-5 text-left text-[#f6a601]">*Please review your order carefully-due to our baking schedule, changes cannot be made once orders are submitted. Thank you for understanding!</p>
         </div>
       }
