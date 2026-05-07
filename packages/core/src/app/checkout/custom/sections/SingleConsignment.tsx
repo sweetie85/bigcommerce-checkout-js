@@ -105,6 +105,10 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
 
     if (cart) {
 
+      if (!shippingAddress.countryCode) {
+        shippingAddress.countryCode = 'US';
+      }
+
       // Validate address
       if (!validateAddress(shippingAddress, setErrorMessage)) {
         return null;

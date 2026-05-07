@@ -35,13 +35,13 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
 
     // console.log(shippingAddress?.countryCode);
 
-    if (shippingAddress?.countryCode) {
-      const selectedCountry = countries.find(c => c.code == shippingAddress.countryCode);
+    // if (shippingAddress?.countryCode) {
+      const selectedCountry = countries.find(c => c.code == 'US');
       if (selectedCountry?.subdivisions) {
         setProvinces(selectedCountry.subdivisions);
       }
-    }
-  }, [shippingAddress]);
+    // }
+  }, [countries]);
 
   const handleChange = (e: any) => {
     // console.log('e.target.value: '+e.target.value);
@@ -59,12 +59,12 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
     onInputChange(updatedShippingAddress);
     setShippingAddress(updatedShippingAddress);
 
-    if (e.target.name == 'countryCode') {
-      const selectedCountry = countries.find(c => c.code == e.target.value);
-      if (selectedCountry?.subdivisions) {
-        setProvinces(selectedCountry.subdivisions);
-      }
-    }
+    // if (e.target.name == 'countryCode') {
+    //   const selectedCountry = countries.find(c => c.code == e.target.value);
+    //   if (selectedCountry?.subdivisions) {
+    //     setProvinces(selectedCountry.subdivisions);
+    //   }
+    // }
   };
 
   function isSameAddress(a: AddressRequestBody, b: AddressRequestBody): boolean {
@@ -151,20 +151,25 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
         <div className="form-field-row">
           <input className="custom-form-input text" type="text" placeholder="*City" name="city" value={shippingAddress?.city} onChange={handleInputChange} />
           {/* <input className="custom-form-input text" type="text" placeholder="Country" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange} /> */}
-          <select className="custom-form-input select" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange}>
+          {/* <select className="custom-form-input select" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange}>
             <option value="">-- *Select a Country --</option>
             {countries.filter(c => c.code == 'US').map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
+          </select> */}
+
+          <select className="custom-form-input select" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange}>
+            <option value="">-- *Select a State --</option>
+            {provinces.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
           </select>
         </div>
         <div className="form-field-row">
-          {provinces.length == 0 ?
+          {/* {provinces.length == 0 ?
             <input className="custom-form-input text" type="text" placeholder="*State/Province" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange} />
           : 
             <select className="custom-form-input select" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange}>
               <option value="">-- *Select a State --</option>
               {provinces.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
             </select>
-          }
+          } */}
           <input className="custom-form-input text" type="text" placeholder="*Postal Code" name="postalCode" value={shippingAddress?.postalCode} onChange={handleInputChange} />
         </div>
       </div>}
