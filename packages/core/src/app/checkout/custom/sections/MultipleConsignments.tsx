@@ -33,7 +33,6 @@ const MultipleConsignments = ({
 }: SelectItemsProps) => {
   const [mainCartItems, setMainCartItems] = useState<CustomItem[]>([]);
   const [selecedItemIds, setSelecedItemIds] = useState<number[]>([]);
-  const [incompleteConsignments, setIncompleteConsignments] = useState<Consignment[]>([]);
   
   const [holdingConsignment, setHoldingConsignment] = useState<Consignment | null>(null);
   const [unassignedLineItems, setUnassignedLineItems] = useState<CustomItem[]>([]);
@@ -117,19 +116,19 @@ const MultipleConsignments = ({
         // setIsNextStep(true);
       }
 
-      const incompleteConsignments = consignments.filter(c => isIncompleteConsignment(c));
-      if (incompleteConsignments.length > 0) {
-        // incompleteConsignments.forEach(async (c) => await unassignConsignment(c));
-        setIncompleteConsignments(incompleteConsignments);
-      }
+      // const incompleteConsignments = consignments.filter(c => isIncompleteConsignment(c));
+      // if (incompleteConsignments.length > 0) {
+      //   // incompleteConsignments.forEach(async (c) => await unassignConsignment(c));
+      //   setIncompleteConsignments(incompleteConsignments);
+      // }
     }
   }, [consignments, cart, selecedItemIds]);
 
-  useEffect(() => {
-    if (incompleteConsignments.length > 0) {
-      incompleteConsignments.forEach(async (c) => await unassignConsignment(c));
-    }
-  }, [incompleteConsignments]);
+  // useEffect(() => {
+  //   if (incompleteConsignments.length > 0) {
+  //     incompleteConsignments.forEach(async (c) => await unassignConsignment(c));
+  //   }
+  // }, [incompleteConsignments]);
 
   // Verify if all consignment are assinged a shipping method
   useEffect(() => {
@@ -373,7 +372,7 @@ const MultipleConsignments = ({
       <span>{stepNumber}. </span>
       {/* { isNextStep ? */}
         <span>Select an item to add a delivery address, select & group items going to the same address.</span>
-        <span>Choose shipping method, future ship date, and an optional gift message for each group.</span>
+        {/* <span>Choose shipping method, future ship date, and an optional gift message for each group.</span> */}
       {/* :      
       } */}
     </div>
@@ -550,9 +549,9 @@ const MultipleConsignments = ({
         <div className="mobile-only" style={{ color: '#EB2F2F', fontSize: '14px', maxWidth: '250px' }}>*Assign delivery address to all items before continuing.</div>
       }
 
-      { (!isGoTOOrderSummary) &&
+      {/* { (!isGoTOOrderSummary) &&
         <div className="mobile-only" style={{ color: '#EB2F2F', fontSize: '14px', maxWidth: '250px' }}>**Choose shipping method and date for all groups before continuing.</div>
-      }
+      } */}
 
     </div>
 

@@ -47,13 +47,13 @@ const CheckoutPayment = ({ checkoutId, paymentForm } :CheckoutPaymentProps) => {
   
       // console.log(shippingAddress?.countryCode);
   
-      if (billingAddress?.countryCode) {
-        const selectedCountry = countries.find(c => c.code == billingAddress.countryCode);
+      // if (billingAddress?.countryCode) {
+        const selectedCountry = countries.find(c => c.code == 'US');
         if (selectedCountry?.subdivisions) {
           setProvinces(selectedCountry.subdivisions);
         }
-      }
-    }, [billingAddress]);
+      // }
+    }, [countries]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
       setBillingAddress({
@@ -64,6 +64,10 @@ const CheckoutPayment = ({ checkoutId, paymentForm } :CheckoutPaymentProps) => {
 
   const updateBillingAddress = async () => {
     if (billingAddress) {
+
+      if (!billingAddress.countryCode) {
+        billingAddress.countryCode = 'US';
+      }
 
       // Validate address
       if (!validateAddress(billingAddress, setErrorMessage)) {
@@ -134,20 +138,25 @@ const CheckoutPayment = ({ checkoutId, paymentForm } :CheckoutPaymentProps) => {
         <div className="form-field-row">
           <input className="custom-form-input text" type="text" placeholder="*City" name="city" value={billingAddress?.city} onChange={handleInputChange} />
           {/* <input className="custom-form-input text" type="text" placeholder="Country" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange} /> */}
-          <select className="custom-form-input select" name="countryCode" value={billingAddress?.countryCode} onChange={handleInputChange}>
+          {/* <select className="custom-form-input select" name="countryCode" value={billingAddress?.countryCode} onChange={handleInputChange}>
             <option value="">-- *Select a Country --</option>
             {countries.filter(c => c.code == 'US').map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
-          </select>
+          </select> */}
+
+          <select className="custom-form-input select" name="stateOrProvince" value={billingAddress?.stateOrProvince} onChange={handleInputChange}>
+              <option value="">-- *Select a State --</option>
+              {provinces.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
+            </select>
         </div>
         <div className="form-field-row">
-          {provinces.length == 0 ?
+          {/* {provinces.length == 0 ?
             <input className="custom-form-input text" type="text" placeholder="*State/Province" name="stateOrProvince" value={billingAddress?.stateOrProvince} onChange={handleInputChange} />
           : 
             <select className="custom-form-input select" name="stateOrProvince" value={billingAddress?.stateOrProvince} onChange={handleInputChange}>
               <option value="">-- *Select a State --</option>
               {provinces.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
             </select>
-          }
+          } */}
           <input className="custom-form-input text" type="text" placeholder="*Postal Code" name="postalCode" value={billingAddress?.postalCode} onChange={handleInputChange} />
         </div>
       </div>

@@ -512,9 +512,9 @@
     position: relative; 
     width: 95%;
     
-    @include breakpoint('medium') {
-      width: 500px;
-    }
+    // @include breakpoint('medium') {
+    //   width: 500px;
+    // }
   }
 
   .save-changes-button {

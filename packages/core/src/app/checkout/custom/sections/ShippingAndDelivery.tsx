@@ -117,7 +117,7 @@ const ShippingAndDelivery = ({ checkoutId, giftProducts, gotoNextStep }: Shippin
     {((!customer || customer.isGuest) && showTopSteps) &&
       <div className="step-title choose-consignment-type">
         <label>1. Enter your email address:</label>
-        <div className="form-field-row ml-8 gap-5 justify-start">
+        <div className="form-field-row ml-8 gap-5 justify-start!">
           <input className="custom-form-input text" type="text" placeholder="Email Id" onChange={handleGuestEmailChange} value={guestEmalId} />
           <button className="button-continue" onClick={saveGuestEmail}>Continue</button>
         </div>

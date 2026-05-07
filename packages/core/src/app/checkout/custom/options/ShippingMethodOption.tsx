@@ -55,11 +55,11 @@ const ShippingMethodOption = ({ showNumbering = true, updatedShippingOptionId, h
         : so.cost == 500;
     });
 
-  useEffect(() => {
-    if (selectedConsignment && selectedConsignment.selectedShippingOption) {
-      setSelectedShippingOptionId(selectedConsignment.selectedShippingOption.id)
-    }
-  }, [selectedConsignment]);
+  // useEffect(() => {
+  //   if (selectedConsignment && selectedConsignment.selectedShippingOption) {
+  //     setSelectedShippingOptionId(selectedConsignment.selectedShippingOption.id)
+  //   }
+  // }, [selectedConsignment]);
 
   useEffect(() => {
     setSelectedShippingOptionId(updatedShippingOptionId);

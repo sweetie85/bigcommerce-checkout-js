@@ -128,13 +128,6 @@ const AddressOptionGroup = ({
   }
 
   const validateAndSave = () => {
-    // This is optional
-    // if (!futureShipDate) {
-    //   setFutureShipDateError('Please select future ship date!');
-    // } else {
-    //   setFutureShipDateError(null);
-    // }
-
     saveChanges();
   }
 
@@ -210,27 +203,12 @@ const AddressOptionGroup = ({
         } else {
           updatedAddress.customFields = [futureDateCustomData];
         }
-
-
-        // Add new product: SH-DATE
-        /*
-        const shipDateItem = await addFutureShipDateToCart(futureShipDate);
-
-        // console.log('shipDateItem: ');
-        // console.log(shipDateItem);
-
-        if (shipDateItem) {
-          lineItems.push({ itemId: shipDateItem.id, quantity: 1 });
-        }
-        */
       }
 
       // debugger;
 
-      const isFinalUpdate = selectedShippingOptionId;
-
       const requestBody = {
-        address: isFinalUpdate ? updatedAddress : { ...updatedAddress, firstName: 'TO_BE_ASSIGNED' },
+        address: updatedAddress,
         shippingAddress: updatedAddress,
         lineItems: lineItems,
       } as ConsignmentAssignmentRequestBody;
@@ -256,16 +234,14 @@ const AddressOptionGroup = ({
       }
 
       // reset shipping details form once saved
-      if (isFinalUpdate) {
-        setFutureShipDate(null);
-        setIsUpdateAddressChecked(false);
-        setShippingAddress(null);
-        setSelectedConsignment(null);
-        setSelectedShippingOptionId(null);
-        
-        onComplete();
-      }
+      setFutureShipDate(null);
+      setIsUpdateAddressChecked(false);
+      setShippingAddress(null);
+      setSelectedConsignment(null);
+      setSelectedShippingOptionId(null);
       setShippingAddressError(null);
+
+      onComplete();
     }
   }
 
@@ -347,26 +323,26 @@ const AddressOptionGroup = ({
         </div>
       </div>}
 
-      { !selectedConsignment ?
+      {/* { !selectedConsignment ?
         <div className="mt-8">
           <button onClick={() => validateAndSave()} className="w-50 text-center bg-[#315B42] text-white rounded-lg p-2.5">CONTINUE</button>
         </div>
-      :
+      : */}
       <div className="mt-8">
-        <div className="shipping-options-wrapper flex gap-5">
-          <div className="shipping-options w-[48%]">
+        <div className="shipping-options-wrapper flex max-md:flex-col gap-5">
+          <div className="shipping-options md:w-[48%]">
             <ShippingMethodOption 
               handleChange={(id) => { 
                 setSelectedShippingOptionId(id);
                 setShippingMethodErrorMessage(null);
               }}
               updatedShippingOptionId={selectedShippingOptionId} 
-              selectedConsignment={selectedConsignment}
+              selectedConsignment={null}
               showNumbering={false}
               />
             {shippingMethodErrorMessage && <div className="text-red-500 mb-5 mt-2">{shippingMethodErrorMessage}</div> }
           </div>
-          <div className="future-ship-date-option w-[48%]">
+          <div className="future-ship-date-option md:w-[48%]">
             <FutureShipDateOption 
               handleChangeDate={setFutureShipDate}
               selectedConsignment={selectedConsignment}
@@ -393,7 +369,7 @@ const AddressOptionGroup = ({
           <button className="save-changes-button" onClick={() => validateAndSave()}>SAVE CHANGES</button>
         </div>
       </div>
-      }
+      {/* } */}
     </div>
     }
  </div>
