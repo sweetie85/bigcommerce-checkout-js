@@ -282,10 +282,10 @@ const AddressOptionGroup = ({
           <label className={isNewAddress ? 'selected' : ''} htmlFor="choose_new_address">Enter a new adddress:</label>
         </div>
       </>}
+
+      <div className="text-red-500 mb-5">{errorMessage}</div>
       
       {(!customer || customer.isGuest || isNewAddress) && <div>
-        <div className="text-red-500 mb-5">{errorMessage}</div>
-
         <div className="form-field-row">
           <input className="custom-form-input text" type="text" placeholder="*First Name" name="firstName" value={shippingAddress?.firstName} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="*Last Name" name="lastName" value={shippingAddress?.lastName} onChange={handleInputChange} />
