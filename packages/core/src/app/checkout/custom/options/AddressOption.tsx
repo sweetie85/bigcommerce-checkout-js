@@ -2,10 +2,11 @@ import { AddressRequestBody, Consignment, Country, Customer, CustomerAddress, Re
 import React, { useEffect, useState } from "react";
 import { useCheckout } from "../context/CheckoutContext";
 import { isHoldingConsignment } from "../utility";
+import { CustomAddressRequestBody } from "../types";
 
 interface AddressOptionProps {
-  updatedShippingAddress: AddressRequestBody | null;
-  onInputChange: (updated: AddressRequestBody ) => void;
+  updatedShippingAddress: CustomAddressRequestBody | null;
+  onInputChange: (updated: CustomAddressRequestBody ) => void;
   selectedConsignment: Consignment | null;
   isUpdateAddressChecked: boolean;
   setIsUpdateAddressChecked: (isUpdate: boolean) => void
@@ -141,25 +142,21 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
           <input className="custom-form-input text" type="text" placeholder="*Last Name" name="lastName" value={shippingAddress?.lastName} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
-          <input className="custom-form-input text" type="text" placeholder="Company Name" name="company" value={shippingAddress?.company} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="Email Address" name="email" value={shippingAddress?.email} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="Phone Number" name="phone" value={shippingAddress?.phone} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
+          <input className="custom-form-input text" type="text" placeholder="Company Name" name="company" value={shippingAddress?.company} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="*Address" name="address1" value={shippingAddress?.address1} onChange={handleInputChange} />
-          <input className="custom-form-input text" type="text" placeholder="Address/Suite/Building" name="address2" value={shippingAddress?.address2} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
+          <input className="custom-form-input text" type="text" placeholder="Address/Suite/Building" name="address2" value={shippingAddress?.address2} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="*City" name="city" value={shippingAddress?.city} onChange={handleInputChange} />
           {/* <input className="custom-form-input text" type="text" placeholder="Country" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange} /> */}
           {/* <select className="custom-form-input select" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange}>
             <option value="">-- *Select a Country --</option>
             {countries.filter(c => c.code == 'US').map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
           </select> */}
-
-          <select className="custom-form-input select" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange}>
-            <option value="">-- *Select a State --</option>
-            {provinces.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
-          </select>
         </div>
         <div className="form-field-row">
           {/* {provinces.length == 0 ?
@@ -170,6 +167,10 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
               {provinces.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
             </select>
           } */}
+          <select className="custom-form-input select" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange}>
+            <option value="">-- *Select a State --</option>
+            {provinces.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
+          </select>
           <input className="custom-form-input text" type="text" placeholder="*Postal Code" name="postalCode" value={shippingAddress?.postalCode} onChange={handleInputChange} />
         </div>
       </div>}

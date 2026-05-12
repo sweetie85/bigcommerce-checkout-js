@@ -5,7 +5,7 @@ import FutureShipDateOptionGroup from "./FutureShipDateOptionGroup";
 import ShippingMethodOption from "./ShippingMethodOption";
 import FutureShipDateOption from "./FutureShipDateOption";
 import GiftMessageOption from "./GiftMessageOption";
-import { CustomItem, GiftProduct } from "../types";
+import { CustomAddressRequestBody, CustomItem, GiftProduct } from "../types";
 import { addItemsToCart, handleCheckoutError, validateAddress } from "../utility";
 
 interface AddressOptionProps {
@@ -28,7 +28,7 @@ const AddressOptionGroup = ({
   const [provinces, setProvinces] = useState<Region[]>([]);
 
   const [isUpdateAddressChecked, setIsUpdateAddressChecked] = useState(false);
-  const [shippingAddress, setShippingAddress] = useState<AddressRequestBody | null>(null);
+  const [shippingAddress, setShippingAddress] = useState<CustomAddressRequestBody | null>(null);
   const [shippingAddressError, setShippingAddressError] = useState<string | null>(null);
   const [selectedConsignment, setSelectedConsignment] = useState<Consignment | null>(null);
   const [futureShipDate, setFutureShipDate] = useState<string | null>(null);
@@ -291,24 +291,21 @@ const AddressOptionGroup = ({
           <input className="custom-form-input text" type="text" placeholder="*Last Name" name="lastName" value={shippingAddress?.lastName} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
-          <input className="custom-form-input text" type="text" placeholder="Company Name" name="company" value={shippingAddress?.company} onChange={handleInputChange} />
+          <input className="custom-form-input text" type="text" placeholder="Email Address" name="email" value={shippingAddress?.email} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="Phone Number" name="phone" value={shippingAddress?.phone} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
+          <input className="custom-form-input text" type="text" placeholder="Company Name" name="company" value={shippingAddress?.company} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="*Address" name="address1" value={shippingAddress?.address1} onChange={handleInputChange} />
-          <input className="custom-form-input text" type="text" placeholder="Address/Suite/Building" name="address2" value={shippingAddress?.address2} onChange={handleInputChange} />
         </div>
         <div className="form-field-row">
+          <input className="custom-form-input text" type="text" placeholder="Address/Suite/Building" name="address2" value={shippingAddress?.address2} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="*City" name="city" value={shippingAddress?.city} onChange={handleInputChange} />
           {/* <input className="custom-form-input text" type="text" placeholder="Country" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange} /> */}
           {/* <select className="custom-form-input select" name="countryCode" value={shippingAddress?.countryCode} onChange={handleInputChange}>
             <option value="">-- *Select a Country --</option>
             {countries.filter(c => c.code == 'US').map(c => <option value={c.code}>{c.name}</option>)}
           </select> */}
-          <select className="custom-form-input select" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange}>
-              <option value="">-- *Select a State --</option>
-              {provinces.map(c => <option value={c.code}>{c.name}</option>)}
-            </select>
         </div>
         <div className="form-field-row">
           {/* {provinces.length == 0 ?
@@ -319,6 +316,10 @@ const AddressOptionGroup = ({
               {provinces.map(c => <option value={c.code}>{c.name}</option>)}
             </select>
           } */}
+          <select className="custom-form-input select" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange}>
+            <option value="">-- *Select a State --</option>
+            {provinces.map(c => <option value={c.code}>{c.name}</option>)}
+          </select>
           <input className="custom-form-input text" type="text" placeholder="*Postal Code" name="postalCode" value={shippingAddress?.postalCode} onChange={handleInputChange} />
         </div>
       </div>}
