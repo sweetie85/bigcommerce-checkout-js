@@ -115,6 +115,19 @@ export const OrderConfirmationPage = ({
         console.log(conversionData);
 
         window.gtag('event', 'conversion', conversionData);
+
+        /**
+         * Task Update:
+         * The purchase conversion tag is set up and ready to fire, 
+         * but it needs the following snippet added to the BigCommerce order confirmation page template before the closing body tag. 
+         * This is what passes the actual order data into GTM:
+         */
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+            event: 'purchase_complete',
+            orderTotal: order.orderAmount,
+            orderId: order.orderId?.toString(),
+        });
     }, [order]);
 
     return <div
