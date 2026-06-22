@@ -238,6 +238,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
     }
 
     if (selectedConsignment && moveNextStep) {
+      window.sessionStorage.setItem('CCC--address-input-changed', '0');
       gotoNextStep();
     }
   }
@@ -251,7 +252,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
   }, [shippingOptions, selectedShippingOptionId]);
 
   const shouldShowContinueButton = () => {
-    return (!customer || customer.isGuest) && (!customerShippingAddress?.postalCode || customerShippingAddress.firstName == 'TO_BE_ASSIGNED');
+    return (!customer || customer.isGuest) || (!customerShippingAddress?.postalCode || customerShippingAddress?.firstName == 'TO_BE_ASSIGNED');
   }
 
   return <>

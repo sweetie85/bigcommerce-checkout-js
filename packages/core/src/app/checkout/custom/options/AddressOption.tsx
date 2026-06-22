@@ -44,18 +44,37 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
     // }
   }, [countries]);
 
+  useEffect(() => {
+    console.log('isNewAddress: ');
+    const isNewAddress = window.sessionStorage.getItem('CCC--is-new-address');
+    setIsNewAddress(isNewAddress == '1')
+  }, []);
+
   const handleChange = (e: any) => {
     // console.log('e.target.value: '+e.target.value);
     setIsNewAddress(e.target.value == '1');
+
+    window.sessionStorage.setItem('CCC--is-new-address', e.target.value);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
     // console.log({ [e.target.name]: e.target.value })
 
+    window.sessionStorage.setItem('CCC--address-input-changed', '1');
+
     const updatedShippingAddress = {
       ...shippingAddress,
       [e.target.name]: e.target.value,
     } as AddressRequestBody;
+
+    updatedShippingAddress.countryCode = 'US';
+
+    if (e.target.name == 'stateOrProvinceCode') {
+      const province = provinces.find(p => p.code == e.target.value);
+      if (province) {
+        updatedShippingAddress.stateOrProvince = province.name;
+      }
+    }
 
     onInputChange(updatedShippingAddress);
     setShippingAddress(updatedShippingAddress);
@@ -124,7 +143,7 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
         </div>
       
         <div className="step-title step-title-radio flex-align-center mt-5">
-          <input onChange={handleChange} value={1} name="address_option_saved" id="choose_new_address" type="radio" ></input>
+          <input checked={isNewAddress} onChange={handleChange} value={1} name="address_option_saved" id="choose_new_address" type="radio" ></input>
           <label className={isNewAddress ? 'selected' : ''} htmlFor="choose_new_address">Enter a new adddress:</label>
         </div>
       </div>
@@ -167,7 +186,7 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
               {provinces.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
             </select>
           } */}
-          <select className="custom-form-input select" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange}>
+          <select className="custom-form-input select" name="stateOrProvinceCode" value={shippingAddress?.stateOrProvinceCode} onChange={handleInputChange}>
             <option value="">-- *Select a State --</option>
             {provinces.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
           </select>

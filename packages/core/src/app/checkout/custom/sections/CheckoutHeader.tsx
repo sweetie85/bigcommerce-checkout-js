@@ -44,7 +44,8 @@ const CheckoutHeader = ({activeStep = CheckoutStep.Consignment, onChangeStep} : 
   const cart = checkoutState.data.getCart();
 
   const verifyAndGotoStep = (step: CheckoutStep) =>  {
-    if (hasOrderSummaryEnabled) {
+    const addressChanged = window.sessionStorage.getItem('CCC--address-input-changed');
+    if (!(addressChanged == '1') && hasOrderSummaryEnabled) {
       onChangeStep(step)
     }
   }
