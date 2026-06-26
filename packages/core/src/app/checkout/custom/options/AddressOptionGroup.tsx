@@ -78,6 +78,15 @@ const AddressOptionGroup = ({
       [e.target.name]: e.target.value,
     } as AddressRequestBody;
 
+    updatedShippingAddress.countryCode = 'US';
+
+    if (e.target.name == 'stateOrProvinceCode') {
+      const province = provinces.find(p => p.code == e.target.value);
+      if (province) {
+        updatedShippingAddress.stateOrProvince = province.name;
+      }
+    }
+
     // onInputChange(updatedShippingAddress);
     setShippingAddress(updatedShippingAddress);
 
@@ -316,7 +325,7 @@ const AddressOptionGroup = ({
               {provinces.map(c => <option value={c.code}>{c.name}</option>)}
             </select>
           } */}
-          <select className="custom-form-input select" name="stateOrProvince" value={shippingAddress?.stateOrProvince} onChange={handleInputChange}>
+          <select className="custom-form-input select" name="stateOrProvinceCode" value={shippingAddress?.stateOrProvinceCode} onChange={handleInputChange}>
             <option value="">-- *Select a State --</option>
             {provinces.map(c => <option value={c.code}>{c.name}</option>)}
           </select>
