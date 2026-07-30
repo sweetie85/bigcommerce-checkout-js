@@ -1,9 +1,9 @@
 
 /* Footer */
 .site-footer {
-  background-color: #4a362b;
+  background-color: #0d301d;
   color: #ffffff;
-  padding: 60px 20px;
+  padding: 80px 20px;
   margin-top: 20px;
 
   .footer-container {
@@ -51,7 +51,7 @@
   }
 
   .footer-newsletter input {
-    width: 100%;
+    width: 250px;
     padding: 12px;
     border-radius: 4px;
     border: none;
@@ -60,12 +60,14 @@
   }
 
   .footer-newsletter button {
-    width: 100%;
+    // width: 100%;
     padding: 12px;
     background-color: #ffb000;
     border: none;
     border-radius: 4px;
-    font-weight: bold;
+    // font-weight: bold;
+    font-size: 12px;
+    width: 150px;
     cursor: pointer;
     color: #3a2a20;
     letter-spacing: 1px;
@@ -87,5 +89,133 @@
       grid-template-columns: 1fr;
     }
   }
+
+  /* New footer */
+
+  @font-face {
+    font-family: 'Karla';
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url(https://fonts.gstatic.com/s/karla/v33/qkBIXvYC6trAT55ZBi1ueQVIjQTD-JqaHUlKd7c.woff2) format('woff2');
+    unicode-range: U +0100 -02BA, U +02BD -02C5, U +02C7 -02CC, U +02CE -02D7, U +02DD -02FF, U +0304, U +0308, U +0329, U +1D00 -1DBF, U +1E00 -1E9F, U +1EF2 -1EFF, U +2020, U +20A0 -20AB, U +20AD -20C0, U +2113, U +2C60 -2C7F, U + A720-A7FF;
+  }
+
+  @font-face {
+    font-family: 'Komet Heavy';
+    src: url(https://carolinacookie.com/content/fonts/fonnts.com-Komet_Heavy.otf) format("opentype");
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Gabarito';
+    font-style: normal;
+    font-weight: 400 900;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/gabarito/v9/QGYtz_0dZAGKJJ4t3HtmW4XUng.woff2) format('woff2');
+    unicode-range: U +0100 -02BA, U +02BD -02C5, U +02C7 -02CC, U +02CE -02D7, U +02DD -02FF, U +0304, U +0308, U +0329, U +1D00 -1DBF, U +1E00 -1E9F, U +1EF2 -1EFF, U +2020, U +20A0 -20AB, U +20AD -20C0, U +2113, U +2C60 -2C7F, U + A720-A7FF;
+  }
+
+  .footer .accordion-content {
+      display: block;
+      padding: 0;
+  }
+
+  .footer-info-list {
+      list-style: none;
+      margin-left: 0;
+  }
+
+  .footer-info-list li {
+    font-weight: 400;
+    font-size: 12px;
+  }
+
+  .footer-info-list a {
+    color: #757575;
+    text-decoration: none;
+    font-family: Gabarito;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 118%;
+    letter-spacing: 3%;
+    text-transform: capitalize;
+    margin-bottom: 10px;
+    display: inline-block;
+  }
+
+  .footer-info-list a {
+    color: #757575;
+    text-decoration: none;
+  }
+
+  .footer-info-heading {
+    text-transform: capitalize;
+    font-size: 17px;
+    font-weight: 400;
+    font-family: Komet Heavy;
+    font-weight: 800;
+    font-size: 16px;
+    line-height: 100%;
+    letter-spacing: 0%;
+  }
+
+  .footer-info-heading, .footer-info-list a, .footer-info-list a:hover {
+    color: white;
+  }
+
+  .footer-info-col>:first-child {
+      margin-top: 0;
+      margin-bottom: 12px;
+  }
+
+  .footer-info-col {
+    padding-left: .75rem;
+    padding-right: .75rem;
+    width: 100%;
+    float: left;
+    color: #757575;
+    display: inline-block;
+    float: none;
+    font-size: 1rem;
+    overflow-wrap: break-word;
+    text-align: center;
+    vertical-align: top;
+    -ms-word-break: break-all;
+  }
+
+  .footer-newsletter .button, .footer-newsletter .button:hover {
+    background: #F6A601;
+    font-size: 12px;
+    width: 200px;
+    height: 40px;
+    font-family: 'Copperplate';
+    font-weight: 500;
+    color: #314B42;
+  }
+
+  @media (min-width: 551px) {
+    .footer-info-col {
+        text-align: left;
+        width: 50%;
+    }
+  }
+
+  @media (min-width: 801px) {
+    .footer-info-col--small {
+        width: 16.66667%;
+    }
+  }
+
+  @media (min-width: 801px) {
+    .footer-info-col--small {
+        margin: 0 50px;
+    }
+  }
+
+
+
+  /* End New footer */
 }
 /* End Footer */
