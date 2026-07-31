@@ -180,7 +180,7 @@
     float: none;
     font-size: 1rem;
     overflow-wrap: break-word;
-    text-align: center;
+    text-align: left;
     vertical-align: top;
     -ms-word-break: break-all;
   }
@@ -214,6 +214,69 @@
     }
   }
 
+  @media (max-width: 768px) {
+
+    .footer-logo {
+      display: none;
+    }
+
+    .site-footer {
+      padding: 0;
+    }
+
+    .footer-info {
+      margin: 0 1.5rem !important;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .footer-info-col.contact-info {
+      order: -1; /* keep in top */
+    }
+
+    .footer-info-col.contact-form {
+      margin: 20px 0 40px 0;
+    }
+
+    .accordion-header {
+      cursor: pointer;
+      position: relative;
+    }
+
+    .accordion-header::after {
+      content: url(https://cdn11.bigcommerce.com/s-fr5gzufqwh/images/stencil/original/image-manager/down-arrow.png?t=1754290640);
+      position: absolute;
+      right: 0;
+    }
+
+    .accordion-item.active .accordion-header::after {
+      content: url(https://cdn11.bigcommerce.com/s-fr5gzufqwh/images/stencil/original/image-manager/up-arrow.png?t=1754291090);
+    }
+
+    .accordion-content {
+      display: none;
+      padding: 1rem;
+    }
+
+    .accordion-item.active .accordion-content {
+      display: block;
+    }
+
+    h3.accordion-header {
+      padding-top: 16px;
+      margin-bottom: 0;
+    }
+
+    .footer-info-col>:first-child {
+      margin-top: 0;
+      margin-bottom: 24px;
+    }
+
+    .accordion-item h3.accordion-header {
+      border-top: 2px solid #fff;
+    }
+
+  }
 
 
   /* End New footer */
