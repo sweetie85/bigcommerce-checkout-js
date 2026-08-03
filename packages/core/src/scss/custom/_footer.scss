@@ -210,7 +210,12 @@
 
   @media (min-width: 801px) {
     .footer-info-col--small {
-        margin: 0 50px;
+        margin: 0 40px;
+    }
+
+    .footer-info-col--small p, 
+    .footer-info-col--small a {
+      font-size: 12px;
     }
   }
 
