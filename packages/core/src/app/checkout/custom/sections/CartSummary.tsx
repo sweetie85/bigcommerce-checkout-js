@@ -49,7 +49,8 @@ const CartSummary = () => {
           <div className="w-1/5"><img src={i.imageUrl} /></div>
           <div className="w-3/5">
             <div className="product-title text-sm">{i.quantity} x {i.name}</div>
-            {i.options?.map(o => <div key={o.nameId} className="text-sm product-option">{o.name} {o.value}</div>)}
+            {/* Hide Count from Cart and Checkout */}
+            {i.options?.filter(o => o.name != 'Count').map(o => <div key={o.nameId} className="text-sm product-option">{o.name} {o.value}</div>)}
           </div>
           <div className="w-1/5 text-sm product-price">${(i.salePrice * i.quantity).toFixed(2)}</div>
         </div>))

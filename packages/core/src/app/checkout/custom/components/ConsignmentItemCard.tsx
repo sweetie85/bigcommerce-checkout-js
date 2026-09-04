@@ -30,7 +30,8 @@ const ConsignmentItemCard = ({ i, unassignItem }: ConsignmentItemCardProps) => {
         {(i.options && i.options.length > 0) ?
           (isShowDetails ?
             <div>
-              {i.options?.map(o => <div key={o.nameId} className="font-medium product-option">{o.name} {o.value}</div>)}
+              {/* Hide Count from Cart and Checkout */}
+              {i.options?.filter(o => o.name != 'Count').map(o => <div key={o.nameId} className="font-medium product-option">{o.name} {o.value}</div>)}
               <div className="item-card__toggle-view" onClick={() => setIsShowDetails(!isShowDetails)}>View Less</div>
             </div>
             : 
