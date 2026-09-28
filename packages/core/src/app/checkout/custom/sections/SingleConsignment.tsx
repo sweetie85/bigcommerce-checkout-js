@@ -8,6 +8,7 @@ import { AddressRequestBody, Consignment, ConsignmentAssignmentRequestBody, Cons
 import { useCheckout } from "../context/CheckoutContext";
 import { GiftProduct } from "../types";
 import { addItemsToCart, handleCheckoutError, validateAddress } from "../utility";
+import GiftMessageOptionEdit from "../options/GiftMessageOptionEdit";
 
 interface SingleConsignmentProps {
   checkoutId: string;
@@ -251,6 +252,14 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
     }
   }, [shippingOptions, selectedShippingOptionId]);
 
+  const hasGiftItem = () => {
+    const cart = checkoutState.data.getCart();
+    if (!cart) {
+      return false
+    }
+    return !!cart.lineItems.physicalItems.find(i => !i.parentId && isGiftItem(i))
+  }
+
   const shouldShowContinueButton = () => {
     return (!customer || customer.isGuest) && (!customerShippingAddress?.postalCode || customerShippingAddress.firstName == 'TO_BE_ASSIGNED');
   }
@@ -300,7 +309,20 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
       </div>
     </div>
 
-    <hr style={{ margin: '30px 0'}} />      
+    <hr style={{ margin: '30px 0'}} />  
+    
+    { hasGiftItem() ?
+      <GiftMessageOptionEdit 
+        giftProducts={giftProducts} 
+        setGiftProductId={setGiftProductId} 
+        setGiftMessage={setGiftMessage} 
+        giftMessageLength={giftMessage ? giftMessage.length : 0}
+        selectedConsignment={selectedConsignment}
+        checkoutId={checkoutId}
+        setIsInProgress={setIsInProgress}
+        saveChanges={saveChanges}
+        />
+    :
     <GiftMessageOption 
       giftProducts={giftProducts} 
       setGiftProductId={setGiftProductId} 
@@ -308,6 +330,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
       giftMessageLength={giftMessage ? giftMessage.length : 0}
       selectedConsignment={selectedConsignment}
       />
+    }
 
     {/* <div style={{ textAlign: 'right', marginTop: '20px' }}>
       <button onClick={saveChanges} style={{ width: '200px', textAlign: 'center', backgroundColor: '#315B42', color: '#fff', borderRadius: '10px', padding: '10px'}}>SAVE CHANGES</button>

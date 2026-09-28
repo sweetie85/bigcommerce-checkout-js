@@ -135,8 +135,9 @@ const FutureShipDateOption = ({
       <label className="ml-2.5">{showNumbering && <span>{stepNumber}. </span>}(Optional) - Choose a Future Ship Date:</label>
     </div>
     <div className="ml-8">
-      <div className="mt-2.5 flex gap-2.5">
+      <div className="mt-2.5 flex items-start gap-2.5">
         <input 
+          className="mt-1"
           value="ship_now" 
           checked={shippingDateOption === "ship_now"} 
           name="ship_date_option" 
