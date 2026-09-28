@@ -151,7 +151,7 @@ const AddressOption = ({ updatedShippingAddress, onInputChange, selectedConsignm
       </>
       :
       <div className="step-title">
-        <label>{!customer || customer.isGuest ? '3' : '2'}. Shipping Address <span className="text-red-500">{errorMessage}</span></label>
+        <label>{!customer || customer.isGuest ? '3' : '2'}. Delivery Address <span className="text-red-500">{errorMessage}</span></label>
       </div>
     }
 

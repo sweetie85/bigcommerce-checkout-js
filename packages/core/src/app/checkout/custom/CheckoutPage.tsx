@@ -56,7 +56,7 @@ const CheckoutPage = ({ checkoutId, paymentForm  }: CustomCheckoutPageProps) => 
         }} giftProducts={giftProducts} />
 
       case CheckoutStep.OrderSummary:
-        return <OrderSummary onChangeTab={setActiveTabIndex} />
+        return <OrderSummary onChangeTab={setActiveTabIndex} checkoutId={checkoutId} />
 
       case CheckoutStep.Payment:
         return <CheckoutPayment checkoutId={checkoutId} paymentForm={paymentForm}/>

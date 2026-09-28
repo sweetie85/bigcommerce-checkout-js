@@ -132,7 +132,7 @@ const FutureShipDateOption = ({
 
   return <div>
     <div className="step-title">
-      <label className="ml-2.5">{showNumbering && <span>{stepNumber}. </span>}Choose a future ship date:</label>
+      <label className="ml-2.5">{showNumbering && <span>{stepNumber}. </span>}(Optional) - Choose a Future Ship Date:</label>
     </div>
     <div className="ml-8">
       <div className="mt-2.5 flex gap-2.5">
@@ -143,18 +143,19 @@ const FutureShipDateOption = ({
           onChange={handleOptionChange} 
           id={"future_ship_date_ship_all"} type="radio" >
         </input>
-        <label className="cursor-pointer" htmlFor={"future_ship_date_ship_all"}>Ship all items right away</label>
+        <label className="cursor-pointer" htmlFor={"future_ship_date_ship_all"}>Ship Now - Once cookies are baked and ready to go</label>
       </div>
-      <div className="mt-2.5 flex gap-2.5">
+      <div className="mt-2.5 flex items-start gap-2.5">
         {/* <input value="1" checked={shouldSelectShipDate} name="ship_date_option" onChange={handleChange} id={"future_ship_date_select_date"} type="radio" ></input> */}
         <input 
+          className="mt-1"
           value="ship_date" 
           checked={shippingDateOption === "ship_date"} 
           name="ship_date_option" 
           onChange={handleOptionChange} 
           id={"future_ship_date_select_date"} type="radio" >
         </input>
-        <label className="cursor-pointer" htmlFor={"future_ship_date_select_date"}>Choose a future ship date</label>
+        <label className="cursor-pointer" htmlFor={"future_ship_date_select_date"}>Ship in Future - Wait to ship until this date (i.e. holidays, birthday, etc.)</label>
       </div>
 
       {shippingDateOption === "ship_date" && <>
@@ -177,10 +178,11 @@ const FutureShipDateOption = ({
             }}
             customInput={<input readOnly={true} onKeyDown={(e) => e.preventDefault()} className="input-text md:w-75!" type="text" />}
             />
-            <svg onClick={() => setIsOpen((prev) => !prev)} className="absolute right-2.5 top-5 cursor-pointer" width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg onClick={() => setIsOpen((prev) => !prev)} className="absolute right-2.5 top-3 cursor-pointer" width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M14 2.14483L7.02143 9L-9.37535e-08 2.14483L2.21585 -5.15101e-07L6.97857 4.70206L11.7841 -9.6858e-08L14 2.14483Z" fill="#315B42"/>
             </svg>
         </div>
+        { newShipDate && <p>Your order will ship on the date selected above.</p> }
           {futureShipDateError && <p className="text-red-600">{futureShipDateError}</p>}
         </>
       }

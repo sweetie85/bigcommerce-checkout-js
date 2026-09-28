@@ -4,16 +4,22 @@ import { formatAddress } from "../../custom-utility";
 import { useCheckout } from "../context/CheckoutContext";
 import { CheckoutStep } from "../types";
 import { formatedDate } from "../utility";
+import ConfirmDialog from "../components/ConfirmDialog";
+import FullPageLoader from "../FullPageLoader";
 
 interface OrderSummaryProps {
+  checkoutId: string;
   onChangeTab: (index: CheckoutStep) => void;
 }
 
-const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
+const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
   const [mainCartItems, setMainCartItems] = useState<PhysicalItem[]>([]);
   const [shippingTotal, setShippingTotal] = useState<number>(0);
 
-  const { checkoutState, storeConfig } = useCheckout();
+  const [selectedItemIdToDelete, setSelectedItemIdToDelete] = useState<string | number | null>(null);
+  const [isInProgress, setIsInProgress] = useState(false);
+
+  const { checkoutState, storeConfig, checkoutService } = useCheckout();
   const { futureShipDateFieldId: FUTURE_SHIP_DATE_FIELD_ID } = storeConfig;
   
   const cart: Cart | undefined = checkoutState.data.getCart();
@@ -42,7 +48,26 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
     return totalAmount.toFixed(2);
   }
 
+  const removeCartItem = async (itemId: string | number) => {
+
+    setIsInProgress(true);
+
+    // Delete the item first
+    await fetch(`/api/storefront/carts/${checkoutId}/items/${itemId}`, {
+      method: 'DELETE',
+      credentials: 'same-origin'
+    })
+   
+    // Force SDK to refresh its internal state
+    await checkoutService.loadCheckout(checkoutId);
+    
+    setSelectedItemIdToDelete(null);
+    setIsInProgress(false);
+  };
+
   return <section className="order-summary relative">
+    {isInProgress && <FullPageLoader /> }
+    
     <p className="order-summary__title"> Order Summary</p>
     <div className="absolute right-10 -top-2">
       <button onClick={() => { 
@@ -65,7 +90,7 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
         {mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
         .map((i, index) => <div key={i.id}>
           
-          <div key={i.id} className="order-summary__cart-item">
+          <div key={i.id} className="order-summary__cart-item relative">
             <div className="w-25"><img src={i.imageUrl} /></div>
             <div className="w-[30%]">
               <div className="product-title">{i.quantity} x {i.name}</div>
@@ -89,6 +114,16 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
             <div className="product-price w-[10%] flex flex-col gap-5">
               <div className="min-h-12">${(i.salePrice * i.quantity).toFixed(2)}</div>
               {index == 0 && <div>${c.selectedShippingOption?.cost}</div>}
+            </div>
+
+            <div onClick={() => setSelectedItemIdToDelete(i.id) } className="absolute right-2 top-1 cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 6h18"/>
+                <path d="M8 6V4h8v2"/>
+                <path d="M19 6l-1 14H6L5 6"/>
+                <path d="M10 11v5"/>
+                <path d="M14 11v5"/>
+              </svg>
             </div>
           </div>
         </div>)}
@@ -134,6 +169,15 @@ const OrderSummary = ({ onChangeTab }: OrderSummaryProps) => {
         </div>
       }
     </div>
+
+    <ConfirmDialog 
+      isOpen={!!selectedItemIdToDelete} 
+      message="Are you sure you want to remove this item?" 
+      onConfirm={() => { 
+        removeCartItem(selectedItemIdToDelete as string);
+      }}
+      onCancel={() => setSelectedItemIdToDelete(null)}
+      />
   </section>
 }
 
