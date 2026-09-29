@@ -78,7 +78,7 @@ const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
 
     <div className="order-summary__cart-items custom-box-shadow">
 
-    <div className="order-summary__cart-item header">
+    <div className="order-summary__cart-item header text-base!">
       <div className="w-25">Item</div>
       <div className="w-[30%]"></div>
       <div className="w-[30%]">Delivery Address</div>
@@ -95,7 +95,7 @@ const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
             <div className="w-[30%]">
               <div className="product-title">{i.quantity} x {i.name}</div>
               {/* Hide Count from Cart and Checkout */}
-              {i.options?.filter(o => o.name != 'Count').map(o => <div key={o.nameId} className="product-option">{o.name} {o.value}</div>)}
+              {i.options?.filter(o => o.name != 'Count').map(o => <div key={o.nameId} className="product-option">{o.name}: {o.value}</div>)}
             </div>
             
             <div className="w-[30%]">
