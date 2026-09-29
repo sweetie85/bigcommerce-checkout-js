@@ -419,6 +419,16 @@
   }
 }
 
+.save-button {
+  background-color: #F6A601;
+  padding: space(2) space(2);
+  border-radius: space(2);
+
+  @include breakpoint('medium') {
+    padding: space(3) space(5);
+  }
+}
+
 .address-update-arrow-wrapper {
   cursor: pointer;
   display: flex;

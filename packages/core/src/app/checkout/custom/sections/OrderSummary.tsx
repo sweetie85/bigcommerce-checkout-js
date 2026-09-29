@@ -6,6 +6,7 @@ import { CheckoutStep } from "../types";
 import { formatedDate } from "../utility";
 import ConfirmDialog from "../components/ConfirmDialog";
 import FullPageLoader from "../FullPageLoader";
+import ShippingMethodOptionGroup from "../options/ShippingMethodOptionGroup";
 
 interface OrderSummaryProps {
   checkoutId: string;
@@ -65,6 +66,12 @@ const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
     setIsInProgress(false);
   };
 
+  const saveShippingMethod = async (consignmentId: string, shippingMethodId: string) => {
+    setIsInProgress(true);
+    await checkoutService.selectConsignmentShippingOption(consignmentId, shippingMethodId);
+    setIsInProgress(false);
+  }
+
   return <section className="order-summary relative">
     {isInProgress && <FullPageLoader /> }
     
@@ -107,13 +114,25 @@ const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
                 <div className="min-h-12">
                   {c.address.customFields[0] && c.address.customFields[0].fieldId == FUTURE_SHIP_DATE_FIELD_ID && c.address.customFields[0].fieldValue != '' ? formatedDate(c.address.customFields[0].fieldValue as string) : 'No Shipping date (standard)'}
                 </div>
-                <div>{c.selectedShippingOption?.description}</div>
+
+                {/* Check if shipping option is availble */}
+                {c.selectedShippingOption ?
+                  <div>{c.selectedShippingOption?.description}</div>
+                :
+                  <div>
+                    {/* Select shipping option */}
+                    <ShippingMethodOptionGroup selectedConsignment={c} handleChange={(id) => {
+                      saveShippingMethod(c.id, id);
+                    }} />
+                  </div>
+                }
+                
               </div>}
             </div>
 
             <div className="product-price w-[10%] flex flex-col gap-5">
               <div className="min-h-12">${(i.salePrice * i.quantity).toFixed(2)}</div>
-              {index == 0 && <div>${c.selectedShippingOption?.cost}</div>}
+              {(index == 0 && c.selectedShippingOption) && <div>${c.selectedShippingOption?.cost}</div>}
             </div>
 
             <div onClick={() => setSelectedItemIdToDelete(i.id) } className="absolute right-2 top-1 cursor-pointer">

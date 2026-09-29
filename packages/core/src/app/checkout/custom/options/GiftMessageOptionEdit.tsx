@@ -1,4 +1,4 @@
-import { Consignment, PhysicalItem } from "@bigcommerce/checkout-sdk";
+import { Consignment, ConsignmentAssignmentRequestBody, PhysicalItem } from "@bigcommerce/checkout-sdk";
 import React, { useEffect, useState } from "react"
 import { useCheckout } from "../context/CheckoutContext";
 import { GiftProduct } from "../types";
@@ -8,16 +8,15 @@ import ConfirmDialog from "../components/ConfirmDialog";
 interface GiftMessageOptionProps {
   showNumbering?: boolean;
   giftProducts: GiftProduct[];
-  setGiftProductId: (id: string) => void;
-  setGiftMessage: (message: string) => void;
   giftMessageLength: number;
   selectedConsignment: Consignment | null;
   checkoutId: string;
   setIsInProgress: (inProgress: boolean) => void;
   saveChanges: (moveNextStep: boolean) => void
+  selectedShippingOptionId: null | string;
 }
 
-const GiftMessageOptionEdit = ({ checkoutId, saveChanges, setIsInProgress, showNumbering = true, giftProducts, selectedConsignment, setGiftProductId, setGiftMessage, giftMessageLength }: GiftMessageOptionProps) => {
+const GiftMessageOptionEdit = ({ checkoutId, selectedShippingOptionId, saveChanges, setIsInProgress, showNumbering = true, giftProducts, selectedConsignment, giftMessageLength }: GiftMessageOptionProps) => {
 
   const [isEnabled, setIsEnabled] = useState(true);
   const [hasMultipleGiftMessage, setHasMultipleGiftMessage] = useState(false);
@@ -26,6 +25,10 @@ const GiftMessageOptionEdit = ({ checkoutId, saveChanges, setIsInProgress, showN
   const [isShowDeleteConfirmation, setIsShowDeleteConfirmation] = useState(false);
   const { checkoutState, checkoutService } = useCheckout();
   const [ giftMessageEdited, setGiftMessageEdited ] = useState('');
+
+  // Custom message
+  const [gitProductId, setGiftProductId] = useState<string | null>(null);
+  const [giftMessage, setGiftMessage] = useState<string | null>(null);
   
   const customer = checkoutState.data.getCustomer();
   const stepNumber = customer?.isGuest ? 6 : 5;
@@ -75,6 +78,10 @@ const GiftMessageOptionEdit = ({ checkoutId, saveChanges, setIsInProgress, showN
       method: 'DELETE',
       credentials: 'same-origin'
     })
+
+    if (selectedShippingOptionId) {
+      await checkoutService.selectShippingOption(selectedShippingOptionId);
+    }
     
     // Force SDK to refresh its internal state
     await checkoutService.loadCheckout(checkoutId);
@@ -92,10 +99,101 @@ const GiftMessageOptionEdit = ({ checkoutId, saveChanges, setIsInProgress, showN
       credentials: 'same-origin'
     })
     .then(res => res.json())
-    .then(data => {
-      saveChanges(false);
+    .then(async data => {
+      if (selectedShippingOptionId) {
+        await checkoutService.selectShippingOption(selectedShippingOptionId);
+      }
+      addItemToCart();
     });
   }
+
+  const addItemToCart = async () => {
+  
+      if (!gitProductId || !giftMessage) {
+        setIsInProgress(false);
+        return null;
+      }
+  
+      setIsInProgress(true);
+  
+      const [productId, optionId] = gitProductId.split('|');
+  
+      const lineItems = [];
+      const lineItem = {
+        quantity: 1,
+        productId: parseInt(productId),
+        optionSelections: [{
+          optionId: parseInt(optionId),
+          optionValue: giftMessage
+        }],
+      };
+  
+      lineItems.push(lineItem);
+  
+      const endpoint = checkoutId ? `/api/storefront/cart/${checkoutId}/items` : `/api/storefront/cart`;
+  
+      const payload = { lineItems };
+  
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify(payload)
+      });
+  
+      if (!res.ok) {
+        const error = await res.json();
+        console.error('Add item error:', error);
+        alert('Error adding add-ons: ' + (error.title || 'Unknown error'));
+        
+        setIsInProgress(false);
+        return null;
+      } else {
+  
+        // console.log('Item added successfully.');
+        // window.location.reload();
+        // console.log(res);
+  
+        const response = await res.json();
+        const physicalItems = response.lineItems.physicalItems as PhysicalItem[];
+  
+        // Collect only main products
+        const cartItems = physicalItems.filter(i => !i.parentId);
+        const lastItem = cartItems[cartItems.length - 1];
+  
+        const giftItem = { itemId: lastItem.id, quantity: 1 };
+  
+        if (selectedConsignment) {
+          // selectedConsignment.lineItemIds.push(giftItem);
+  
+          // Capture selected shipping option
+          const shippingOptionId = selectedConsignment.selectedShippingOption?.id;
+  
+          const requestBody = {
+            address: selectedConsignment.address,
+            shippingAddress: selectedConsignment.address,
+            lineItems: [giftItem],
+          } as ConsignmentAssignmentRequestBody;
+  
+          // console.log('assignItemsToAddress: ');
+          // console.log(requestBody);
+  
+          await checkoutService.assignItemsToAddress(requestBody);
+  
+          // Setting back shipping methods again
+          if (shippingOptionId) {
+            await checkoutService.selectConsignmentShippingOption(selectedConsignment.id, shippingOptionId);
+          }
+  
+          setIsEnabled(false);
+        }
+      }
+  
+      setIsInProgress(false);
+    }
 
 
   const remainingCharacters = () => {

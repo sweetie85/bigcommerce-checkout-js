@@ -187,6 +187,8 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
 
   const saveChanges = async (moveNextStep = true, removeFufureShipDate = false) => {
 
+    debugger;
+    
     if (shouldSelectShipDate && !futureShipDate) {
       setFutureShipDateError('Please select future ship date!');
       return;
@@ -314,13 +316,12 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
     { hasGiftItem() ?
       <GiftMessageOptionEdit 
         giftProducts={giftProducts} 
-        setGiftProductId={setGiftProductId} 
-        setGiftMessage={setGiftMessage} 
         giftMessageLength={giftMessage ? giftMessage.length : 0}
         selectedConsignment={selectedConsignment}
         checkoutId={checkoutId}
         setIsInProgress={setIsInProgress}
         saveChanges={saveChanges}
+        selectedShippingOptionId={selectedShippingOptionId}
         />
     :
     <GiftMessageOption 
