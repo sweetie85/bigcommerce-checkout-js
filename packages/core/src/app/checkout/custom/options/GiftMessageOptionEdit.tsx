@@ -55,6 +55,11 @@ const GiftMessageOptionEdit = ({ checkoutId, selectedShippingOptionId, saveChang
 
           if (giftItem && giftItem.options) {
             setGiftMessageEdited(giftItem.options[0].value);
+
+            const giftProductVariantId = giftItem.productId + '|' + giftItem.options[0].nameId;
+
+            setGiftProductId(giftProductVariantId);
+            setGiftMessage(giftItem.options[0].value);
           }
         } else {
           // console.log('setHasMultipleGiftMessage false');
@@ -100,15 +105,12 @@ const GiftMessageOptionEdit = ({ checkoutId, selectedShippingOptionId, saveChang
     })
     .then(res => res.json())
     .then(async data => {
-      if (selectedShippingOptionId) {
-        await checkoutService.selectShippingOption(selectedShippingOptionId);
-      }
-      addItemToCart();
+      await addItemToCart();
     });
   }
 
   const addItemToCart = async () => {
-  
+
       if (!gitProductId || !giftMessage) {
         setIsInProgress(false);
         return null;
@@ -188,7 +190,11 @@ const GiftMessageOptionEdit = ({ checkoutId, selectedShippingOptionId, saveChang
             await checkoutService.selectConsignmentShippingOption(selectedConsignment.id, shippingOptionId);
           }
   
+          // Force SDK to refresh its internal state
+          await checkoutService.loadCheckout(checkoutId);
+
           setIsEnabled(false);
+          setIsInProgress(true);
         }
       }
   
