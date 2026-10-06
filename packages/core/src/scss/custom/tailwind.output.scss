@@ -33,9 +33,6 @@
 .-top-2 {
   top: calc(var(--spacing) * -2);
 }
-.top-1 {
-  top: calc(var(--spacing) * 1);
-}
 .top-3 {
   top: calc(var(--spacing) * 3);
 }
@@ -44,9 +41,6 @@
 }
 .top-5 {
   top: calc(var(--spacing) * 5);
-}
-.right-2 {
-  right: calc(var(--spacing) * 2);
 }
 .right-2\.5 {
   right: calc(var(--spacing) * 2.5);
@@ -116,6 +110,9 @@
 }
 .flex {
   display: flex;
+}
+.inline {
+  display: inline;
 }
 .h-5\.5 {
   height: calc(var(--spacing) * 5.5);
@@ -194,6 +191,9 @@
 }
 .justify-start\! {
   justify-content: flex-start !important;
+}
+.gap-1 {
+  gap: calc(var(--spacing) * 1);
 }
 .gap-2 {
   gap: calc(var(--spacing) * 2);
