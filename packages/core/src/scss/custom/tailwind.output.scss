@@ -111,8 +111,8 @@
 .flex {
   display: flex;
 }
-.inline {
-  display: inline;
+.hidden {
+  display: none;
 }
 .h-5\.5 {
   height: calc(var(--spacing) * 5.5);
@@ -373,6 +373,11 @@
 }
 .filter {
   filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+}
+.disabled\:opacity-40 {
+  &:disabled {
+    opacity: 40%;
+  }
 }
 .max-md\:hidden {
   @media (width < 48rem) {

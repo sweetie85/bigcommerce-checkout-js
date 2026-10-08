@@ -35,6 +35,10 @@ const GiftMessageOption = ({ showNumbering = true, giftProducts, selectedConsign
 
         const giftItems = selectedConsignmentItems.filter(i => i.sku.startsWith('CARD-'));
 
+        if (giftItems.length > 0) {
+          setIsEnabled(true);
+        }
+
         if (giftItems.length >= 1) {
           // console.log('setHasMultipleGiftMessage true');
           setHasMultipleGiftMessage(true);
@@ -57,7 +61,7 @@ const GiftMessageOption = ({ showNumbering = true, giftProducts, selectedConsign
   return <div className="add-gift-single-popup-wrapper">
     <div className="step-title">
       <input onChange={(e) => setIsEnabled(!isEnabled)} name="address_option_saved" id="choose_gift_item" type="radio" value={1} ></input>
-      <label htmlFor="choose_gift_item" className="ml-2.5">{showNumbering && <span>{stepNumber}. </span>} Add Gift Message: (If this is a gift, be sure to include so your recipient knows who sent the gift. Billing name will not appear on packing slip.)</label>
+      <label htmlFor="choose_gift_item" className="ml-2.5 this-is-not-edit">{showNumbering && <span>{stepNumber}. </span>} Add Gift Message: (If this is a gift, be sure to include so your recipient knows who sent the gift. Billing name will not appear on packing slip.)</label>
     </div>
 
     {isEnabled && <>
