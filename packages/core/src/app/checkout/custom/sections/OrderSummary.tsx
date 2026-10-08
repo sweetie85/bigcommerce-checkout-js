@@ -5,6 +5,7 @@ import { CheckoutStep } from "../types";
 import ConfirmDialog from "../components/ConfirmDialog";
 import FullPageLoader from "../FullPageLoader";
 import OrderSummaryItemRow from "../options/OrderSummaryItemRow";
+import { isHoldingConsignment } from "../utility";
 
 interface OrderSummaryProps {
   checkoutId: string;
@@ -17,11 +18,13 @@ const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
 
   const [selectedItemIdToDelete, setSelectedItemIdToDelete] = useState<string | number | null>(null);
   const [isInProgress, setIsInProgress] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { checkoutState, checkoutService } = useCheckout();
   
   const cart: Cart | undefined = checkoutState.data.getCart();
   const consignments: Consignment[] | undefined = checkoutState.data.getConsignments() ?? [];
+  const [hasPaymentEnabled, setHasPaymentEnabled] = useState(false);
 
   useEffect(() => {
     let shippingTotal = 0;
@@ -34,6 +37,31 @@ const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
     if (cart) {
       const mainItems = cart.lineItems.physicalItems.filter(c => !c.parentId);
       setMainCartItems(mainItems);
+    
+
+      // Check if all item as having consignment
+      const userConsignments = consignments.filter(c => !isHoldingConsignment(c))
+
+      // Ensure all line items are included
+      const totalItems = cart.lineItems.physicalItems.filter(i => !i.parentId).length
+      const itemsInConsignments = userConsignments.reduce(
+        (sum, c) => sum + c.lineItemIds.filter(i => cart.lineItems.physicalItems.find(p => p.id == i && !p.parentId)).length,
+        0
+      )
+
+      const allConsignmentsHaveShipping = userConsignments.every(
+        c => !!c.selectedShippingOption
+      );
+
+      if (totalItems === itemsInConsignments && allConsignmentsHaveShipping) {
+        setHasPaymentEnabled(true);
+      } else {
+        setHasPaymentEnabled(false);
+      }
+
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 3000);
     }
   }, [consignments]);
 
@@ -71,7 +99,7 @@ const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
       <button onClick={() => { 
         onChangeTab(CheckoutStep.Payment);
         window.scrollTo({ top: 0, behavior: 'smooth'});
-      }} className="bg-[#F6A601] py-3 px-12.5 rounded-lg">GO TO PAYMENT</button>
+      }} disabled={!hasPaymentEnabled} className="bg-[#F6A601] py-3 px-12.5 rounded-lg disabled:opacity-40">GO TO PAYMENT</button>
     </div>
 
     <div className="order-summary__cart-items custom-box-shadow">
@@ -89,6 +117,7 @@ const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
         .map((i, index) => <OrderSummaryItemRow i={i} c={c} index={index}
           setIsInProgress={setIsInProgress}
           setSelectedItemIdToDelete={setSelectedItemIdToDelete}
+          isLoading={isLoading}
         />)}
       </div>
       )}
@@ -127,7 +156,8 @@ const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
           <button onClick={() => { 
             onChangeTab(CheckoutStep.Payment);
             window.scrollTo({ top: 0, behavior: 'smooth'});
-          }} className="bg-[#F6A601] py-3 px-12 mt-7 rounded-lg">GO TO PAYMENT</button>
+          }} className="bg-[#F6A601] py-3 px-12 mt-7 rounded-lg disabled:opacity-40"
+          disabled={!hasPaymentEnabled}>GO TO PAYMENT</button>
           <p className="w-[40%] mt-5 text-left text-[#f6a601]">*Please review your order carefully-due to our baking schedule, changes cannot be made once orders are submitted. Thank you for understanding!</p>
         </div>
       }

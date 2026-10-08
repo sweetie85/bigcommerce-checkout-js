@@ -11,9 +11,10 @@ interface OrderSummaryItemRowProps {
   index: number;
   setIsInProgress: (isSet: boolean) => void;
   setSelectedItemIdToDelete: (id: string | number | null) => void
+  isLoading: boolean;
 }
 
-const OrderSummaryItemRow = ({ i, c, index, setIsInProgress, setSelectedItemIdToDelete }: OrderSummaryItemRowProps) => {
+const OrderSummaryItemRow = ({ i, c, index, isLoading, setIsInProgress, setSelectedItemIdToDelete }: OrderSummaryItemRowProps) => {
   const [isEditShipping, setIsEditShipping] = useState(false);
 
   const { storeConfig, checkoutService } = useCheckout();
@@ -81,13 +82,14 @@ const OrderSummaryItemRow = ({ i, c, index, setIsInProgress, setSelectedItemIdTo
               </span>
             </div>
           :
-            <div>
+            <div className={`${isLoading ? 'hidden' : '' }`}>
               {/* Select shipping option */}
               <ShippingMethodOptionGroup selectedConsignment={c} handleChange={(id) => {
                 if (id) {
                   saveShippingMethod(id);
                 }
               }} />
+              { !c.selectedShippingOption && <p className="text-red-600">Plese select shipping method</p>}
               { isEditShipping && <div className="mt-2">
                 <button className="underline" onClick={() => setIsEditShipping(false)}>Cancel</button>
               </div>}
