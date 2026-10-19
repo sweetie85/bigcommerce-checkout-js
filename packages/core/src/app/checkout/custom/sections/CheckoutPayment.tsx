@@ -2,6 +2,10 @@ import { AddressRequestBody, CheckoutStoreSelector, Region } from "@bigcommerce/
 import React, { ReactNode, useEffect, useState } from "react";
 import { useCheckout } from "../context/CheckoutContext";
 import PaymentOptionsImage from "../../../../static/payment-gateways.png"
+import PaypalCheckoutImage from "../../../../static/paypal_checkout.png"
+import PaypalPayLaterImage from "../../../../static/paypal_pay_later.png"
+import VenmoCheckoutImage from "../../../../static/venmo_checkout.png"
+import GooglePayImage from "../../../../static/google_pay.png"
 import FullPageLoader from "../FullPageLoader";
 import { validateAddress } from "../utility";
 
@@ -109,20 +113,23 @@ const CheckoutPayment = ({ checkoutId, paymentForm } :CheckoutPaymentProps) => {
     }
   }
 
-  return <section className="payment-page">
+  return <section className="payment-page max-md:m-0!">
     {isInProgress && <FullPageLoader /> }
     
     <p className="payment-page__title">Billing & Payment Information</p>
-    <div className="payment-page__wrapper">
+    <div className="payment-page__wrapper max-md:p-3!">
       <div>
-        <div className="text-sm font-bold">Check out faster with:</div>
-        <div>
-          <img className="w-[70%]" src={PaymentOptionsImage} alt="Payment options"/>
+        <div className="text-base font-bold">Check out faster with:</div>
+        <div className="mt-4 gap-2 w-full md:w-[70%] grid grid-cols-2 md:grid-cols-4">
+          <img className="" src={PaypalCheckoutImage} alt="Payment options"/>
+          <img className="" src={PaypalPayLaterImage} alt="Payment options"/>
+          <img className="" src={VenmoCheckoutImage} alt="Payment options"/>
+          <img className="" src={GooglePayImage} alt="Payment options"/>
         </div>
       </div>
 
       <p className="text-base font-bold mt-5">Billing Address: <span className="text-red-500">{errorMessage}</span></p>
-      <div className="px-15">
+      <div className="px-0 md:px-15">
         <div className="form-field-row">
           <input className="custom-form-input text" type="text" placeholder="*First Name" name="firstName" value={billingAddress?.firstName} onChange={handleInputChange} />
           <input className="custom-form-input text" type="text" placeholder="*Last Name" name="lastName" value={billingAddress?.lastName} onChange={handleInputChange} />
@@ -166,7 +173,7 @@ const CheckoutPayment = ({ checkoutId, paymentForm } :CheckoutPaymentProps) => {
       </div>
 
       {(savedBillingAddress && savedBillingAddress.postalCode) && <>
-        <p className="text-sm font-bold mt-5">Payment: </p>
+        <p className="text-base font-bold mt-5">Payment: </p>
           { paymentForm }
         </>
       }

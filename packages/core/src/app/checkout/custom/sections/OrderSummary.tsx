@@ -94,18 +94,18 @@ const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
   return <section className="order-summary relative">
     {isInProgress && <FullPageLoader /> }
     
-    <p className="order-summary__title"> Order Summary</p>
-    <div className="absolute right-10 -top-2">
+    <p className="order-summary__title max-md:pb-0!"> Order Summary</p>
+    <div className="max-md:text-right max-md:my-5 max-md:pr-2 md:absolute md:right-10 md:-top-2">
       <button onClick={() => { 
         onChangeTab(CheckoutStep.Payment);
         window.scrollTo({ top: 0, behavior: 'smooth'});
-      }} disabled={!hasPaymentEnabled} className="bg-[#F6A601] py-3 px-12.5 rounded-lg disabled:opacity-40">GO TO PAYMENT</button>
+      }} disabled={!hasPaymentEnabled} className="bg-[#F6A601] py-3 px-12 rounded-lg disabled:opacity-40">GO TO PAYMENT</button>
     </div>
 
-    <div className="order-summary__cart-items custom-box-shadow">
+    <div className="order-summary__cart-items custom-box-shadow mx-0! md:mx-10!">
 
-    <div className="order-summary__cart-item header text-base!">
-      <div className="w-25">Item</div>
+    <div className="order-summary__cart-item header text-xs! md:text-base! max-md:gap-2!">
+      <div className="w-[10%]">Item</div>
       <div className="w-[30%]"></div>
       <div className="w-[30%]">Delivery Address</div>
       <div className="w-[20%]">Ship Date and Method</div>
@@ -125,10 +125,10 @@ const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
       <hr className="border-[#315B42]" />
 
       <div className="order-summary__footer">
-        <p className="w-2/5 font-bold">
+        <p className="w-1/5 md:w-2/5 font-bold">
         </p>
 
-        <div className="cart-summary p-0">
+        <div className="cart-summary p-0! max-md:w-4/5!">
           <div className="cart-amount-line pt-0">
             <span>Subtotal</span>
             <span>${cart?.baseAmount}</span>
@@ -158,7 +158,7 @@ const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
             window.scrollTo({ top: 0, behavior: 'smooth'});
           }} className="bg-[#F6A601] py-3 px-12 mt-7 rounded-lg disabled:opacity-40"
           disabled={!hasPaymentEnabled}>GO TO PAYMENT</button>
-          <p className="w-[40%] mt-5 text-left text-[#f6a601]">*Please review your order carefully-due to our baking schedule, changes cannot be made once orders are submitted. Thank you for understanding!</p>
+          <p className="w-4/5 md:w-2/5 mt-5 text-left text-[#f6a601]">*Please review your order carefully-due to our baking schedule, changes cannot be made once orders are submitted. Thank you for understanding!</p>
         </div>
       }
     </div>

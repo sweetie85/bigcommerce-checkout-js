@@ -28,8 +28,8 @@ const OrderSummaryItemRow = ({ i, c, index, isLoading, setIsInProgress, setSelec
   }
   
   return <div key={i.id}>
-    <div key={i.id} className="order-summary__cart-item relative">
-      <div className="w-25"><img src={i.imageUrl} /></div>
+    <div key={i.id} className="order-summary__cart-item relative max-md:gap-2!">
+      <div className="w-[10%]"><img src={i.imageUrl} /></div>
       <div className="w-[30%]">
         <div className="product-title">{i.quantity} x {i.name}</div>
         {/* Hide Count from Cart and Checkout */}

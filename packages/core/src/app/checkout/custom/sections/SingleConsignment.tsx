@@ -187,7 +187,7 @@ const SingleConsignment = ({ checkoutId, giftProducts, setIsInProgress, gotoNext
 
   const saveChanges = async (moveNextStep = true, removeFufureShipDate = false) => {
 
-    debugger;
+    // debugger;
     
     if (shouldSelectShipDate && !futureShipDate) {
       setFutureShipDateError('Please select future ship date!');
