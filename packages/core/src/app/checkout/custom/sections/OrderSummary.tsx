@@ -8,6 +8,7 @@ import OrderSummaryItemRow from "../options/OrderSummaryItemRow";
 import { isHoldingConsignment } from "../utility";
 import OrderSummaryItemRowMobile from "../options/OrderSummaryItemRowMobile";
 import OrderSummaryItemRowMobileBottom from "../options/OrderSummaryItemRowMobileBottom";
+import CouponCodeBlock from "../components/CouponCode";
 
 interface OrderSummaryProps {
   checkoutId: string;
@@ -148,32 +149,38 @@ const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
         )}
       </div>
     
-      <hr className="border-[#315B42]" />
+      <hr className="max-md:hidden border-[#315B42]" />
 
-      <div className="order-summary__footer">
-        <p className="w-1/5 md:w-2/5 font-bold">
-        </p>
+      <div className="max-md:bg-[#E0E6E3] max-md:py-5 mt-5 -mx-5 px-5">
+        <div className="order-summary__footer max-md:mt-0!">
+          <p className="w-1/5 md:w-2/5 font-bold">
+          </p>
 
-        <div className="cart-summary p-0! max-md:w-4/5!">
-          <div className="cart-amount-line pt-0">
-            <span>Subtotal</span>
-            <span>${cart?.baseAmount}</span>
-          </div>
-          <div className="cart-amount-line">
-            <span>Shipping</span>
-            <span>{ shippingTotal || shippingTotal === 0 ? '$'+shippingTotal.toFixed(2) : 'TBD' }</span>
-          </div>
-          <div className="cart-amount-line">
-            <span>Tax</span>
-            <span>$0.00</span>
-          </div>
+          <div className="cart-summary p-0! max-md:w-4/5! max-md:bg-[#E0E6E3]!">
+            <div className="cart-amount-line pt-0">
+              <span>Subtotal</span>
+              <span>${cart?.baseAmount}</span>
+            </div>
+            <div className="cart-amount-line">
+              <span>Shipping</span>
+              <span>{ shippingTotal || shippingTotal === 0 ? '$'+shippingTotal.toFixed(2) : 'TBD' }</span>
+            </div>
+            <div className="cart-amount-line">
+              <span>Tax</span>
+              <span>$0.00</span>
+            </div>
 
-          <hr className="border-[#315B42]" />
+            <hr className="border-[#315B42]" />
 
-          <div className="cart-amount-line">
-            <span className="text-lg">Total (USD)</span>
-            <span className="text-xl font-bold">${cartTotalAmount()}</span>
+            <div className="cart-amount-line">
+              <span className="text-lg">Total (USD)</span>
+              <span className="text-xl font-bold">${cartTotalAmount()}</span>
+            </div>
           </div>
+        </div>
+
+        <div className="md:hidden px-4 text-center">
+          <CouponCodeBlock />
         </div>
       </div>
 

@@ -33,12 +33,12 @@ const CouponCodeBlock = () => {
     await checkoutService.removeCoupon(code);
   }
 
-  return <div className="custom-box-shadow bg-white p-4 mt-6 rounded-lg">
+  return <div className="custom-box-shadow bg-white p-2 pb-1 md:p-4 mt-6 rounded-lg">
     <div>
-      <label className="text-lg cursor-pointer" onClick={() => setIsShowPromoCode(!isShowPromoCode)}>Apply a Promo code</label>
+      <label className="max-md:text-center text-lg cursor-pointer" onClick={() => setIsShowPromoCode(!isShowPromoCode)}>Apply a Promo code</label>
     </div>
 
-    { isShowPromoCode && <div className="mt-2 flex gap-2 items-center">
+    { isShowPromoCode && <div className="mt-2 flex gap-2 items-center max-md:justify-center">
       <input id="couponCode" className="p-2 rounded" type="text"  placeholder="PROMO CODE" />
       <button className="bg-[#F6A601] rounded-lg py-2 px-5" onClick={applyCoupon}>Apply</button>
     </div>}
