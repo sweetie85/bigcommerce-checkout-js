@@ -6,6 +6,8 @@ import ConfirmDialog from "../components/ConfirmDialog";
 import FullPageLoader from "../FullPageLoader";
 import OrderSummaryItemRow from "../options/OrderSummaryItemRow";
 import { isHoldingConsignment } from "../utility";
+import OrderSummaryItemRowMobile from "../options/OrderSummaryItemRowMobile";
+import OrderSummaryItemRowMobileBottom from "../options/OrderSummaryItemRowMobileBottom";
 
 interface OrderSummaryProps {
   checkoutId: string;
@@ -95,7 +97,7 @@ const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
     {isInProgress && <FullPageLoader /> }
     
     <p className="order-summary__title max-md:pb-0!"> Order Summary</p>
-    <div className="max-md:text-right max-md:my-5 max-md:pr-2 md:absolute md:right-10 md:-top-2">
+    <div className="max-md:text-center max-md:my-5 max-md:pr-2 md:absolute md:right-10 md:-top-2">
       <button onClick={() => { 
         onChangeTab(CheckoutStep.Payment);
         window.scrollTo({ top: 0, behavior: 'smooth'});
@@ -104,23 +106,47 @@ const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
 
     <div className="order-summary__cart-items custom-box-shadow mx-0! md:mx-10!">
 
-    <div className="order-summary__cart-item header text-xs! md:text-base! max-md:gap-2!">
-      <div className="w-[10%]">Item</div>
-      <div className="w-[30%]"></div>
-      <div className="w-[30%]">Delivery Address</div>
-      <div className="w-[20%]">Ship Date and Method</div>
-      <div className="w-[10%]">Price</div>
-    </div>
+      {/* Mobile view */}
+      <div className="md:hidden">
+        { consignments.map((c, cIndex) => <><div style={{ borderWidth: '1px' }} className={`order-summary__consignment ${cIndex > 0 ? 'border-top! border-black! mt-4!' : 'border-0!'}`}>
+          {mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
+          .map((i, index) => <OrderSummaryItemRowMobile i={i} c={c} index={index}
+            setIsInProgress={setIsInProgress}
+            setSelectedItemIdToDelete={setSelectedItemIdToDelete}
+            isLoading={isLoading}
+          />)}
+        </div>
 
-      { consignments.map(c => <div className="order-summary__consignment">
-        {mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
-        .map((i, index) => <OrderSummaryItemRow i={i} c={c} index={index}
-          setIsInProgress={setIsInProgress}
-          setSelectedItemIdToDelete={setSelectedItemIdToDelete}
-          isLoading={isLoading}
-        />)}
+        <div>
+          <OrderSummaryItemRowMobileBottom c={consignments[cIndex]}
+            setIsInProgress={setIsInProgress}
+            setSelectedItemIdToDelete={setSelectedItemIdToDelete}
+            isLoading={isLoading} />
+        </div>
+        </>
+        )}
       </div>
-      )}
+
+      {/* Desktop view */}
+      <div className="max-md:hidden">
+        <div className="order-summary__cart-item header text-xs! md:text-base! max-md:gap-2!">
+          <div className="w-[10%]">Item</div>
+          <div className="w-[30%]"></div>
+          <div className="w-[30%]">Delivery Address</div>
+          <div className="w-[20%]">Ship Date and Method</div>
+          <div className="w-[10%]">Price</div>
+        </div>
+
+        { consignments.map(c => <div className="order-summary__consignment">
+          {mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
+          .map((i, index) => <OrderSummaryItemRow i={i} c={c} index={index}
+            setIsInProgress={setIsInProgress}
+            setSelectedItemIdToDelete={setSelectedItemIdToDelete}
+            isLoading={isLoading}
+          />)}
+        </div>
+        )}
+      </div>
     
       <hr className="border-[#315B42]" />
 
