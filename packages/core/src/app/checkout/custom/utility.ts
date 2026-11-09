@@ -148,3 +148,22 @@ export const addItemsToCart = async (checkoutId: string, gitProductId: string | 
       return { itemId: lastItem.id, quantity: lastItem.quantity };
     }
   }
+
+export async function deleteConsignment(checkoutId: string, consignmentId: string) {
+  const response = await fetch(
+      `/api/storefront/checkouts/${checkoutId}/consignments/${consignmentId}`,
+      {
+          method: 'DELETE',
+          credentials: 'same-origin',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+      }
+  );
+
+  if (!response.ok) {
+      throw new Error('Unable to delete consignment');
+  }
+
+  return true;
+}

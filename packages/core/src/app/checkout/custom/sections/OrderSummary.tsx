@@ -5,7 +5,7 @@ import { CheckoutStep } from "../types";
 import ConfirmDialog from "../components/ConfirmDialog";
 import FullPageLoader from "../FullPageLoader";
 import OrderSummaryItemRow from "../options/OrderSummaryItemRow";
-import { isHoldingConsignment } from "../utility";
+import { deleteConsignment, isHoldingConsignment } from "../utility";
 import OrderSummaryItemRowMobile from "../options/OrderSummaryItemRowMobile";
 import OrderSummaryItemRowMobileBottom from "../options/OrderSummaryItemRowMobileBottom";
 import CouponCodeBlock from "../components/CouponCode";
@@ -29,7 +29,20 @@ const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
   const consignments: Consignment[] | undefined = checkoutState.data.getConsignments() ?? [];
   const [hasPaymentEnabled, setHasPaymentEnabled] = useState(false);
 
+  
+
   useEffect(() => {
+
+    // Check for empty item consignments
+    const emptyConsignments = consignments.filter(c => c.lineItemIds.length == 0);
+    console.log('empty emptyConsignments');
+    console.log(emptyConsignments);
+
+    emptyConsignments.forEach(async c => {
+      await deleteConsignment(checkoutId, c.id);
+      await checkoutService.loadCheckout(checkoutId);
+    });
+
     let shippingTotal = 0;
     for(let i = 0; i < consignments.length; i++) {
       shippingTotal += consignments[i].shippingCost;
@@ -110,19 +123,23 @@ const OrderSummary = ({ checkoutId, onChangeTab }: OrderSummaryProps) => {
       {/* Mobile view */}
       <div className="md:hidden">
         { consignments.map((c, cIndex) => <><div style={{ borderWidth: '1px' }} className={`order-summary__consignment ${cIndex > 0 ? 'border-top! border-black! mt-4!' : 'border-0!'}`}>
-          {mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
-          .map((i, index) => <OrderSummaryItemRowMobile i={i} c={c} index={index}
-            setIsInProgress={setIsInProgress}
-            setSelectedItemIdToDelete={setSelectedItemIdToDelete}
-            isLoading={isLoading}
-          />)}
-        </div>
-
-        <div>
-          <OrderSummaryItemRowMobileBottom c={consignments[cIndex]}
-            setIsInProgress={setIsInProgress}
-            setSelectedItemIdToDelete={setSelectedItemIdToDelete}
-            isLoading={isLoading} />
+          { mainCartItems.filter(i => c.lineItemIds.includes(i.id as string))
+          .map((i, index, filteredItems) => <>
+            <OrderSummaryItemRowMobile i={i} c={c} index={index}
+              setIsInProgress={setIsInProgress}
+              setSelectedItemIdToDelete={setSelectedItemIdToDelete}
+              isLoading={isLoading}
+            />
+            {index === filteredItems.length - 1 && (
+              <div>
+                <OrderSummaryItemRowMobileBottom c={consignments[cIndex]}
+                  setIsInProgress={setIsInProgress}
+                  setSelectedItemIdToDelete={setSelectedItemIdToDelete}
+                  isLoading={isLoading} 
+                />
+              </div>
+            )}
+          </>)}
         </div>
         </>
         )}

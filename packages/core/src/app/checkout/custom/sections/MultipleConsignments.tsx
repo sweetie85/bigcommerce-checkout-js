@@ -10,7 +10,7 @@ import ConsignmentItemCard from "../components/ConsignmentItemCard";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { GiftProduct, CustomItem } from "../types";
 import GiftMessageOptionGroupEdit from "../options/GiftMessageOptionGroupEdit";
-import { isHoldingConsignment, isIncompleteConsignment } from "../utility";
+import { deleteConsignment, isHoldingConsignment, isIncompleteConsignment } from "../utility";
 
 interface SelectItemsProps {
   checkoutId: string;
@@ -50,6 +50,17 @@ const MultipleConsignments = ({
 
   useEffect(() => {
     if (cart) {
+
+      // Check for empty item consignments
+      const emptyConsignments = consignments.filter(c => c.lineItemIds.length == 0);
+      console.log('Empty Consignments');
+      console.log(emptyConsignments);
+
+      emptyConsignments.forEach(async c => {
+        await deleteConsignment(checkoutId, c.id);
+        await checkoutService.loadCheckout(checkoutId);
+      });
+      
       const physicalItems = cart.lineItems.physicalItems.filter(c => !c.parentId);
       const mainItems = [] as CustomItem[];
 

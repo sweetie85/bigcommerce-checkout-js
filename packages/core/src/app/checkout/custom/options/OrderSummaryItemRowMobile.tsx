@@ -18,13 +18,33 @@ const ItemTitle = ({ i }: { i: PhysicalItem; }) => {
   const [isViewDetails, setIsViewDetails] = useState(false);
   return <>
     <div className="product-title">{i.quantity} x {i.name}</div>
-    {!isViewDetails && <a className="text-[#315B42] text-xs underline" onClick={() => setIsViewDetails(true)}>Order Details</a>}
-    {isViewDetails &&
-      <div>
+    <a className="text-[#315B42] text-xs underline flex gap-1.5 items-center" onClick={() => setIsViewDetails(!isViewDetails)}>
+      <span>Order Details</span>
+      <span>
+        {isViewDetails ? (
+          // Up Arrow
+          <svg className="mt-1.5" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m18 15-6-6-6 6" />
+          </svg>
+        ) : (
+          // Down Arrow
+          <svg className="mt-1.5" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        )}
+      </span>
+    </a>
+    <div className={`grid transition-all duration-300 ease-in-out ${
+        isViewDetails
+          ? 'grid-rows-[1fr] opacity-100'
+          : 'grid-rows-[0fr] opacity-0'
+      }`}
+    >
+      <div className="overflow-hidden">
         {/* Hide Count from Cart and Checkout */}
         {i.options?.filter(o => o.name != 'Count').map(o => <div key={o.nameId} className="product-option">{o.name}: {o.value}</div>)}
       </div>
-    }
+    </div>
   </>
 }
 
