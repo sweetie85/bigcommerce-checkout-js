@@ -6,7 +6,7 @@ import ShippingMethodOption from "./ShippingMethodOption";
 import FutureShipDateOption from "./FutureShipDateOption";
 import GiftMessageOption from "./GiftMessageOption";
 import { CustomAddressRequestBody, CustomItem, GiftProduct } from "../types";
-import { addItemsToCart, handleCheckoutError, validateAddress } from "../utility";
+import { addFutureShipDateToCart, addItemsToCart, handleCheckoutError, validateAddress } from "../utility";
 
 interface AddressOptionProps {
   checkoutId: string;
@@ -202,6 +202,7 @@ const AddressOptionGroup = ({
 
       if (updatedAddress && futureShipDate) {
 
+        /*
         const futureDateCustomData = {
           fieldId: FUTURE_SHIP_DATE_FIELD_ID,
           fieldValue: futureShipDate,
@@ -211,6 +212,12 @@ const AddressOptionGroup = ({
           updatedAddress.customFields.push(futureDateCustomData);
         } else {
           updatedAddress.customFields = [futureDateCustomData];
+        }
+        */
+
+        const shipDateItem = await addFutureShipDateToCart(checkoutId, futureShipDate);
+        if (shipDateItem) {
+          lineItems.push({ itemId: shipDateItem.id, quantity: 1 });
         }
       }
 

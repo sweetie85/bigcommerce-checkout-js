@@ -167,3 +167,59 @@ export async function deleteConsignment(checkoutId: string, consignmentId: strin
 
   return true;
 }
+
+export const addFutureShipDateToCart = async (checkoutId: string, futureShipDate: string): Promise<PhysicalItem | null> => {
+
+    console.log('addFutureShipDateToCart: ');
+
+    const [productId, optionId] = ['140', '148'];
+
+    const lineItems = [];
+    const lineItem = {
+      quantity: 1,
+      productId: parseInt(productId),
+      optionSelections: [{
+        optionId: parseInt(optionId),
+        optionValue: futureShipDate
+      }],
+    };
+
+    lineItems.push(lineItem);
+
+    const endpoint = `/api/storefront/cart/${checkoutId}/items`;
+
+    const payload = { lineItems };
+
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if(!res.ok) {
+      const error = await res.json();
+      console.error('Add item error:', error);
+      alert('Error adding add-ons: ' + (error.title || 'Unknown error'));
+      
+      // setIsInProgress(false);
+      return null;
+    } else {
+
+      console.log('Item added successfully.');
+      // window.location.reload();
+      console.log(res);
+
+      const response = await res.json();
+      const physicalItems = response.lineItems.physicalItems as PhysicalItem[];
+
+      // Collect only main products
+      const cartItems = physicalItems.filter(i => !i.parentId);
+      const lastItem = cartItems[cartItems.length - 1];
+
+      return lastItem;
+    }
+  }
