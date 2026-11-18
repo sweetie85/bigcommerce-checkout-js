@@ -1,5 +1,6 @@
 import { PhysicalItem } from "@bigcommerce/checkout-sdk";
 import React, { useState } from "react";
+import { removeTrailingNumbers } from "../utility";
 
 interface ConsignmentItemCardProps {
   i: PhysicalItem,
@@ -31,7 +32,7 @@ const ConsignmentItemCard = ({ i, unassignItem }: ConsignmentItemCardProps) => {
           (isShowDetails ?
             <div>
               {/* Hide Count from Cart and Checkout */}
-              {i.options?.filter(o => o.name != 'Count').map(o => <div key={o.nameId} className="font-medium product-option">{o.name} {o.value}</div>)}
+              {i.options?.filter(o => o.name != 'Count').map(o => <div key={o.nameId} className="font-medium product-option">{removeTrailingNumbers(o.name)}: {o.value}</div>)}
               <div className="item-card__toggle-view" onClick={() => setIsShowDetails(!isShowDetails)}>View Less</div>
             </div>
             : 

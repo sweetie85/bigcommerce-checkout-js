@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Consignment, PhysicalItem } from "@bigcommerce/checkout-sdk";
 import { formatAddress } from "../../custom-utility";
-import { formatedDate } from "../utility";
+import { formatedDate, removeTrailingNumbers } from "../utility";
 import ShippingMethodOptionGroup from "./ShippingMethodOptionGroup";
 import { useCheckout } from "../context/CheckoutContext";
 
@@ -42,7 +42,7 @@ const ItemTitle = ({ i }: { i: PhysicalItem; }) => {
     >
       <div className="overflow-hidden">
         {/* Hide Count from Cart and Checkout */}
-        {i.options?.filter(o => o.name != 'Count').map(o => <div key={o.nameId} className="product-option">{o.name}: {o.value}</div>)}
+        {i.options?.filter(o => o.name != 'Count').map(o => <div key={o.nameId} className="product-option">{removeTrailingNumbers(o.name)}: {o.value}</div>)}
       </div>
     </div>
   </>

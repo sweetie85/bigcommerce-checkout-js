@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Consignment, PhysicalItem } from "@bigcommerce/checkout-sdk";
 import { formatAddress } from "../../custom-utility";
-import { formatedDate } from "../utility";
+import { formatedDate, removeTrailingNumbers } from "../utility";
 import ShippingMethodOptionGroup from "./ShippingMethodOptionGroup";
 import { useCheckout } from "../context/CheckoutContext";
 
@@ -33,7 +33,7 @@ const OrderSummaryItemRow = ({ i, c, index, isLoading, setIsInProgress, setSelec
       <div className="w-[30%]">
         <div className="product-title">{i.quantity} x {i.name}</div>
         {/* Hide Count from Cart and Checkout */}
-        {i.options?.filter(o => o.name != 'Count').map(o => <div key={o.nameId} className="product-option">{o.name}: {o.value}</div>)}
+        {i.options?.filter(o => o.name != 'Count').map(o => <div key={o.nameId} className="product-option">{removeTrailingNumbers(o.name)}: {o.value}</div>)}
 
         <div className="flex gap-1 items-center mt-2">
           <span onClick={() => setSelectedItemIdToDelete(i.id) } className="cursor-pointer underline">Remove</span>

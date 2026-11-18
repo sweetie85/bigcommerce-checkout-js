@@ -167,3 +167,7 @@ export async function deleteConsignment(checkoutId: string, consignmentId: strin
 
   return true;
 }
+
+export const removeTrailingNumbers = (text: string): string => {
+  return text.replace(/\d+$/, "");
+}

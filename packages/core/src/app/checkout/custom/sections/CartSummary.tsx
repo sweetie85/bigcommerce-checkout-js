@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useCheckout } from "../context/CheckoutContext";
 // import { useShipping } from "../shipping/hooks/useShipping";
 import CouponCodeBlock from "../components/CouponCode";
+import { removeTrailingNumbers } from "../utility";
 
 const CartSummary = () => {
   const [shippingTotal, setShippingTotal] = useState<number>(0);
@@ -50,7 +51,7 @@ const CartSummary = () => {
           <div className="w-3/5">
             <div className="product-title text-sm">{i.quantity} x {i.name}</div>
             {/* Hide Count from Cart and Checkout */}
-            {i.options?.filter(o => o.name != 'Count').map(o => <div key={o.nameId} className="text-sm product-option">{o.name} {o.value}</div>)}
+            {i.options?.filter(o => o.name != 'Count').map(o => <div key={o.nameId} className="text-sm product-option">{removeTrailingNumbers(o.name)}: {o.value}</div>)}
           </div>
           <div className="w-1/5 text-sm product-price">${(i.salePrice * i.quantity).toFixed(2)}</div>
         </div>))
